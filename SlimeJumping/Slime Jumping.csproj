@@ -4,6 +4,7 @@
     <RootNamespace>SlimeJumping</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="res\utils\" />
+    <Compile Remove="res\**" />
+    <EmbeddedResource Remove="res\**" />
   </ItemGroup>
 </Project>

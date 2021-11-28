@@ -1,0 +1,129 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://tscn/role/slime/SlimeBone.tscn" type="PackedScene" id=1]
+[ext_resource path="res://src/role/player/Player.cs" type="Script" id=2]
+
+[sub_resource type="CircleShape2D" id=1]
+radius = 2.0
+
+[node name="SlimeBody" type="KinematicBody2D"]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource( 2 )
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+position = Vector2( 0, -8.03845 )
+polygon = PoolVector2Array( 0, 8.03845, 10, 4.03845, 10, 2.00961, 2, -6.02884, -2, -6.02884, -10, 2.00961, -10, 5.03845 )
+
+[node name="Skeleton" type="Node2D" parent="."]
+
+[node name="Up" type="StaticBody2D" parent="Skeleton"]
+position = Vector2( 0, -12.0577 )
+scale = Vector2( 1, 1 )
+collision_layer = 0
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Skeleton/Up"]
+shape = SubResource( 1 )
+disabled = true
+
+[node name="SlimeBone0" parent="Skeleton/Up" instance=ExtResource( 1 )]
+position = Vector2( 3, 3.05767 )
+rotation = -0.652798
+scale = Vector2( 1, 1 )
+
+[node name="SlimeBone1" parent="Skeleton/Up" instance=ExtResource( 1 )]
+position = Vector2( 6, 6.05767 )
+rotation = -0.652798
+scale = Vector2( 1, 1 )
+
+[node name="SlimeBone2" parent="Skeleton/Up" instance=ExtResource( 1 )]
+rotation = -0.652798
+
+[node name="SlimeBone3" parent="Skeleton/Up" instance=ExtResource( 1 )]
+rotation = -1.26623
+
+[node name="SlimeBone4" parent="Skeleton/Up" instance=ExtResource( 1 )]
+rotation = -1.86209
+
+[node name="SlimeBone5" parent="Skeleton/Up" instance=ExtResource( 1 )]
+position = Vector2( 0, 0.0576706 )
+rotation = -2.48061
+
+[node name="SlimeBone6" parent="Skeleton/Up" instance=ExtResource( 1 )]
+position = Vector2( -3, 3.05767 )
+rotation = -2.48061
+
+[node name="SlimeBone7" parent="Skeleton/Up" instance=ExtResource( 1 )]
+position = Vector2( -6, 6.05767 )
+rotation = -2.48061
+
+[node name="Down" type="StaticBody2D" parent="Skeleton"]
+position = Vector2( 0, -2.00961 )
+scale = Vector2( 1, 1 )
+collision_layer = 0
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Skeleton/Down"]
+shape = SubResource( 1 )
+disabled = true
+
+[node name="SlimeBone2" parent="Skeleton/Down" instance=ExtResource( 1 )]
+position = Vector2( 2, -2.99039 )
+rotation = 1.39626
+scale = Vector2( 1, 1 )
+
+[node name="SlimeBone3" parent="Skeleton/Down" instance=ExtResource( 1 )]
+position = Vector2( -2, -2.99039 )
+rotation = 1.74533
+scale = Vector2( 1, 1 )
+
+[node name="SlimeBone4" parent="Skeleton/Down" instance=ExtResource( 1 )]
+position = Vector2( -5, -2.99039 )
+rotation = 2.00713
+scale = Vector2( 1, 1 )
+
+[node name="SlimeBone5" parent="Skeleton/Down" instance=ExtResource( 1 )]
+position = Vector2( 5, -2.99039 )
+rotation = 1.13446
+scale = Vector2( 1, 1 )
+
+[node name="Left" type="StaticBody2D" parent="Skeleton"]
+position = Vector2( -8, -5.02403 )
+scale = Vector2( 1, 1 )
+collision_layer = 0
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Skeleton/Left"]
+shape = SubResource( 1 )
+disabled = true
+
+[node name="SlimeBone1" parent="Skeleton/Left" instance=ExtResource( 1 )]
+position = Vector2( 2, 0.0240307 )
+rotation = 3.31613
+scale = Vector2( 1, 1 )
+
+[node name="SlimeBone2" parent="Skeleton/Left" instance=ExtResource( 1 )]
+position = Vector2( 3, 2.02403 )
+rotation = 2.96706
+scale = Vector2( 1, 1 )
+
+[node name="Right" type="StaticBody2D" parent="Skeleton"]
+position = Vector2( 8, -5.02403 )
+scale = Vector2( 1, 1 )
+collision_layer = 0
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Skeleton/Right"]
+shape = SubResource( 1 )
+disabled = true
+
+[node name="SlimeBone1" parent="Skeleton/Right" instance=ExtResource( 1 )]
+position = Vector2( -3, 0.0240307 )
+rotation = -0.174533
+scale = Vector2( 1, 1 )
+
+[node name="SlimeBone2" parent="Skeleton/Right" instance=ExtResource( 1 )]
+position = Vector2( -4, 2.02403 )
+rotation = 0.174533
+scale = Vector2( 1, 1 )
