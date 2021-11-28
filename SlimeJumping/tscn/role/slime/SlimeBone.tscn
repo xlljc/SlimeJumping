@@ -22,6 +22,7 @@ scale = Vector2( 0.065, 0.065 )
 texture = ExtResource( 2 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="RigidBody2D"]
+scale = Vector2( 0.8, 0.8 )
 shape = SubResource( 1 )
 
 [node name="PinJointStart" type="PinJoint2D" parent="."]
@@ -35,7 +36,7 @@ visible = false
 position = Vector2( 8, 0 )
 node_b = NodePath("../RigidBody2D")
 bias = 0.9
-softness = 2.0
+softness = 0.6
 
 [node name="DebugLine" type="Line2D" parent="."]
 points = PoolVector2Array( 0, 0, 8, 0 )
