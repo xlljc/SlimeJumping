@@ -1,5 +1,8 @@
 ﻿using Godot;
 
+/// <summary>
+/// slime骨骼块
+/// </summary>
 public class SlimeBone : Node2D
 {
     /// <summary>

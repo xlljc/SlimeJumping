@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://tscn/role/slime/SlimeBone.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/role/player/Player.cs" type="Script" id=2]
+[ext_resource path="res://src/role/slime/SlimeSkeleton.cs" type="Script" id=3]
 
 [sub_resource type="CircleShape2D" id=1]
 radius = 2.0
@@ -24,6 +25,7 @@ polygon = PoolVector2Array( 0, 8.03845, 10, 4.03845, 10, 2.00961, 2, -6.02884, -
 position = Vector2( 0, -12.0577 )
 collision_layer = 0
 collision_mask = 0
+script = ExtResource( 3 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Skeleton/Up"]
 shape = SubResource( 1 )
@@ -62,6 +64,7 @@ rotation = -2.48061
 position = Vector2( 0, -2.00961 )
 collision_layer = 0
 collision_mask = 0
+script = ExtResource( 3 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Skeleton/Down"]
 shape = SubResource( 1 )
@@ -87,6 +90,7 @@ rotation = 1.13446
 position = Vector2( -8, -5.02403 )
 collision_layer = 0
 collision_mask = 0
+script = ExtResource( 3 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Skeleton/Left"]
 shape = SubResource( 1 )
@@ -104,6 +108,7 @@ rotation = 2.96706
 position = Vector2( 8, -5.02403 )
 collision_layer = 0
 collision_mask = 0
+script = ExtResource( 3 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Skeleton/Right"]
 shape = SubResource( 1 )

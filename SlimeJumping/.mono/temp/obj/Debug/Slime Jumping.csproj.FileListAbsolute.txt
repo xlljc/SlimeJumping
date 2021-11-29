@@ -7,3 +7,12 @@ D:\GameProject\SlimeJumping\SlimeJumping\.mono\temp\obj\Debug\Slime Jumping.Asse
 D:\GameProject\SlimeJumping\SlimeJumping\.mono\temp\obj\Debug\Slime Jumping.csproj.CoreCompileInputs.cache
 D:\GameProject\SlimeJumping\SlimeJumping\.mono\temp\obj\Debug\Slime Jumping.dll
 D:\GameProject\SlimeJumping\SlimeJumping\.mono\temp\obj\Debug\Slime Jumping.pdb
+D:\GodotProject\SlimeJumping\SlimeJumping\.mono\temp\bin\Debug\Slime Jumping.dll
+D:\GodotProject\SlimeJumping\SlimeJumping\.mono\temp\bin\Debug\Slime Jumping.pdb
+D:\GodotProject\SlimeJumping\SlimeJumping\.mono\temp\obj\Debug\Slime Jumping.csproj.AssemblyReference.cache
+D:\GodotProject\SlimeJumping\SlimeJumping\.mono\temp\obj\Debug\Slime Jumping.GeneratedMSBuildEditorConfig.editorconfig
+D:\GodotProject\SlimeJumping\SlimeJumping\.mono\temp\obj\Debug\Slime Jumping.AssemblyInfoInputs.cache
+D:\GodotProject\SlimeJumping\SlimeJumping\.mono\temp\obj\Debug\Slime Jumping.AssemblyInfo.cs
+D:\GodotProject\SlimeJumping\SlimeJumping\.mono\temp\obj\Debug\Slime Jumping.csproj.CoreCompileInputs.cache
+D:\GodotProject\SlimeJumping\SlimeJumping\.mono\temp\obj\Debug\Slime Jumping.dll
+D:\GodotProject\SlimeJumping\SlimeJumping\.mono\temp\obj\Debug\Slime Jumping.pdb
