@@ -6,12 +6,12 @@
 public class SlimeBone : Node2D
 {
     /// <summary>
-    /// 
+    /// 固定点1
     /// </summary>
     public PinJoint2D PinJointStart;
 
     /// <summary>
-    /// 
+    /// 固定点2
     /// </summary>
     public PinJoint2D PinJointEnd;
 

@@ -6,12 +6,7 @@
 public abstract class Role : KinematicBody2D
 {
     /// <summary>
-    /// 角色控制器, 子类创建时赋值
+    /// 获取角色状态机控制器
     /// </summary>
-    protected StateController _stateController;
-
-    /// <summary>
-    /// 获取角色控制器
-    /// </summary>
-    public StateController StateController { get { return _stateController; } }
+    public virtual StateCtr<Role> StateCtr { get; }
 }

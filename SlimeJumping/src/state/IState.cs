@@ -2,15 +2,19 @@
 /// <summary>
 /// 状态机接口
 /// </summary>
-interface IState<T> where T : Role
+public interface IState<R> where R : Role
 {
-    void SetRole(T role);
+    StateEnum StateType { get; }
 
-    T GetRole();
+    R Role { get; }
 
-    void Enter(StateEnum prevState);
+    StateCtr<R> StateController { get; }
 
-    void Update(float delta);
+    void Enter(StateEnum prev, params object[] args);
 
-    void Out(StateEnum nextState);
+    void PhysicsUpdate(float delta);
+
+    bool CanChangeState(StateEnum next);
+
+    void Exit(StateEnum next);
 }
