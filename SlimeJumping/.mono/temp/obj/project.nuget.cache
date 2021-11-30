@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "AFF3N+pousnNH+3xeH2wSBFiBU7TbYeW4/1scg6U5m3xKAfgMFgw6pgDjA2thpnBrT3Co9In36UO76J+V/nWdQ==",
+  "dgSpecHash": "Uu2s6S76Sn5sApdXVbuqUvq+ihi5TcsctWQW3UovqRAQj+oa6Npo5BiQqlnIYABNY7sTZyQ39Chvrobaz/sqIQ==",
   "success": true,
-  "projectFilePath": "D:\\GameProject\\SlimeJumping\\SlimeJumping\\Slime Jumping.csproj",
+  "projectFilePath": "D:\\GodotProject\\SlimeJumping\\SlimeJumping\\Slime Jumping.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

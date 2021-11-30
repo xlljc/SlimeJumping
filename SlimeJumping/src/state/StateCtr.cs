@@ -1,6 +1,5 @@
 ﻿using Godot;
 using Godot.Collections;
-
 /// <summary>
 /// 角色状态机控制器
 /// </summary>
@@ -10,7 +9,7 @@ public class StateCtr<R> where R : Role
     /// 绑定的角色
     /// </summary>
     public R Role { get; }
-
+    
     /// <summary>
     /// 当前活跃的状态
     /// </summary>
@@ -20,7 +19,7 @@ public class StateCtr<R> where R : Role
     /// <summary>
     /// 负责存放状态实例对象
     /// </summary>
-    private Dictionary<StateEnum, IState<R>> _states = new Dictionary<StateEnum, IState<R>>();
+    private readonly Dictionary<StateEnum, IState<R>> _states = new Dictionary<StateEnum, IState<R>>();
 
     public StateCtr(R r)
     {
@@ -49,6 +48,8 @@ public class StateCtr<R> where R : Role
             GD.PrintErr("当前状态已经在状态机中注册:", state);
             return;
         }
+        state.Role = Role;
+        state.StateController = this;
         _states.Add(state.StateType, state);
     }
 
@@ -57,20 +58,24 @@ public class StateCtr<R> where R : Role
     /// </summary>
     public void ChangeState(StateEnum next, params object[] arg)
     {
-        if (_currState == null || !_currState.CanChangeState(next))
-        {
-            return;
-        }
         var newState = GetStateInstance(next);
         if (newState == null)
         {
             GD.PrintErr("当前状态机未找到相应状态:" + next);
             return;
         }
-        var currStateType = _currState.StateType;
-        _currState.Exit(next);
-        _currState = newState;
-        newState.Enter(currStateType, arg);
+        if (_currState == null)
+        {
+            _currState = newState;
+            newState.Enter(StateEnum.None, arg);
+        }
+        else if (_currState.CanChangeState(next))
+        {
+            var prev = _currState.StateType;
+            _currState.Exit(next);
+            _currState = newState;
+            _currState.Enter(prev, arg);
+        }
     }
 
     /// <summary>
@@ -78,6 +83,11 @@ public class StateCtr<R> where R : Role
     /// </summary>
     private IState<R> GetStateInstance(StateEnum stateType)
     {
-        return _states[stateType];
+        //_states.TryGetValue(stateType, out IState<R> r);
+        if (_states.ContainsKey(stateType))
+        {
+            return _states[stateType];
+        }
+        return null;
     }
 }

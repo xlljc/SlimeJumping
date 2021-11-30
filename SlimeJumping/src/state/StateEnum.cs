@@ -5,23 +5,27 @@
 public enum StateEnum
 {
     /// <summary>
+    /// 无状态
+    /// </summary>
+    None = 0,
+    /// <summary>
     /// 静止状态
     /// </summary>
-    Idle,
+    Idle = 1,
     /// <summary>
     /// 平地奔跑状态
     /// </summary>
-    Run,
+    Run = 2,
     /// <summary>
     /// 跳跃向上阶段状态
     /// </summary>
-    Jump,
+    Jump = 3,
     /// <summary>
     /// 下落阶段状态
     /// </summary>
-    Fall,
+    Fall = 4,
     /// <summary>
     /// 落地状态
     /// </summary>
-    FallGround,
+    FallGround = 5,
 }
