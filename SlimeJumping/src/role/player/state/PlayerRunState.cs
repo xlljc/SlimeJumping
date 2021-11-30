@@ -1,11 +1,11 @@
 ﻿using Godot;
 
 /// <summary>
-/// 玩家空闲状态
+/// 玩家奔跑状态
 /// </summary>
-public class PlayerIdleState : IState<Player>
+public class PlayerRunState : IState<Player>
 {
-    public StateEnum StateType => StateEnum.Idle;
+    public StateEnum StateType => StateEnum.Run;
 
     public Player Role { get; set; }
 
@@ -28,13 +28,14 @@ public class PlayerIdleState : IState<Player>
 
     public void PhysicsUpdate(float delta)
     {
-        if (InputManager.MoveAxis.LengthSquared() != 0)
+        if (InputManager.MoveAxis.LengthSquared() == 0)
         {
-            StateController.ChangeState(StateEnum.Run);
+            StateController.ChangeState(StateEnum.Idle);
         }
         else
         {
-            Role.MoveCtr.Velocity = InputManager.MoveAxis;
+            Role.MoveCtr.Velocity = InputManager.MoveAxis * Role.MoveSpeed;
+            GD.Print(Role.MoveCtr.Velocity);
         }
     }
 }

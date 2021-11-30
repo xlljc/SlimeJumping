@@ -1,5 +1,6 @@
 ﻿using Godot;
-using Godot.Collections;
+using System.Collections.Generic;
+
 /// <summary>
 /// 角色状态机控制器
 /// </summary>
@@ -21,6 +22,11 @@ public class StateCtr<R> where R : Role
     /// </summary>
     private readonly Dictionary<StateEnum, IState<R>> _states = new Dictionary<StateEnum, IState<R>>();
 
+    /// <summary>
+    /// 记录下当前帧是否有改变的状态
+    /// </summary>
+    private bool _isChangeState = false;
+
     public StateCtr(R r)
     {
         Role = r;
@@ -32,9 +38,15 @@ public class StateCtr<R> where R : Role
     /// </summary>
     public void PhysicsUpdate(float delta)
     {
+        _isChangeState = false;
         if (CurrState != null)
         {
             CurrState.PhysicsUpdate(delta);
+            //判断当前帧是否有改变的状态, 如果有, 则重新调用 Update() 方法
+            if (_isChangeState)
+            {
+                PhysicsUpdate(delta);
+            }
         }
     }
 
@@ -69,7 +81,7 @@ public class StateCtr<R> where R : Role
             _currState = newState;
             newState.Enter(StateEnum.None, arg);
         }
-        else if (_currState.CanChangeState(next))
+        else if (_isChangeState = _currState.CanChangeState(next))
         {
             var prev = _currState.StateType;
             _currState.Exit(next);
@@ -83,11 +95,7 @@ public class StateCtr<R> where R : Role
     /// </summary>
     private IState<R> GetStateInstance(StateEnum stateType)
     {
-        //_states.TryGetValue(stateType, out IState<R> r);
-        if (_states.ContainsKey(stateType))
-        {
-            return _states[stateType];
-        }
-        return null;
+        _states.TryGetValue(stateType, out IState<R> v);
+        return v;
     }
 }
