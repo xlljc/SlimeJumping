@@ -1,11 +1,11 @@
 ﻿using Godot;
 
 /// <summary>
-/// 玩家奔跑状态
+/// 下落状态
 /// </summary>
-public class PlayerRunState : IState<Player>
+public class PlayerFallState : IState<Player>
 {
-    public StateEnum StateType => StateEnum.Run;
+    public StateEnum StateType => StateEnum.Fall;
 
     public Player Role { get; set; }
 
@@ -23,18 +23,20 @@ public class PlayerRunState : IState<Player>
 
     public void Exit(StateEnum next)
     {
-        
+
     }
 
     public void PhysicsUpdate(float delta)
     {
-        if (InputManager.MoveAxis.x == 0)
+        if (Role.IsOnFloor())
         {
-            StateController.ChangeState(StateEnum.Idle);
+            StateController.ChangeState(StateEnum.FallGround);
         }
         else
         {
-            Role.MoveCtr.Velocity = new Vector2(InputManager.MoveAxis.x * Role.MoveSpeed, 0);
+            var v = Role.MoveCtr.Velocity;
+            v.y += Game.FallSpeed * delta;
+            Role.MoveCtr.Velocity = v;
         }
     }
 }

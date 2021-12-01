@@ -13,11 +13,15 @@ public static class InputManager
 
     /// <summary>
     /// 归一化后的移动轴向
-    /// 归一化后的移动轴向
     /// </summary>
     public static Vector2 MoveAxisNorm => _moveAxisNorm;
     private static Vector2 _moveAxisNorm = Vector2.Zero;
 
+    /// <summary>
+    /// 是否按下跳跃
+    /// </summary>
+    public static bool Jump => _jump;
+    private static bool _jump = false;
 
     public static void Update(float delta)
     {
@@ -26,6 +30,7 @@ public static class InputManager
             Input.GetActionStrength("move_down") - Input.GetActionStrength("move_up")
         );
         _moveAxisNorm = _moveAxis.Normalized();
+        _jump = Input.IsActionPressed("move_jump");
     }
 }
 

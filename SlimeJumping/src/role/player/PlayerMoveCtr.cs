@@ -26,10 +26,18 @@ public class PlayerMoveCtr
     }
 
     /// <summary>
+    /// 更新速度
+    /// </summary>
+    public void UpdateVelocity()
+    {
+        Velocity = Player.MoveAndSlide(Velocity, _upDir);
+    }
+
+    /// <summary>
     /// 更新控制器, 每帧调用
     /// </summary>
     public void PhysicsUpdate(float delta)
     {
-        Velocity = Player.MoveAndSlide(Velocity, _upDir);
+        UpdateVelocity();
     }
 }

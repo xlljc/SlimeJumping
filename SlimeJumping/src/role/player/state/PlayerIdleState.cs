@@ -18,7 +18,7 @@ public class PlayerIdleState : IState<Player>
 
     public void Enter(StateEnum prev, params object[] args)
     {
-        
+        GD.Print(StateType);
     }
 
     public void Exit(StateEnum next)
@@ -28,13 +28,21 @@ public class PlayerIdleState : IState<Player>
 
     public void PhysicsUpdate(float delta)
     {
-        if (InputManager.MoveAxis.LengthSquared() != 0)
+        if (InputManager.Jump)
+        {
+            StateController.ChangeState(StateEnum.Jump);
+        }
+        else if (!Role.IsOnFloor())
+        {
+            StateController.ChangeState(StateEnum.Fall);
+        }
+        else if (InputManager.MoveAxis.x != 0)
         {
             StateController.ChangeState(StateEnum.Run);
         }
         else
         {
-            Role.MoveCtr.Velocity = InputManager.MoveAxis;
+            Role.MoveCtr.Velocity = Vector2.Zero;
         }
     }
 }

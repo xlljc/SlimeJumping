@@ -1,11 +1,11 @@
 ﻿using Godot;
 
 /// <summary>
-/// 玩家奔跑状态
+/// 跳跃状态
 /// </summary>
-public class PlayerRunState : IState<Player>
+public class PlayerJumpState : IState<Player>
 {
-    public StateEnum StateType => StateEnum.Run;
+    public StateEnum StateType => StateEnum.Jump;
 
     public Player Role { get; set; }
 
@@ -19,22 +19,32 @@ public class PlayerRunState : IState<Player>
     public void Enter(StateEnum prev, params object[] args)
     {
         GD.Print(StateType);
+        var v = Role.MoveCtr.Velocity;
+        v.y -= Role.JumpSpeed;
+        Role.MoveCtr.Velocity = v;
+        Role.MoveCtr.UpdateVelocity();
     }
 
     public void Exit(StateEnum next)
     {
-        
+
     }
 
     public void PhysicsUpdate(float delta)
     {
-        if (InputManager.MoveAxis.x == 0)
+        if (Role.IsOnFloor())
         {
             StateController.ChangeState(StateEnum.Idle);
         }
+        else if (Role.MoveCtr.Velocity.y > 0)
+        {
+            StateController.ChangeState(StateEnum.Fall);
+        }
         else
         {
-            Role.MoveCtr.Velocity = new Vector2(InputManager.MoveAxis.x * Role.MoveSpeed, 0);
+            var v = Role.MoveCtr.Velocity;
+            v.y += Game.FallSpeed * delta;
+            Role.MoveCtr.Velocity = v;
         }
     }
 }

@@ -70,6 +70,10 @@ public class StateCtr<R> where R : Role
     /// </summary>
     public void ChangeState(StateEnum next, params object[] arg)
     {
+        if (_currState != null && _currState.StateType == next)
+        {
+            return;
+        }
         var newState = GetStateInstance(next);
         if (newState == null)
         {
