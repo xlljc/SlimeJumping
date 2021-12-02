@@ -7,5 +7,7 @@ public class Player : Slime {     [Export]     public float MoveSpeed = 30
         StateCtr.Register(new PlayerJumpState());
         StateCtr.Register(new PlayerFallState());
         StateCtr.Register(new PlayerFallGroundState());
+        StateCtr.Register(new PlayerImpactState());
+        StateCtr.Register(new PlayerShrinkState());
         //默认为idle状态
         StateCtr.ChangeState(StateEnum.Idle);     }      public override void _PhysicsProcess(float delta)     {         //更新状态         StateCtr.PhysicsUpdate(delta);         //更新移动         MoveCtr.PhysicsUpdate(delta);     } }

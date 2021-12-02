@@ -20,6 +20,15 @@ public class PlayerMoveCtr
     /// </summary>
     private Vector2 _upDir = Vector2.Up;
 
+    /// <summary>
+    /// 添加一个冲击力
+    /// </summary>
+    public Vector2 AddForce(Vector2 force)
+    {
+        return Velocity;
+    }
+
+
     public PlayerMoveCtr(Player p)
     {
         Player = p;

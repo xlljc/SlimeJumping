@@ -28,7 +28,7 @@ public class PlayerIdleState : IState<Player>
 
     public void PhysicsUpdate(float delta)
     {
-        if (InputManager.Jump)
+        if (InputManager.PhysicsJumpPressed)
         {
             StateController.ChangeState(StateEnum.Jump);
         }
@@ -36,7 +36,7 @@ public class PlayerIdleState : IState<Player>
         {
             StateController.ChangeState(StateEnum.Fall);
         }
-        else if (InputManager.MoveAxis.x != 0)
+        else if (InputManager.PhysicsMoveAxis.x != 0)
         {
             StateController.ChangeState(StateEnum.Run);
         }

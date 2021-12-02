@@ -28,13 +28,21 @@ public class PlayerRunState : IState<Player>
 
     public void PhysicsUpdate(float delta)
     {
-        if (InputManager.MoveAxis.x == 0)
+        if (InputManager.PhysicsJumpPressed)
+        {
+            StateController.ChangeState(StateEnum.Jump);
+        }
+        else if (!Role.IsOnFloor())
+        {
+            StateController.ChangeState(StateEnum.Fall);
+        }
+        else if (InputManager.PhysicsMoveAxis.x == 0)
         {
             StateController.ChangeState(StateEnum.Idle);
         }
         else
         {
-            Role.MoveCtr.Velocity = new Vector2(InputManager.MoveAxis.x * Role.MoveSpeed, 0);
+            Role.MoveCtr.Velocity = new Vector2(InputManager.PhysicsMoveAxis.x * Role.MoveSpeed, 0);
         }
     }
 }

@@ -28,4 +28,12 @@ public enum StateEnum
     /// 落地状态
     /// </summary>
     FallGround = 5,
+    /// <summary>
+    /// 冲刺状态
+    /// </summary>
+    Impact = 6,
+    /// <summary>
+    /// 收缩状态
+    /// </summary>
+    Shrink = 7,
 }

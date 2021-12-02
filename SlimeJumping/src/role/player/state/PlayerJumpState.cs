@@ -44,6 +44,7 @@ public class PlayerJumpState : IState<Player>
         {
             var v = Role.MoveCtr.Velocity;
             v.y += Game.FallSpeed * delta;
+            v.x = InputManager.PhysicsMoveAxis.x * Role.MoveSpeed;
             Role.MoveCtr.Velocity = v;
         }
     }
