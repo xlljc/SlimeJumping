@@ -11,23 +11,74 @@ public class PlayerMoveCtr
     public Player Player;
 
     /// <summary>
-    /// 这个速度就是玩家当前物理帧移动的真实速度
+    /// 这个速度就是玩家当前物理帧移动的真实速率
+    /// 该速度就是 BasisVelocity + ForceVelocity
     /// </summary>
-    public Vector2 Velocity { get; set; } = Vector2.Zero;
+    public Vector2 Velocity => _velocity;
+    private Vector2 _velocity = Vector2.Zero;
+
+    /// <summary>
+    /// 玩家的基础移动速率, 包括左右移动, 下坠, 上升等
+    /// </summary>
+    public Vector2 BasisVelocity => _basisVelocity;
+    private Vector2 _basisVelocity = Vector2.Zero;
+
+    /// <summary>
+    /// 玩家受到的外力速率, 比如惯性力, 突然受到的冲击力等
+    /// </summary>
+    public Vector2 ForceVelocity => _forceVelocity;
+    private Vector2 _forceVelocity = Vector2.Zero;
+
+    /// <summary>
+    /// 基础速率削减值, 就是基础速率每秒减少的量, 到 0 为止
+    /// </summary>
+    //public Vector2 BasisCurtail { get; set; } = Vector2.Zero;
+
+    /// <summary>
+    /// 外力速率削减值, 就是外力速率每秒减少的量, 到 0 为止
+    /// </summary>
+    public Vector2 ForceCurtail { get; set; } = new Vector2(300, 300);
 
     /// <summary>
     /// 玩家向上的方向
     /// </summary>
-    private Vector2 _upDir = Vector2.Up;
+    private readonly Vector2 _upDir = Vector2.Up;
 
     /// <summary>
-    /// 添加一个冲击力
+    /// 增加基础力的速率
     /// </summary>
-    public Vector2 AddForce(Vector2 force)
+    public void AddBasisVelocity(Vector2 basis)
     {
-        return Velocity;
+        _basisVelocity += basis;
+        _UpdateVelocity();
     }
 
+    /// <summary>
+    /// 强制设置基础速率的大小
+    /// </summary>
+    public void SetBasisVelocity(Vector2 basis)
+    {
+        _basisVelocity = basis;
+        _UpdateVelocity();
+    }
+
+    /// <summary>
+    /// 添加一个瞬间冲击速率
+    /// </summary>
+    public void AddForceVelocity(Vector2 force)
+    {
+        _forceVelocity += force;
+        _UpdateVelocity();
+    }
+
+    /// <summary>
+    /// 强制设置外力速率的大小
+    /// </summary>
+    public void SetForceVelocity(Vector2 force)
+    {
+        _forceVelocity = force;
+        _UpdateVelocity();
+    }
 
     public PlayerMoveCtr(Player p)
     {
@@ -35,11 +86,31 @@ public class PlayerMoveCtr
     }
 
     /// <summary>
-    /// 更新速度
+    /// 更新速率
     /// </summary>
-    public void UpdateVelocity()
+    private void _UpdateVelocity()
     {
-        Velocity = Player.MoveAndSlide(Velocity, _upDir);
+        _velocity = ForceVelocity + BasisVelocity;
+    }
+
+    /// <summary>
+    /// 更新移动
+    /// </summary>
+    public void UpdateMove()
+    {
+        var vlen1 = Velocity.Length();
+        var v = Player.MoveAndSlide(Velocity, _upDir);
+        var vlen2 = v.Length();
+        if (vlen1 <= vlen2)
+        {
+            _basisVelocity = v;
+            _forceVelocity = Vector2.Zero;
+        }
+        else
+        {
+            _basisVelocity = v.Clamped(vlen1);
+        }
+        _UpdateVelocity();
     }
 
     /// <summary>
@@ -47,6 +118,6 @@ public class PlayerMoveCtr
     /// </summary>
     public void PhysicsUpdate(float delta)
     {
-        UpdateVelocity();
+        UpdateMove();
     }
 }
