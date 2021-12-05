@@ -18,8 +18,7 @@ public class PlayerShrinkState : IState<Player>
 
     public void Enter(StateEnum prev, params object[] args)
     {
-        GD.Print(StateType);
-        StateController.ChangeState(StateEnum.Idle);
+
     }
 
     public void Exit(StateEnum next)

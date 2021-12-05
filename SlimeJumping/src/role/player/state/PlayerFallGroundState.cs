@@ -18,7 +18,6 @@ public class PlayerFallGroundState : IState<Player>
 
     public void Enter(StateEnum prev, params object[] args)
     {
-        GD.Print(StateType);
         StateController.ChangeState(StateEnum.Idle);
     }
 

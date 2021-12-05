@@ -18,7 +18,7 @@ public class PlayerIdleState : IState<Player>
 
     public void Enter(StateEnum prev, params object[] args)
     {
-        GD.Print(StateType);
+
     }
 
     public void Exit(StateEnum next)
@@ -42,7 +42,7 @@ public class PlayerIdleState : IState<Player>
         }
         else
         {
-            Role.MoveCtr.Velocity = Vector2.Zero;
+            Role.MoveCtr.BasisVelocity = Vector2.Zero;
         }
     }
 }

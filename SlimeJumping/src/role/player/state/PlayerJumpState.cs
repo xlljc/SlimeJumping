@@ -18,11 +18,9 @@ public class PlayerJumpState : IState<Player>
 
     public void Enter(StateEnum prev, params object[] args)
     {
-        GD.Print(StateType);
-        var v = Role.MoveCtr.Velocity;
+        var v = Role.MoveCtr.BasisVelocity;
         v.y -= Role.JumpSpeed;
-        Role.MoveCtr.Velocity = v;
-        Role.MoveCtr.UpdateVelocity();
+        Role.MoveCtr.BasisVelocity = v;
     }
 
     public void Exit(StateEnum next)
@@ -32,20 +30,6 @@ public class PlayerJumpState : IState<Player>
 
     public void PhysicsUpdate(float delta)
     {
-        if (Role.IsOnFloor())
-        {
-            StateController.ChangeState(StateEnum.Idle);
-        }
-        else if (Role.MoveCtr.Velocity.y > 0)
-        {
-            StateController.ChangeState(StateEnum.Fall);
-        }
-        else
-        {
-            var v = Role.MoveCtr.Velocity;
-            v.y += Game.FallSpeed * delta;
-            v.x = InputManager.PhysicsMoveAxis.x * Role.MoveSpeed;
-            Role.MoveCtr.Velocity = v;
-        }
+        
     }
 }

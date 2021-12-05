@@ -57,7 +57,7 @@ public class StateCtr<R> where R : Role
     {
         if (GetStateInstance(state.StateType) != null)
         {
-            GD.PrintErr("当前状态已经在状态机中注册:", state);
+            this.Error("当前状态已经在状态机中注册:", state);
             return;
         }
         state.Role = Role;
@@ -66,32 +66,19 @@ public class StateCtr<R> where R : Role
     }
 
     /// <summary>
-    /// 切换到下一个指定状态
+    /// 立即切换到下一个指定状态, 并且这一帧会被调用update
     /// </summary>
     public void ChangeState(StateEnum next, params object[] arg)
     {
-        if (_currState != null && _currState.StateType == next)
-        {
-            return;
-        }
-        var newState = GetStateInstance(next);
-        if (newState == null)
-        {
-            GD.PrintErr("当前状态机未找到相应状态:" + next);
-            return;
-        }
-        if (_currState == null)
-        {
-            _currState = newState;
-            newState.Enter(StateEnum.None, arg);
-        }
-        else if (_isChangeState = _currState.CanChangeState(next))
-        {
-            var prev = _currState.StateType;
-            _currState.Exit(next);
-            _currState = newState;
-            _currState.Enter(prev, arg);
-        }
+        _changeState(false, next, arg);
+    }
+
+    /// <summary>
+    /// 切换到下一个指定状态, 下一帧才会调用update
+    /// </summary>
+    public void ChangeStateLate(StateEnum next, params object[] arg)
+    {
+        _changeState(true, next, arg);
     }
 
     /// <summary>
@@ -101,5 +88,36 @@ public class StateCtr<R> where R : Role
     {
         _states.TryGetValue(stateType, out IState<R> v);
         return v;
+    }
+
+    /// <summary>
+    /// 切换状态
+    /// </summary>
+    private void _changeState(bool late, StateEnum next, params object[] arg)
+    {
+        if (_currState != null && _currState.StateType == next)
+        {
+            return;
+        }
+        var newState = GetStateInstance(next);
+        if (newState == null)
+        {
+            this.Error("当前状态机未找到相应状态:" + next);
+            return;
+        }
+        if (_currState == null)
+        {
+            _currState = newState;
+            newState.Enter(StateEnum.None, arg);
+        }
+        else if (_currState.CanChangeState(next))
+        {
+            _isChangeState = !late;
+            var prev = _currState.StateType;
+            _currState.Exit(next);
+            this.Log("nextState => " + next);
+            _currState = newState;
+            _currState.Enter(prev, arg);
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Godot;
+using System.Collections.Generic;
 
 /// <summary>
 /// 玩家的移动控制器, 该类负责移动计算, 惯性计算等
@@ -11,6 +12,11 @@ public class PlayerMoveCtr
     public Player Player;
 
     /// <summary>
+    /// 玩家受到的外力的集合
+    /// </summary>
+    private readonly Dictionary<string, ExternalForce> _forceData = new Dictionary<string, ExternalForce>();
+
+    /// <summary>
     /// 这个速度就是玩家当前物理帧移动的真实速率
     /// 该速度就是 BasisVelocity + ForceVelocity
     /// </summary>
@@ -20,24 +26,8 @@ public class PlayerMoveCtr
     /// <summary>
     /// 玩家的基础移动速率, 包括左右移动, 下坠, 上升等
     /// </summary>
-    public Vector2 BasisVelocity => _basisVelocity;
+    public Vector2 BasisVelocity { get { return _basisVelocity; } set { _basisVelocity = value; } }
     private Vector2 _basisVelocity = Vector2.Zero;
-
-    /// <summary>
-    /// 玩家受到的外力速率, 比如惯性力, 突然受到的冲击力等
-    /// </summary>
-    public Vector2 ForceVelocity => _forceVelocity;
-    private Vector2 _forceVelocity = Vector2.Zero;
-
-    /// <summary>
-    /// 基础速率削减值, 就是基础速率每秒减少的量, 到 0 为止
-    /// </summary>
-    //public Vector2 BasisCurtail { get; set; } = Vector2.Zero;
-
-    /// <summary>
-    /// 外力速率削减值, 就是外力速率每秒减少的量, 到 0 为止
-    /// </summary>
-    public Vector2 ForceCurtail { get; set; } = new Vector2(300, 300);
 
     /// <summary>
     /// 玩家向上的方向
@@ -45,39 +35,40 @@ public class PlayerMoveCtr
     private readonly Vector2 _upDir = Vector2.Up;
 
     /// <summary>
-    /// 增加基础力的速率
+    /// 根据名称添加一个外力, 并返回创建的外力的对象
     /// </summary>
-    public void AddBasisVelocity(Vector2 basis)
+    public ExternalForce AddForce(string name)
     {
-        _basisVelocity += basis;
-        _UpdateVelocity();
+        var f = new ExternalForce(name);
+        AddForce(f);
+        return f;
     }
 
     /// <summary>
-    /// 强制设置基础速率的大小
+    /// 根据对象添加一个外力力
     /// </summary>
-    public void SetBasisVelocity(Vector2 basis)
+    public void AddForce(ExternalForce force)
     {
-        _basisVelocity = basis;
-        _UpdateVelocity();
+        _forceData.Add(force.Name, force);
     }
 
     /// <summary>
-    /// 添加一个瞬间冲击速率
+    /// 根据名称移除一个外力
     /// </summary>
-    public void AddForceVelocity(Vector2 force)
+    public void RemoveForce(string name)
     {
-        _forceVelocity += force;
-        _UpdateVelocity();
+        if (!_forceData.Remove(name))
+        {
+            this.Error($"力:{name}不存在!!!");
+        }
     }
 
     /// <summary>
-    /// 强制设置外力速率的大小
+    /// 根据对象移除一个外力
     /// </summary>
-    public void SetForceVelocity(Vector2 force)
+    public void RemoveForce(ExternalForce force)
     {
-        _forceVelocity = force;
-        _UpdateVelocity();
+        RemoveForce(force.Name);
     }
 
     public PlayerMoveCtr(Player p)
@@ -86,31 +77,49 @@ public class PlayerMoveCtr
     }
 
     /// <summary>
-    /// 更新速率
-    /// </summary>
-    private void _UpdateVelocity()
-    {
-        _velocity = ForceVelocity + BasisVelocity;
-    }
-
-    /// <summary>
     /// 更新移动
     /// </summary>
-    public void UpdateMove()
+    public void UpdateMove(float delta)
     {
-        var vlen1 = Velocity.Length();
-        var v = Player.MoveAndSlide(Velocity, _upDir);
-        var vlen2 = v.Length();
-        if (vlen1 <= vlen2)
+        //先调用更新
+        var ks = _forceData.Keys;
+        foreach (var k in ks)
+            _forceData[k].PhysicsUpdate(delta);
+
+        var finallyEf = Vector2.Zero;
+        foreach (var item in _forceData)
+            finallyEf += item.Value.Velocity;
+        //最终速率
+        var finallyVelocity = _basisVelocity + finallyEf;
+
+        //计算移动
+        _velocity = Player.MoveAndSlide(finallyVelocity, _upDir);
+
+        //调整其他速率
+        var scale = new Vector2(1, 1);
+        var flag = false;
+        if ((_basisVelocity.x >= 0 && _velocity.x > _basisVelocity.x) || (_basisVelocity.x < 0 && _velocity.x < _basisVelocity.x))
         {
-            _basisVelocity = v;
-            _forceVelocity = Vector2.Zero;
+            //x轴外力
+            float efx = _velocity.x - _basisVelocity.x;
+            scale.x = Mathf.Abs(efx / finallyEf.x);
+            flag = true;
         }
-        else
+        if ((_basisVelocity.y >= 0 && _velocity.y > _basisVelocity.y) || (_basisVelocity.y < 0 && _velocity.y < _basisVelocity.y))
         {
-            _basisVelocity = v.Clamped(vlen1);
+            //y轴外力
+            float efy = _velocity.y - _basisVelocity.y;
+            scale.y = Mathf.Abs(efy / finallyEf.y);
+            flag = true;
         }
-        _UpdateVelocity();
+        if (flag)
+        {
+            foreach (var item in _forceData)
+            {
+                var velocity = item.Value.Velocity;
+                item.Value.Velocity = new Vector2(velocity.y * scale.x, velocity.y * scale.y);
+            }
+        }
     }
 
     /// <summary>
@@ -118,6 +127,6 @@ public class PlayerMoveCtr
     /// </summary>
     public void PhysicsUpdate(float delta)
     {
-        UpdateMove();
+        UpdateMove(delta);
     }
 }

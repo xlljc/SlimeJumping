@@ -18,7 +18,7 @@ public class PlayerImpactState : IState<Player>
 
     public void Enter(StateEnum prev, params object[] args)
     {
-        GD.Print(StateType);
+
     }
 
     public void Exit(StateEnum next)

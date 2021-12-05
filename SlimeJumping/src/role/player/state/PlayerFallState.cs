@@ -18,7 +18,7 @@ public class PlayerFallState : IState<Player>
 
     public void Enter(StateEnum prev, params object[] args)
     {
-        GD.Print(StateType);
+
     }
 
     public void Exit(StateEnum next)
@@ -34,10 +34,10 @@ public class PlayerFallState : IState<Player>
         }
         else
         {
-            var v = Role.MoveCtr.Velocity;
+            var v = Role.MoveCtr.BasisVelocity;
             v.y += Game.FallSpeed * delta;
             v.x = InputManager.PhysicsMoveAxis.x * Role.MoveSpeed;
-            Role.MoveCtr.Velocity = v;
+            Role.MoveCtr.BasisVelocity = v;
         }
     }
 }
