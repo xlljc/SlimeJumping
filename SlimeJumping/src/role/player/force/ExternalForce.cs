@@ -18,7 +18,7 @@ public class ExternalForce
     /// <summary>
     /// 物理帧更新
     /// </summary>
-    public void PhysicsUpdate(float delta)
+    public virtual void PhysicsUpdate(float delta)
     {
 
     }

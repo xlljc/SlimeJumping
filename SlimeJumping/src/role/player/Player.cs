@@ -36,6 +36,8 @@ public class Player : Slime
         StateCtr.Register(new PlayerShrinkState());
         //默认为idle状态
         StateCtr.ChangeState(StateEnum.Idle);
+
+        MoveCtr.AddForce(new GravityForce("gravity"));
     }
 
     public override void _PhysicsProcess(float delta)

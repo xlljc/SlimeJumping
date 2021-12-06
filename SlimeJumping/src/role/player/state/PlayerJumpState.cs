@@ -11,6 +11,8 @@ public class PlayerJumpState : IState<Player>
 
     public StateCtr<Player> StateController { get; set; }
 
+    private ExternalForce _jumpForce;
+
     public bool CanChangeState(StateEnum next)
     {
         return true;
@@ -18,9 +20,8 @@ public class PlayerJumpState : IState<Player>
 
     public void Enter(StateEnum prev, params object[] args)
     {
-        var v = Role.MoveCtr.BasisVelocity;
-        v.y -= Role.JumpSpeed;
-        Role.MoveCtr.BasisVelocity = v;
+        _jumpForce = Role.MoveCtr.AddForce("jump");
+        _jumpForce.Velocity = new Vector2(0, -Role.JumpSpeed);
     }
 
     public void Exit(StateEnum next)
@@ -30,6 +31,6 @@ public class PlayerJumpState : IState<Player>
 
     public void PhysicsUpdate(float delta)
     {
-        
+        //this.Log("velocity: " + Role.MoveCtr.Velocity + " , " + _jumpForce.Velocity);
     }
 }

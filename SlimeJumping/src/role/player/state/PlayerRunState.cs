@@ -30,7 +30,7 @@ public class PlayerRunState : IState<Player>
     {
         if (InputManager.PhysicsJumpPressed)
         {
-            StateController.ChangeState(StateEnum.Jump);
+            StateController.ChangeStateLate(StateEnum.Jump);
         }
         else if (!Role.IsOnFloor())
         {

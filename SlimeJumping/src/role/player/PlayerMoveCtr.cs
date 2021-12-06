@@ -35,7 +35,7 @@ public class PlayerMoveCtr
     private readonly Vector2 _upDir = Vector2.Up;
 
     /// <summary>
-    /// 根据名称添加一个外力, 并返回创建的外力的对象
+    /// 根据名称添加一个外力, 并返回创建的外力的对象, 如果存在这个名称的外力, 移除之前的外力
     /// </summary>
     public ExternalForce AddForce(string name)
     {
@@ -45,11 +45,13 @@ public class PlayerMoveCtr
     }
 
     /// <summary>
-    /// 根据对象添加一个外力力
+    /// 根据对象添加一个外力力, 如果存在这个名称的外力, 移除之前的外力
     /// </summary>
-    public void AddForce(ExternalForce force)
+    public ExternalForce AddForce(ExternalForce force)
     {
+        _forceData.Remove(force.Name);
         _forceData.Add(force.Name, force);
+        return force;
     }
 
     /// <summary>
@@ -61,6 +63,23 @@ public class PlayerMoveCtr
         {
             this.Error($"力:{name}不存在!!!");
         }
+    }
+
+    /// <summary>
+    /// 根据名称获取一个外力
+    /// </summary>
+    public ExternalForce GetForce(string name)
+    {
+        _forceData.TryGetValue(name, out ExternalForce f);
+        return f;
+    }
+
+    /// <summary>
+    /// 检车是否有当前名称的外力对象
+    /// </summary>
+    public bool ContainsForce(string name)
+    {
+        return _forceData.ContainsKey(name);
     }
 
     /// <summary>
@@ -96,24 +115,15 @@ public class PlayerMoveCtr
         _velocity = Player.MoveAndSlide(finallyVelocity, _upDir);
 
         //调整其他速率
-        var scale = new Vector2(1, 1);
-        var flag = false;
-        if ((_basisVelocity.x >= 0 && _velocity.x > _basisVelocity.x) || (_basisVelocity.x < 0 && _velocity.x < _basisVelocity.x))
+        if (_forceData.Count > 0)
         {
+            var scale = new Vector2();
             //x轴外力
             float efx = _velocity.x - _basisVelocity.x;
-            scale.x = Mathf.Abs(efx / finallyEf.x);
-            flag = true;
-        }
-        if ((_basisVelocity.y >= 0 && _velocity.y > _basisVelocity.y) || (_basisVelocity.y < 0 && _velocity.y < _basisVelocity.y))
-        {
+            scale.x = finallyEf.x == 0f ? 0 : Mathf.Abs(efx / finallyEf.x);
             //y轴外力
             float efy = _velocity.y - _basisVelocity.y;
-            scale.y = Mathf.Abs(efy / finallyEf.y);
-            flag = true;
-        }
-        if (flag)
-        {
+            scale.y = finallyEf.y == 0f ? 0 : Mathf.Abs(efy / finallyEf.y);
             foreach (var item in _forceData)
             {
                 var velocity = item.Value.Velocity;
