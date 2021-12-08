@@ -90,6 +90,23 @@ public class PlayerMoveCtr
         RemoveForce(force.Name);
     }
 
+    /// <summary>
+    /// 移除所有外力
+    /// </summary>
+    public void ClearForce()
+    {
+        _forceData.Clear();
+    }
+
+    /// <summary>
+    /// 移除所有外力和基础力, 使玩家静止
+    /// </summary>
+    public void Halt()
+    {
+        ClearForce();
+        _basisVelocity = Vector2.Zero;
+    }
+
     public PlayerMoveCtr(Player p)
     {
         Player = p;

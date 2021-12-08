@@ -1,21 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "D:\\GodotProject\\SlimeJumping\\SlimeJumping\\Slime Jumping.csproj": {}
+    "D:\\GameProject\\SlimeJumping\\SlimeJumping\\Slime Jumping.csproj": {}
   },
   "projects": {
-    "D:\\GodotProject\\SlimeJumping\\SlimeJumping\\Slime Jumping.csproj": {
+    "D:\\GameProject\\SlimeJumping\\SlimeJumping\\Slime Jumping.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\GodotProject\\SlimeJumping\\SlimeJumping\\Slime Jumping.csproj",
+        "projectUniqueName": "D:\\GameProject\\SlimeJumping\\SlimeJumping\\Slime Jumping.csproj",
         "projectName": "Slime Jumping",
-        "projectPath": "D:\\GodotProject\\SlimeJumping\\SlimeJumping\\Slime Jumping.csproj",
-        "packagesPath": "C:\\Users\\jing-cheng.li\\.nuget\\packages\\",
-        "outputPath": "D:\\GodotProject\\SlimeJumping\\SlimeJumping\\.mono\\temp\\obj\\",
+        "projectPath": "D:\\GameProject\\SlimeJumping\\SlimeJumping\\Slime Jumping.csproj",
+        "packagesPath": "C:\\Users\\li\\.nuget\\packages\\",
+        "outputPath": "D:\\GameProject\\SlimeJumping\\SlimeJumping\\.mono\\temp\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"
+        ],
         "configFilePaths": [
-          "C:\\Users\\jing-cheng.li\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\li\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net472"
@@ -39,7 +43,7 @@
       "frameworks": {
         "net472": {
           "targetAlias": "net472",
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.401\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.400\\RuntimeIdentifierGraph.json"
         }
       }
     }

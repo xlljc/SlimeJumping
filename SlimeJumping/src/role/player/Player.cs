@@ -6,7 +6,9 @@ public class Player : Slime
     [Export]
     public float MoveSpeed = 300;
     [Export]
-    public float JumpSpeed = 1000;
+    public float JumpSpeed = 500;
+    [Export]
+    public float JumpUpSpeed = 800;
 
     /// <summary>
     /// 角色状态机控制器
