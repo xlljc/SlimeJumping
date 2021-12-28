@@ -34,11 +34,15 @@ public class PlayerJumpState : IState<Player>
 
     public void PhysicsUpdate(float delta)
     {
-        if (Role.IsOnFloor())
+        if (InputManager.PhysicsImpactPressed)
+        {
+            StateController.ChangeState(StateEnum.Impact);
+        }
+        else if (Role.IsOnFloor())
         {
             StateController.ChangeState(StateEnum.Idle);
         }
-        else if (Role.MoveCtr.Velocity.x > 0)
+        else if (Role.MoveCtr.Velocity.y > 0)
         {
             StateController.ChangeState(StateEnum.Fall);
         }

@@ -1,8 +1,8 @@
 ﻿
 /// <summary>
-/// 
+/// 游戏配置类
 /// </summary>
-public static class Game
+public static class GameConfig
 {
     /// <summary>
     /// 重力加速度
@@ -12,7 +12,7 @@ public static class Game
     /// <summary>
     /// 下落加速系数
     /// </summary>
-    public static readonly float FallCoefficient = 5f * 60;
+    public static readonly float FallCoefficient = 5.5f * 60;
 
     /// <summary>
     /// 下落每秒增加速度

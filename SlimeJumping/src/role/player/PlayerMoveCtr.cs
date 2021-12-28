@@ -115,7 +115,7 @@ public class PlayerMoveCtr
     /// <summary>
     /// 更新移动
     /// </summary>
-    public void UpdateMove(float delta)
+    private void UpdateMove(float delta)
     {
         //先调用更新
         var ks = _forceData.Keys;

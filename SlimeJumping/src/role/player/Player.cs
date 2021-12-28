@@ -1,14 +1,24 @@
 ﻿using Godot;
-using System.Collections.Generic;
 
 public class Player : Slime
 {
+    /// <summary>
+    /// 移动速度
+    /// </summary>
     [Export]
     public float MoveSpeed = 300;
+    /// <summary>
+    /// 跳跃瞬间速度
+    /// </summary>
     [Export]
-    public float JumpSpeed = 500;
+    public float JumpSpeed = 550;
+    /// <summary>
+    /// 跳跃上升速度
+    /// </summary>
     [Export]
-    public float JumpUpSpeed = 800;
+    public float JumpUpSpeed = 1500;
+    [Export]
+    public float ImpactSpeed = 1000;
 
     /// <summary>
     /// 角色状态机控制器
@@ -19,6 +29,16 @@ public class Player : Slime
     /// 运动控制器, 玩家的移动, 惯性计算交给该控制器
     /// </summary>
     public PlayerMoveCtr MoveCtr { get; }
+
+    /// <summary>
+    /// 玩家脸的朝向, -1 和 1
+    /// </summary>
+    public int Face { get; private set; } = 1;
+
+    /// <summary>
+    /// 玩家当前状态
+    /// </summary>
+    public StateEnum StateType => StateCtr.CurrState.StateType;
 
     public Player()
     {
@@ -39,7 +59,7 @@ public class Player : Slime
         //默认为idle状态
         StateCtr.ChangeState(StateEnum.Idle);
 
-        MoveCtr.AddForce(new GravityForce("gravity"));
+        MoveCtr.AddForce(new GravityForce(this));
     }
 
     public override void _PhysicsProcess(float delta)
@@ -48,5 +68,16 @@ public class Player : Slime
         StateCtr.PhysicsUpdate(delta);
         //更新移动
         MoveCtr.PhysicsUpdate(delta);
+    }
+
+    /// <summary>
+    /// 设置脸的朝向
+    /// </summary>
+    public void SetFace(float x)
+    {
+        if (x != 0)
+        {
+            Face = x > 0 ? 1 : -1;
+        }
     }
 }

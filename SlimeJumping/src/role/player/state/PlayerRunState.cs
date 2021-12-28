@@ -42,7 +42,9 @@ public class PlayerRunState : IState<Player>
         }
         else
         {
-            Role.MoveCtr.BasisVelocity = new Vector2(InputManager.PhysicsMoveAxis.x * Role.MoveSpeed, 0);
+            var x = InputManager.PhysicsMoveAxis.x * Role.MoveSpeed;
+            Role.SetFace(x);
+            Role.MoveCtr.BasisVelocity = new Vector2(x, 0);
         }
     }
 }

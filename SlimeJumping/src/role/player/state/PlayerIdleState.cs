@@ -32,6 +32,10 @@ public class PlayerIdleState : IState<Player>
         {
             StateController.ChangeStateLate(StateEnum.Jump);
         }
+        else if (InputManager.PhysicsImpactPressed)
+        {
+            StateController.ChangeState(StateEnum.Impact);
+        }
         else if (!Role.IsOnFloor())
         {
             StateController.ChangeState(StateEnum.Fall);
