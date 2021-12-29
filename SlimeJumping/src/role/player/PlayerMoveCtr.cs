@@ -91,15 +91,23 @@ public class PlayerMoveCtr
     }
 
     /// <summary>
-    /// 移除所有外力
+    /// 移除所有外力 (除了重力)
     /// </summary>
     public void ClearForce()
     {
         _forceData.Clear();
+        //var keys = _forceData.Keys;
+        //foreach (var k in keys)
+        //{
+        //    if (!(_forceData[k] is GravityForce))
+        //    {
+        //        _forceData.Remove(k);
+        //    }
+        //}
     }
 
     /// <summary>
-    /// 移除所有外力和基础力, 使玩家静止
+    /// 移除所有外力 (除了重力) 和基础力, 使玩家静止
     /// </summary>
     public void Halt()
     {
@@ -144,7 +152,7 @@ public class PlayerMoveCtr
             foreach (var item in _forceData)
             {
                 var velocity = item.Value.Velocity;
-                item.Value.Velocity = new Vector2(velocity.y * scale.x, velocity.y * scale.y);
+                item.Value.Velocity = new Vector2(velocity.x * scale.x, velocity.y * scale.y);
             }
         }
     }

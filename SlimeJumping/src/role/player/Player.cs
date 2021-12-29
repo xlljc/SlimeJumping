@@ -18,7 +18,7 @@ public class Player : Slime
     [Export]
     public float JumpUpSpeed = 1500;
     [Export]
-    public float ImpactSpeed = 1000;
+    public float ImpactSpeed = 800;
 
     /// <summary>
     /// 角色状态机控制器

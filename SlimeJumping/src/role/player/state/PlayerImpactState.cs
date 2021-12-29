@@ -21,17 +21,23 @@ public class PlayerImpactState : IState<Player>
 
     public void Enter(StateEnum prev, params object[] args)
     {
+        //清空所有的力
+        Role.MoveCtr.Halt();
+        //添加冲刺的力
         force = new ImpactForce(Role);
         Role.MoveCtr.AddForce(force);
     }
 
     public void Exit(StateEnum next)
     {
-
+        Role.MoveCtr.RemoveForce(force);
     }
 
     public void PhysicsUpdate(float delta)
     {
-        
+        if (force.Velocity.IsZero())
+        {
+            StateController.ChangeState(StateEnum.Fall);
+        }
     }
 }
