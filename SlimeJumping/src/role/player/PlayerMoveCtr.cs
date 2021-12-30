@@ -26,7 +26,7 @@ public class PlayerMoveCtr
     /// <summary>
     /// 玩家的基础移动速率, 包括左右移动, 下坠, 上升等
     /// </summary>
-    public Vector2 BasisVelocity { get { return _basisVelocity; } set { _basisVelocity = value; } }
+    public Vector2 BasisVelocity { get => _basisVelocity; set { _basisVelocity = value; } }
     private Vector2 _basisVelocity = Vector2.Zero;
 
     /// <summary>
@@ -91,23 +91,26 @@ public class PlayerMoveCtr
     }
 
     /// <summary>
-    /// 移除所有外力 (除了重力)
+    /// 移除所有外力
     /// </summary>
     public void ClearForce()
     {
-        _forceData.Clear();
-        //var keys = _forceData.Keys;
-        //foreach (var k in keys)
-        //{
-        //    if (!(_forceData[k] is GravityForce))
-        //    {
-        //        _forceData.Remove(k);
-        //    }
-        //}
+        List<string> keys = new List<string>(_forceData.Keys);
+        foreach (var key in keys)
+        {
+            if (key != "gravity")
+            {
+                _forceData.Remove(key);
+            }
+            else
+            {
+                _forceData["gravity"].Velocity = Vector2.Zero;
+            }
+        }
     }
 
     /// <summary>
-    /// 移除所有外力 (除了重力) 和基础力, 使玩家静止
+    /// 移除所有外力和基础力, 使玩家静止
     /// </summary>
     public void Halt()
     {
@@ -126,20 +129,28 @@ public class PlayerMoveCtr
     private void UpdateMove(float delta)
     {
         //先调用更新
-        var ks = _forceData.Keys;
+        var ks = new List<string>(_forceData.Keys);
         foreach (var k in ks)
-            _forceData[k].PhysicsUpdate(delta);
+        {
+            var fore = _forceData[k];
+            if (fore.Enable)
+                fore.PhysicsUpdate(delta);
+        }
 
+        //外力总和
         var finallyEf = Vector2.Zero;
         foreach (var item in _forceData)
-            finallyEf += item.Value.Velocity;
+        {
+            if (item.Value.Enable)
+                finallyEf += item.Value.Velocity;
+        }
         //最终速率
         var finallyVelocity = _basisVelocity + finallyEf;
 
         //计算移动
         _velocity = Player.MoveAndSlide(finallyVelocity, _upDir);
 
-        //调整其他速率
+        //调整外力速率
         if (_forceData.Count > 0)
         {
             var scale = new Vector2();
@@ -151,8 +162,11 @@ public class PlayerMoveCtr
             scale.y = finallyEf.y == 0f ? 0 : Mathf.Abs(efy / finallyEf.y);
             foreach (var item in _forceData)
             {
-                var velocity = item.Value.Velocity;
-                item.Value.Velocity = new Vector2(velocity.x * scale.x, velocity.y * scale.y);
+                if (item.Value.Enable)
+                {
+                    var velocity = item.Value.Velocity;
+                    item.Value.Velocity = new Vector2(velocity.x * scale.x, velocity.y * scale.y);
+                }
             }
         }
     }

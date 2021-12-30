@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://tscn/role/slime/SlimeBone.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/role/player/Player.cs" type="Script" id=2]
 [ext_resource path="res://src/role/slime/SlimeSkeleton.cs" type="Script" id=3]
+[ext_resource path="res://res/curve/ImpactCurve.tres" type="Curve" id=4]
 
 [sub_resource type="CircleShape2D" id=1]
 radius = 2.0
@@ -11,6 +12,7 @@ radius = 2.0
 collision_layer = 2
 collision_mask = 0
 script = ExtResource( 2 )
+ImpactCurve = ExtResource( 4 )
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
 position = Vector2( 0, -8.03845 )

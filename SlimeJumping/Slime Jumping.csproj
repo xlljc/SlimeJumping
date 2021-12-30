@@ -3,6 +3,9 @@
     <TargetFramework>net472</TargetFramework>
     <RootNamespace>SlimeJumping</RootNamespace>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Remove="res\**" />
     <EmbeddedResource Remove="res\**" />

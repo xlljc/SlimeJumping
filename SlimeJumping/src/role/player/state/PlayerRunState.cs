@@ -28,7 +28,11 @@ public class PlayerRunState : IState<Player>
 
     public void PhysicsUpdate(float delta)
     {
-        if (InputManager.PhysicsJumpPressed)
+        if (InputManager.PhysicsImpactPressed)
+        {
+            StateController.ChangeState(StateEnum.Impact);
+        }
+        else if(InputManager.PhysicsJumpPressed)
         {
             StateController.ChangeStateLate(StateEnum.Jump);
         }
@@ -42,6 +46,7 @@ public class PlayerRunState : IState<Player>
         }
         else
         {
+            //移动计算
             var x = InputManager.PhysicsMoveAxis.x * Role.MoveSpeed;
             Role.SetFace(x);
             Role.MoveCtr.BasisVelocity = new Vector2(x, 0);

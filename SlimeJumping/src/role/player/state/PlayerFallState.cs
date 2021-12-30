@@ -28,14 +28,20 @@ public class PlayerFallState : IState<Player>
 
     public void PhysicsUpdate(float delta)
     {
-        if (Role.IsOnFloor())
+        if (InputManager.PhysicsImpactPressed)
+        {
+            StateController.ChangeState(StateEnum.Impact);
+        }
+        else if (Role.IsOnFloor())
         {
             StateController.ChangeState(StateEnum.FallGround);
         }
         else
         {
             //移动计算
-            Role.MoveCtr.BasisVelocity = new Vector2(InputManager.PhysicsMoveAxis.x * Role.MoveSpeed, 0);
+            var x = InputManager.PhysicsMoveAxis.x * Role.MoveSpeed;
+            Role.SetFace(x);
+            Role.MoveCtr.BasisVelocity = new Vector2(x, 0);
         }
     }
 }

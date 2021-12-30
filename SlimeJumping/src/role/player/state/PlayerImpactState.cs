@@ -23,6 +23,7 @@ public class PlayerImpactState : IState<Player>
     {
         //清空所有的力
         Role.MoveCtr.Halt();
+        Role.GravityForce.Enable = false;
         //添加冲刺的力
         force = new ImpactForce(Role);
         Role.MoveCtr.AddForce(force);
@@ -31,6 +32,7 @@ public class PlayerImpactState : IState<Player>
     public void Exit(StateEnum next)
     {
         Role.MoveCtr.RemoveForce(force);
+        Role.GravityForce.Enable = true;
     }
 
     public void PhysicsUpdate(float delta)

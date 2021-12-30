@@ -17,8 +17,21 @@ public class Player : Slime
     /// </summary>
     [Export]
     public float JumpUpSpeed = 1500;
+    /// <summary>
+    /// 冲刺初始速度
+    /// </summary>
     [Export]
     public float ImpactSpeed = 800;
+    /// <summary>
+    /// 冲刺作用力有效时间
+    /// </summary>
+    [Export]
+    public float ImpactTime = 0.15f;
+    /// <summary>
+    /// 冲刺速率曲线
+    /// </summary>
+    [Export]
+    public Curve ImpactCurve;
 
     /// <summary>
     /// 角色状态机控制器
@@ -34,6 +47,11 @@ public class Player : Slime
     /// 玩家脸的朝向, -1 和 1
     /// </summary>
     public int Face { get; private set; } = 1;
+
+    /// <summary>
+    /// 玩家的重力对象
+    /// </summary>
+    public GravityForce GravityForce { get; private set; }
 
     /// <summary>
     /// 玩家当前状态
@@ -59,7 +77,8 @@ public class Player : Slime
         //默认为idle状态
         StateCtr.ChangeState(StateEnum.Idle);
 
-        MoveCtr.AddForce(new GravityForce(this));
+        GravityForce = new GravityForce(this);
+        MoveCtr.AddForce(GravityForce);
     }
 
     public override void _PhysicsProcess(float delta)

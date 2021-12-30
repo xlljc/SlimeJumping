@@ -14,13 +14,6 @@ public class GravityForce : ExternalForce
 
     public override void PhysicsUpdate(float delta)
     {
-        if (Player.StateType != StateEnum.Impact)
-        {
-            Velocity = new Vector2(0, Velocity.y + GameConfig.FallSpeed * delta);
-        }
-        else
-        {
-            Velocity = Vector2.Zero;
-        }
+        Velocity = new Vector2(0, Velocity.y + GameConfig.FallSpeed * delta);
     }
 }

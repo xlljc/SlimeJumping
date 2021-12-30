@@ -11,6 +11,11 @@ public class ExternalForce
     public string Name { get; }
 
     /// <summary>
+    /// 是否启用这个力对象, 如果禁用, 则该力对象则不会参与到运动计算当中, 而且不会调用 Update 方法
+    /// </summary>
+    public bool Enable { get; set; } = true;
+
+    /// <summary>
     /// 当前力的速率
     /// </summary>
     public Vector2 Velocity { get; set; } = Vector2.Zero;
