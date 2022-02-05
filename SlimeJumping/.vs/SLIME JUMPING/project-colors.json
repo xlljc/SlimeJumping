@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "22e80062-b110-4778-a54b-604df21af650": {
+      "ProjectGuid": "22e80062-b110-4778-a54b-604df21af650",
+      "DisplayName": "Slime Jumping",
+      "ColorIndex": 0
+    }
+  },
+  "NextColorIndex": 1
+}
