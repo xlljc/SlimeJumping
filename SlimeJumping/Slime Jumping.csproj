@@ -1,4 +1,4 @@
-<Project Sdk="Godot.NET.Sdk/3.3.0">
+﻿<Project Sdk="Godot.NET.Sdk/3.3.0">
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <RootNamespace>SlimeJumping</RootNamespace>
@@ -9,5 +9,16 @@
   <ItemGroup>
     <Compile Remove="res\**" />
     <EmbeddedResource Remove="res\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.ClearScript" Version="7.2.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="ClearScript-Service">
+      <HintPath>ClearScript-Service.dll</HintPath>
+    </Reference>
+    <Reference Include="NVelocity">
+      <HintPath>NVelocity.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>
