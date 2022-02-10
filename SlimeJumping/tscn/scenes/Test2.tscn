@@ -6,6 +6,7 @@
 extents = Vector2( 20, 148.09 )
 
 [node name="Test2" type="Node2D"]
+position = Vector2( -464, 1194 )
 
 [node name="Wall" type="RigidBody2D" parent="."]
 position = Vector2( 472, 520 )
