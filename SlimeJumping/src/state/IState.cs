@@ -1,4 +1,4 @@
-﻿using Godot;
+using Godot;
 
 /// <summary>
 /// 状态接口

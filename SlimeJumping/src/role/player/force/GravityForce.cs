@@ -1,4 +1,4 @@
-﻿using Godot;
+using Godot;
 
 /// <summary>
 /// 玩家的重力外力

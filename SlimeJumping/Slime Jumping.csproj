@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Godot.NET.Sdk/3.3.0">
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
     <RootNamespace>SlimeJumping</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -11,21 +11,12 @@
     <EmbeddedResource Remove="res\**" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.ClearScript.Core" Version="7.2.1" />
+    <PackageReference Include="Microsoft.ClearScript.V8" Version="7.2.1" />
+    <PackageReference Include="Microsoft.ClearScript.V8.Native.win-x64" Version="7.2.1" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
   </ItemGroup>
   <ItemGroup>
-		<Reference Include="ClearScript-Service">
-			<Private>false</Private>
-			<HintPath>$(ProjectDir)/ClearScript-Service.dll</HintPath>
-		</Reference>
-		<Reference Include="ClearScript.Core">
-			<Private>false</Private>
-			<HintPath>$(ProjectDir)/ClearScript.Core.dll</HintPath>
-		</Reference>
-		<Reference Include="ClearScript.V8">
-			<Private>false</Private>
-			<HintPath>$(ProjectDir)/ClearScript.V8.dll</HintPath>
-		</Reference>
 		<Reference Include="NVelocity">
 			<Private>false</Private>
 			<HintPath>$(ProjectDir)/NVelocity.dll</HintPath>

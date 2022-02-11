@@ -1,4 +1,4 @@
-﻿using Godot;
+using Godot;
 /// <summary>
 /// log工具类
 /// </summary>

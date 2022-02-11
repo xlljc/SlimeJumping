@@ -1,4 +1,4 @@
-﻿using Godot;
+using Godot;
 
 /// <summary>
 /// 玩家冲刺状态

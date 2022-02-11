@@ -1,4 +1,4 @@
-﻿using Godot;
+using Godot;
 
 /// <summary>
 /// slime骨骼块

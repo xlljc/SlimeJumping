@@ -1,4 +1,4 @@
-﻿using Godot;
+using Godot;
 
 /// <summary>
 /// 游戏角色基类，所有角色必须继承此类
