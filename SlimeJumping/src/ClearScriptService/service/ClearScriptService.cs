@@ -193,7 +193,7 @@ namespace Calljs
         {
             try
             {
-                return GetObject(engine.Script, fullPath);
+                return GetObject(engine.Global, fullPath);
             }
             catch (ScriptEngineException e)
             {
@@ -235,10 +235,13 @@ namespace Calljs
             ClearScriptObject.HostMethod = assembly.GetType("Microsoft.ClearScript.HostMethod");
             ClearScriptObject.HostType = assembly.GetType("Microsoft.ClearScript.HostType");
             ClearScriptObject.HostObject = assembly.GetType("Microsoft.ClearScript.HostObject");
-            ClearScriptObject.ScriptItem = assembly.GetType("Microsoft.ClearScript.ScriptItem");
             ClearScriptObject.HostItem_Unwrap = ClearScriptObject.HostItem.GetMethod("Unwrap", BindingFlags.Instance | BindingFlags.Public);
-            ClearScriptObject.HostItem_TryInvoke = ClearScriptObject.HostItem.GetMethod("TryInvoke", BindingFlags.Public | BindingFlags.Instance);
-            
+
+            var v8ProxyHelpersType = typeof(V8ScriptEngine).Assembly.GetType("Microsoft.ClearScript.V8.V8ProxyHelpers");
+            ClearScriptObject.V8ProxyHelpers_GetHostObjectProperty = v8ProxyHelpersType.GetMethod("GetHostObjectProperty", new Type[] { typeof(object), typeof(string) });
+            ClearScriptObject.V8ProxyHelpers_SetHostObjectProperty = v8ProxyHelpersType.GetMethod("SetHostObjectProperty", new Type[] { typeof(object), typeof(string), typeof(object) });
+            ClearScriptObject.V8ProxyHelpers_InvokeHostObject = v8ProxyHelpersType.GetMethod("InvokeHostObject", new Type[] { typeof(object), typeof(bool), typeof(object[]) });
+
             ScriptObject temp = engine.Global.GetProperty("EngineInternal") as ScriptObject;
             ClearScriptObject.invokeMethod = temp.GetProperty("invokeMethod") as ScriptObject;
             ClearScriptObject.invokeConstructor = temp.GetProperty("invokeConstructor") as ScriptObject;
@@ -361,7 +364,7 @@ namespace Calljs
             }
         }
 
-        private IScriptObject GetObject(dynamic script, string fullName)
+        private IScriptObject GetObject(object script, string fullName)
         {
             string[] names = fullName.Split('.');
             IScriptObject scObj = new ClearScriptObject(this, script, null);
@@ -403,7 +406,7 @@ namespace Calljs
                 nsp = engine.Global;
             }
 
-            object jsObj = ClearScriptObject.ToScriptObject(this, o);
+            object jsObj = GetScriptObject(o);
             
             //赋值
             if (nsp is ScriptObject so)
@@ -456,6 +459,21 @@ namespace Calljs
             return nsp;
         }
 
+        private object GetScriptObject(object v)
+        {
+            if (v is IScriptObject so)
+            {
+                return (ClearScriptObject)so.Object;
+            }
+            else if (v is Type t)
+            {
+                return t.ToHostType(engine);
+            }
+            else
+            {
+                return v;
+            }
+        }
         private Delegate CreateDelegate(MethodInfo method)
         {
             Type delegateType;

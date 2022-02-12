@@ -1,5 +1,4 @@
 using Microsoft.ClearScript;
-using Microsoft.ClearScript.V8;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -25,12 +24,14 @@ namespace Calljs
         internal static Type HostType;
         //HostObject类型
         internal static Type HostObject;
-        //ScriptItem类型
-        internal static Type ScriptItem;
         //Unwrap方法
         internal static MethodInfo HostItem_Unwrap;
-        //TryInvoke方法
-        internal static MethodInfo HostItem_TryInvoke;
+
+        internal static MethodInfo V8ProxyHelpers_GetHostObjectProperty;
+
+        internal static MethodInfo V8ProxyHelpers_SetHostObjectProperty;
+
+        internal static MethodInfo V8ProxyHelpers_InvokeHostObject;
 
         private static MethodInfo _warpFunc;
         //object engine
@@ -65,7 +66,7 @@ namespace Calljs
 
         private ClearScriptService service;
         //包装对象
-        private dynamic obj;
+        private object obj;
         //this对象
         private object thisObj;
         //值类型
@@ -107,7 +108,19 @@ namespace Calljs
 
         public IScriptObject GetValue(string property)
         {
-            return new ClearScriptObject(service, obj[property], this);
+            object o = null;
+            switch (valueType)
+            {
+                case ValueType.Null:
+                    throw new NullReferenceException("Object reference not set to an instance of an object.");
+                case ValueType.JsObject:
+                    o = ((ScriptObject)obj).GetProperty(property);
+                    break;
+                case ValueType.HostItem:
+                    o = V8ProxyHelpers_GetHostObjectProperty.Invoke(null, new object[] { obj, property });
+                    break;
+            }
+            return new ClearScriptObject(service, o, this);
         }
 
         public IScriptObject Invoke(params object[] args)
@@ -123,7 +136,7 @@ namespace Calljs
                 switch (valueType)
                 {
                     case ValueType.Null:
-                        throw new NullReferenceException();
+                        throw new NullReferenceException("Object reference not set to an instance of an object.");
                     case ValueType.JsObject:
                         if (thisArg is null)
                         {
@@ -135,9 +148,7 @@ namespace Calljs
                         }
                         break;
                     case ValueType.HostItem:
-                        object[] argsData = new object[] { null, args, null };
-                        HostItem_TryInvoke.Invoke(obj, argsData);
-                        data = argsData[2];
+                        data = V8ProxyHelpers_InvokeHostObject.Invoke(null, new object[] { obj, false, args });
                         break;
                 }
                 return new ClearScriptObject(service, data, null);
@@ -167,10 +178,12 @@ namespace Calljs
                 switch (valueType)
                 {
                     case ValueType.Null:
-                        throw new NullReferenceException();
+                        throw new NullReferenceException("Object reference not set to an instance of an object.");
                     case ValueType.JsObject:
+                        data = ((ScriptObject)obj).Invoke(true, args);
+                        break;
                     case ValueType.HostItem:
-                        data = invokeConstructor.Invoke(false, JsObject, args);
+                        data = V8ProxyHelpers_InvokeHostObject.Invoke(null, new object[] { obj, true, args });
                         break;
                 }
                 return new ClearScriptObject(service, data, null);
@@ -186,13 +199,25 @@ namespace Calljs
         {
             try
             {
+                object o;
                 if (v is IScriptObject so)
                 {
-                    obj[property] = so.JsObject;
+                    o = so.JsObject;
                 }
                 else
                 {
-                    obj[property] = v;
+                    o = v;
+                }
+                switch (valueType)
+                {
+                    case ValueType.Null:
+                        throw new NullReferenceException("Object reference not set to an instance of an object.");
+                    case ValueType.JsObject:
+                        ((ScriptObject)obj).SetProperty(property, o);
+                        break;
+                    case ValueType.HostItem:
+                        V8ProxyHelpers_SetHostObjectProperty.Invoke(null, new object[] { obj, property, o });
+                        break;
                 }
             }
             catch (ScriptEngineException e)
@@ -212,7 +237,7 @@ namespace Calljs
             return obj.ToString();
         }
 
-        private dynamic WrapAndInit(object o, ScriptEngine engine)
+        private object WrapAndInit(object o, ScriptEngine engine)
         {
             if (o == null)
             {
@@ -220,15 +245,14 @@ namespace Calljs
                 valueType = ValueType.Null;
                 return o;
             }
-
-            Type type = o.GetType();
             //判断是否是js对象
-            if (ScriptItem.IsAssignableFrom(type))
+            if (o is ScriptObject)
             {
                 //
                 valueType = ValueType.JsObject;
                 return o;
             }
+            Type type = o.GetType();
             //
             valueType = ValueType.HostItem;
 
@@ -248,22 +272,6 @@ namespace Calljs
                 return HostItem_Unwrap.Invoke(obj, null);
             }
             return obj;
-        }
-
-        internal static object ToScriptObject(ClearScriptService service, object v)
-        {
-            if (v is IScriptObject so)
-            {
-                return (ClearScriptObject)so.Object;
-            }
-            else if (v is Type t)
-            {
-                return t.ToHostType((V8ScriptEngine)service.Engine);
-            }
-            else
-            {
-                return v;
-            }
         }
     }
 }

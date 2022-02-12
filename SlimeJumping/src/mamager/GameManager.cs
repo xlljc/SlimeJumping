@@ -1,13 +1,34 @@
 using Godot;
 using Calljs;
-using Microsoft.ClearScript.V8;
-using System;
+
+[JsType("host.Test1")]
+public class Test1
+{
+    public object a = "aaa";
+    public static void Say()
+    {
+        GD.Print("host.Test1.Say");
+    }
+
+    public object test(object cb, params object[] args)
+    {
+        var cbFunc = ScriptManager.GetService("ClearScript").ToScriptObject(cb);
+        return cbFunc.Invoke(args).Object;
+    }
+}
 
 /// <summary>
 /// 游戏管理器, 负责管理整个项目其它的Manager, 并更新它们
 /// </summary>
 public class GameManager : Node
 {
+    [JsFunction("host.Say")]
+    public static int Say(int a)
+    {
+        GD.Print("host.SayFunc: " + a);
+        return a;
+    }
+
     /// <summary>
     /// 是否已经初始化过
     /// </summary>
@@ -32,22 +53,16 @@ public class GameManager : Node
         ClearScriptService service = new ClearScriptService();
         ScriptManager.Register(service);
 
-        service.ScanJsClass(typeof(GameManager).Assembly);
         service.AddHostInstance(new HostInstance("console.log", new LogMethod(ScriptManager.Out.Log)));
         service.AddHostInstance(new HostInstance("console.error", new LogMethod(ScriptManager.Out.LogError)));
+        service.ScanJsClass(typeof(GameManager).Assembly);
+
         service.Evaluate("console.log('666')");
 
-        GD.Print("--------1");
-        var console = service.GetObject("console");
-        GD.Print("--------2");
-        var log = console.GetValue("log");
-        GD.Print("--------2.5");
-        log.Invoke("2333");
-        GD.Print("--------3");
-        GD.Print(console.GetValue("log").Invoke("2333").IsNull());
-        GD.Print("--------4");
-        GD.Print(console.GetValue("log").Invoke("2333").IsUndefined());
-        GD.Print("--------5");
+        // var cb = service.GetObject("host.Say");
+        // GD.Print("自己调用: " + cb.Invoke(123));
+        // var test = service.GetObject("host.Test1").New().GetValue("test");
+        // GD.Print("委托调用: " + test.Invoke(cb, new object[] { 654 }));
     }
 
     public override void _Process(float delta)
