@@ -5,14 +5,16 @@ using System.Reflection;
 
 namespace Calljs
 {
-
+    /// <summary>
+    /// 基于 Microsoft.ClearScript 的引擎数据对象, 提供操作对象属性和调用函数的基础API
+    /// </summary>
     public class ClearScriptObject : IScriptObject
     {
         //调用js函数: (thisArg, method, args[]) => any;
         internal static ScriptObject invokeMethod;
         //调用js构造: (method, args[]) => any;
         internal static ScriptObject invokeConstructor;
-        //
+        //void类型
         internal static readonly Type typeVoid = typeof(void);
         //HostTarget类型
         internal static Type HostTarget;
@@ -24,13 +26,13 @@ namespace Calljs
         internal static Type HostType;
         //HostObject类型
         internal static Type HostObject;
-        //Unwrap方法
+        //取消包装
         internal static MethodInfo HostItem_Unwrap;
-
+        //获取主机对象属性
         internal static MethodInfo V8ProxyHelpers_GetHostObjectProperty;
-
+        //设置主机对象属性
         internal static MethodInfo V8ProxyHelpers_SetHostObjectProperty;
-
+        //调用主机函数
         internal static MethodInfo V8ProxyHelpers_InvokeHostObject;
 
         private static MethodInfo _warpFunc;

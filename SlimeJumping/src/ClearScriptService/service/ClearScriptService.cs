@@ -7,6 +7,9 @@ using System.Reflection;
 
 namespace Calljs
 {
+    /// <summary>
+    /// 基于 Microsoft.ClearScript 的引擎服务对象
+    /// </summary>
     public class ClearScriptService : IScriptSerivce
     {
         public string Name => "ClearScript";

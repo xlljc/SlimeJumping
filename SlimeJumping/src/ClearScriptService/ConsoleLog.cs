@@ -2,6 +2,9 @@ using System;
 
 namespace Calljs
 {
+    /// <summary>
+    /// 默认的控制台打印类
+    /// </summary>
     internal class ConsoleLog : ILog
     {
         public void Log(params object[] args)

@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 
 namespace Calljs
 {
-    // 脚本加载器
+    /// <summary>
+    /// 重写 Microsoft.ClearScript 的脚本加载函数
+    /// </summary>
     internal class ScriptFileLoader : DocumentLoader
     {
         private ClearScriptService service;
