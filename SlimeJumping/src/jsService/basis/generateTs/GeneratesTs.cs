@@ -10,64 +10,33 @@ namespace JsService.generate
     /// <summary>
     /// Ts代码生成类
     /// </summary>
-    public class GeneratesTsManager
+    public class GeneratesTs
     {
-        internal static IScriptSerivce ScriptSerivce { get; private set; }
-
         /// <summary>
         /// 定义项, key: cs全名
         /// </summary>
-        internal static readonly Dictionary<string, DeclareBase> DecType = new Dictionary<string, DeclareBase>();
+        internal readonly Dictionary<string, DeclareBase> DecType = new Dictionary<string, DeclareBase>();
 
         /// <summary>
         /// 生成ts类时, 排除的引用类型和自定义类型
         /// </summary>
-        internal static readonly List<string> IgnoreTsType = new List<string>();
+        internal readonly List<string> IgnoreTsType = new List<string>();
 
         //模板引擎
-        private static VelocityEngine _vltEngine;
+        private VelocityEngine _vltEngine;
 
         /// <summary>
         /// 模板引擎上下文对象
         /// </summary>
-        private static VelocityContext _vltContext;
+        private VelocityContext _vltContext;
 
-        private static bool inted = false;
-        private static int index = 0;
+        private IScriptSerivce serivce;
 
-        /// <summary>
-        /// 是否写出ts文件
-        /// </summary>
-        public static bool WriteTs { get; private set; } = false;
+        private int index = 0;
 
-        /// <summary>
-        /// 初始化
-        /// </summary>
-        public static void Init(IScriptSerivce scriptSerivce)
+        public GeneratesTs(IScriptSerivce serivce)
         {
-            if (inted) return;
-            inted = true;
-            WriteTs = true;
-            ScriptSerivce = scriptSerivce;
-
-            // 排除类型
-            IgnoreTsType.Add("void");
-            IgnoreTsType.Add("any");
-            IgnoreTsType.Add("string");
-            IgnoreTsType.Add("number");
-            IgnoreTsType.Add("object");
-            IgnoreTsType.Add("boolean");
-            IgnoreTsType.Add("undefined");
-            IgnoreTsType.Add("null");
-
-            // 创建模板引擎
-            _vltEngine = new VelocityEngine();
-            _vltEngine.SetProperty(RuntimeConstants.RESOURCE_LOADER, "file");
-            _vltEngine.SetProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, Environment.CurrentDirectory);
-            _vltEngine.Init();
-
-            // 模板引擎上下文
-            _vltContext = new VelocityContext();
+            this.serivce = serivce;
         }
 
         /// <summary>
@@ -76,12 +45,12 @@ namespace JsService.generate
         /// <param name="module">模块名, 可以为null</param>
         /// <param name="hostType">主机类型</param>
         /// <exception cref="ArgumentException"></exception>
-        public static void AddType(string module, HostType hostType)
+        public void AddType(string module, HostType hostType)
         {
             AddType(module, hostType, true);
         }
 
-        internal static void AddType(string module, HostType hostType, bool canInstance)
+        internal void AddType(string module, HostType hostType, bool canInstance)
         {
             Type type = hostType.Type;
             // 当前类型全称
@@ -227,7 +196,7 @@ namespace JsService.generate
         /// </summary>
         /// <param name="module">模块名, 可以为 null</param>
         /// <param name="hostInst">主机实例</param>
-        public static void AddInstance(string module, HostInstance hostInst)
+        public void AddInstance(string module, HostInstance hostInst)
         {
             Type type;
             if (hostInst.Type != null)
@@ -290,19 +259,129 @@ namespace JsService.generate
         /// <summary>
         /// 给引用类型起别名, 如果该类型已经被注册到引擎, 则会抛出异常
         /// </summary>
-        public static void Alias(Type type, string name)
+        public void Alias(Type type, string name)
         {
-            if (WriteTs)
-            {
-                string fullName = TypeDeclare.GetCsFullName(type);
-                TypeDeclare.Alias(fullName, name);
-            }
+            string fullName = TypeDeclare.GetCsFullName(type);
+            TypeDeclare.Alias(fullName, name);
+        }
+
+        private void InitVelocityEngine()
+        {
+            // 排除类型
+            IgnoreTsType.Add("void");
+            IgnoreTsType.Add("any");
+            IgnoreTsType.Add("string");
+            IgnoreTsType.Add("number");
+            IgnoreTsType.Add("object");
+            IgnoreTsType.Add("boolean");
+            IgnoreTsType.Add("undefined");
+            IgnoreTsType.Add("null");
+
+            // 创建模板引擎
+            _vltEngine = new VelocityEngine();
+            _vltEngine.SetProperty(RuntimeConstants.INPUT_ENCODING, "utf-8");
+            _vltEngine.SetProperty(RuntimeConstants.OUTPUT_ENCODING, "utf-8");
+            _vltEngine.SetProperty(RuntimeConstants.RESOURCE_LOADER, "file");
+            _vltEngine.SetProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, serivce.SearchPath);
+            _vltEngine.Init();
+            // 模板引擎上下文
+            _vltContext = new VelocityContext();
         }
 
         /// <summary>
+        /// 写出ts代码
+        /// </summary>
+        /// <param name="templatFile">模板相对路径</param>
+        /// <param name="outFile">写出的文件路径</param>
+        public void Write(string templatFile, string outFile)
+        {
+            if (_vltEngine == null)
+            {
+                InitVelocityEngine();
+            }
+            //写出路径
+            string writePath;
+            try
+            {
+                if (outFile.Contains(":") || outFile.StartsWith(@"\\"))
+                {
+                    writePath = outFile;
+                }
+                else
+                {
+                    writePath = writePath = Path.Combine(serivce.SearchPath, outFile);
+                }
+
+                Template vltTemplate = _vltEngine.GetTemplate(templatFile);
+                StringWriter vltWriter = new StringWriter();
+
+                // 注入对象
+                Inject();
+
+                // 不存在路径就创建路径
+                var dir = Path.GetDirectoryName(writePath);
+                if (!Directory.Exists(dir))
+                {
+                    Directory.CreateDirectory(dir);
+                }
+
+                vltTemplate.Merge(_vltContext, vltWriter);
+                string CodeContent = vltWriter.GetStringBuilder().ToString();
+                File.WriteAllText(writePath, CodeContent);
+            }
+            catch (Exception e)
+            {
+                ScriptManager.Out.LogError("模板引擎写出异常: " + e.Message);
+                return;
+            }
+            ScriptManager.Out.Log($"{writePath}写出成功!");
+        }
+
+        /// <summary>
+        /// 写出ts代码, 使用默认模板
+        /// </summary>
+        /// <param name="outFile">写出的文件路径</param>
+        public void Write(string outFile)
+        {
+            if (_vltEngine == null)
+            {
+                InitVelocityEngine();
+            }
+            //写出路径
+            string writePath;
+            try
+            {
+                writePath = Path.Combine(serivce.SearchPath, outFile);
+                //模板字符串
+                string context = VmTemplate.Context;
+                // 注入对象
+                Inject();
+
+                // 不存在路径就创建路径
+                var dir = Path.GetDirectoryName(writePath);
+                if (!Directory.Exists(dir))
+                {
+                    Directory.CreateDirectory(dir);
+                }
+
+                var sw = new StringWriter();
+                _vltEngine.Evaluate(_vltContext, sw, "mystring", context);
+                //写出文件
+                string CodeContent = sw.ToString();
+                File.WriteAllText(writePath, CodeContent);
+            }
+            catch (Exception e)
+            {
+                ScriptManager.Out.LogError("模板引擎写出异常: " + e.Message);
+                return;
+            }
+            ScriptManager.Out.Log($"{writePath}写出成功!");
+        }
+
+                /// <summary>
         /// 将类型注入到模板引擎上下文对象
         /// </summary>
-        public static void Inject()
+        private void Inject()
         {
             // 方法列表
             List<DeclareBase> funcList = new List<DeclareBase>();
@@ -375,88 +454,9 @@ namespace JsService.generate
             _vltContext.Put("cust", custList);
             _vltContext.Put("ref", refList);
             _vltContext.Put("dynamicFunc", dynamicFuncList);
-            _vltContext.Put("environment", ScriptSerivce.Name);
+            _vltContext.Put("environment", serivce.Name);
             _vltContext.Put("time", DateTime.Now);
         }
 
-        /// <summary>
-        /// 写出ts代码
-        /// </summary>
-        /// <param name="templatFile">模板相对路径</param>
-        /// <param name="outFile">写出的文件路径</param>
-        public static void GeneratesTs(string templatFile, string outFile)
-        {
-            if (!inted)
-            {
-                throw new Exception("未调用Init()方法!");
-            }
-            //写出路径
-            string writePath;
-            try
-            {
-                if (outFile.Contains(":") || outFile.StartsWith(@"\\"))
-                {
-                    writePath = outFile;
-                }
-                else
-                {
-                    writePath = writePath = Path.Combine(ScriptSerivce.SearchPath, outFile);
-                }
-
-                Template vltTemplate = _vltEngine.GetTemplate(templatFile);
-                StringWriter vltWriter = new StringWriter();
-
-                // 注入对象
-                Inject();
-
-                vltTemplate.Merge(_vltContext, vltWriter);
-                string CodeContent = vltWriter.GetStringBuilder().ToString();
-                File.WriteAllText(writePath, CodeContent);
-            }
-            catch (Exception e)
-            {
-                ScriptManager.Out.LogError("模板引擎写出异常: " + e.Message);
-                return;
-            }
-            ScriptManager.Out.Log($"{writePath}写出成功!");
-
-            WriteTs = false;
-        }
-
-        /// <summary>
-        /// 写出ts代码, 使用默认模板
-        /// </summary>
-        /// <param name="outFile">写出的文件路径</param>
-        public static void GeneratesTs(string outFile)
-        {
-            if (!inted)
-            {
-                throw new Exception("未调用Init()方法!");
-            }
-            //写出路径
-            string writePath;
-            try
-            {
-                writePath = Path.Combine(ScriptSerivce.SearchPath, outFile);
-                //模板字符串
-                string context = VmTemplate.Context;
-                // 注入对象
-                Inject();
-
-                var sw = new StringWriter();
-                _vltEngine.Evaluate(_vltContext, sw, "", context);
-                //写出文件
-                string CodeContent = sw.ToString();
-                File.WriteAllText(writePath, CodeContent);
-            }
-            catch (Exception e)
-            {
-                ScriptManager.Out.LogError("模板引擎写出异常: " + e.Message);
-                return;
-            }
-            ScriptManager.Out.Log($"{writePath}写出成功!");
-
-            WriteTs = false;
-        }
     }
 }

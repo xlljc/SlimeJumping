@@ -20,7 +20,9 @@ namespace JsService
         public string SearchPath { get; set; } = null;
 
         public ILog Out { get; set; }
-        public ScriptLoadHandler ScriptLoadHandler { get; set; }
+        public FileLoadHandler FileLoadHandler { get; set; }
+    
+        public FileWriteHandler FileWriteHandler { get; set; }
 
         public object Engine => engine;
         internal V8ScriptEngine engine;
@@ -31,6 +33,8 @@ namespace JsService
         private IScriptObject systemAddObjectFunc;
         private IScriptObject systemModules;
         private ScriptObject JsObjectType;
+
+        private GeneratesTs gt;
 
         //调试选项
         private ClearScriptDebugFlag DebugFlag;
@@ -58,9 +62,9 @@ namespace JsService
                     o = new HostInstance(o.Name, so.JsObject, typeof(object));
                 }
                 //添加到生成环境中
-                if (o.IsWriteTs && GeneratesTsManager.WriteTs)
+                if (o.IsWriteTs && gt != null)
                 {
-                    GeneratesTsManager.AddInstance(null, o);
+                    gt.AddInstance(null, o);
                 }
                 var methodInfo = ClearScriptObject.WarpFunc.MakeGenericMethod(o.Obj.GetType());
                 AddByFullName(o.Name, methodInfo.Invoke(null, new object[] { o.Obj, engine }));
@@ -83,9 +87,9 @@ namespace JsService
                     o = new HostInstance(o.Name, so.JsObject, typeof(object));
                 }
                 //添加到生成环境中
-                if (o.IsWriteTs && GeneratesTsManager.WriteTs)
+                if (o.IsWriteTs && gt != null)
                 {
-                    GeneratesTsManager.AddInstance(path, o);
+                    gt.AddInstance(path, o);
                 }
                 var methodInfo = ClearScriptObject.WarpFunc.MakeGenericMethod(o.Obj.GetType());
                 CallSystemAddObjectFunc(path, o.Name, methodInfo.Invoke(null, new object[] { o.Obj, engine }));
@@ -102,9 +106,9 @@ namespace JsService
                 }
                 type.Init();
                 //添加到生成环境中
-                if (type.IsWriteTs && GeneratesTsManager.WriteTs)
+                if (type.IsWriteTs && gt != null)
                 {
-                    GeneratesTsManager.AddType(null, type);
+                    gt.AddType(null, type);
                 }
                 AddByFullName(type.Name, type.Type.ToHostType(engine));
             }
@@ -125,9 +129,9 @@ namespace JsService
                     throw new ArgumentException("不能将带有命名空间的对象注入到System模块中: " + type.Name);
                 }
                 //添加到生成环境中
-                if (type.IsWriteTs && GeneratesTsManager.WriteTs)
+                if (type.IsWriteTs && gt != null)
                 {
-                    GeneratesTsManager.AddType(path, type);
+                    gt.AddType(path, type);
                 }
                 CallSystemAddObjectFunc(path, type.Name, type.Type.ToHostType(engine));
             }
@@ -135,7 +139,10 @@ namespace JsService
 
         public void Alias(Type type, string name)
         {
-            GeneratesTsManager.Alias(type, name);
+            if (gt != null)
+            {
+                gt.Alias(type, name);
+            }
         }
 
         public IScriptObject ToScriptObject(object o)
@@ -206,10 +213,11 @@ namespace JsService
             }
         }
 
-        public void Init()
+        public void Init(GeneratesTs gt = null)
         {
             if (isInited) return;
             isInited = true;
+            this.gt = gt;
 
             if (DebugFlag == ClearScriptDebugFlag.Disable)
             {

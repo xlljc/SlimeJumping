@@ -10,16 +10,16 @@
     <Compile Remove="res\**" />
     <EmbeddedResource Remove="res\**" />
   </ItemGroup>
+  <!-- <ItemGroup>
+    <None Include="extend\**">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup> -->
   <ItemGroup>
     <PackageReference Include="Microsoft.ClearScript.Core" Version="7.2.2" />
     <PackageReference Include="Microsoft.ClearScript.V8" Version="7.2.2" />
     <PackageReference Include="Microsoft.ClearScript.V8.Native.win-x64" Version="7.2.2" />
-  </ItemGroup>
-  <ItemGroup>
-		<Reference Include="NVelocity">
-			<Private>false</Private>
-			<HintPath>$(ProjectDir)/NVelocity.dll</HintPath>
-		</Reference>
+    <PackageReference Include="NVelocity" Version="1.2.0" />
   </ItemGroup>
 	
 </Project>

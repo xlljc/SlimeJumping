@@ -1,14 +1,24 @@
 using System;
 using System.Reflection;
+using JsService.generate;
 
 namespace JsService
 {
     /// <summary>
-    /// 脚本加载函数
+    /// 文件加载处理函数
     /// </summary>
     /// <param name="serivce">脚本service</param>
-    /// <param name="filePath">文件路径, 不带后缀</param>
-    public delegate string ScriptLoadHandler(IScriptSerivce serivce, string filePath);
+    /// <param name="filePath">文件路径</param>
+    public delegate string FileLoadHandler(IScriptSerivce serivce, string filePath);
+
+    /// <summary>
+    /// 文件加载处理函数
+    /// </summary>
+    /// <param name="serivce">脚本service</param>
+    /// <param name="context">文本内容</param>
+    /// <param name="filePath">文件路径</param>
+
+    public delegate void FileWriteHandler(IScriptSerivce serivce, string context, string filePath);
 
     /// <summary>
     /// 脚本服接口
@@ -28,7 +38,7 @@ namespace JsService
         /// <summary>
         /// 脚本文件的搜索路径, null则为当前运行可执行文件路径
         /// </summary>
-        string SearchPath { get; }
+        string SearchPath { get; set; }
 
         /// <summary>
         /// 打印输出
@@ -36,9 +46,14 @@ namespace JsService
         ILog Out { get; set; }
 
         /// <summary>
-        /// 脚本加载函数
+        /// 文件加载函数
         /// </summary>
-        ScriptLoadHandler ScriptLoadHandler { get; set; }
+        FileLoadHandler FileLoadHandler { get; set; }
+
+        /// <summary>
+        /// 文件写出函数
+        /// </summary>
+        FileWriteHandler FileWriteHandler { get; set; }
 
         /// <summary>
         /// 获取 js 引擎
@@ -48,7 +63,8 @@ namespace JsService
         /// <summary>
         /// 初始化调用
         /// </summary>
-        void Init();
+        /// <param name="gt">脚本接口生成对象</param>
+        void Init(GeneratesTs gt = null);
 
         /// <summary>
         /// 注册脚本文件
