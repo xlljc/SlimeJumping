@@ -1,4 +1,6 @@
+using System;
 using System.IO;
+using System.Text;
 
 namespace JsService.primeval
 {
@@ -18,7 +20,13 @@ namespace JsService.primeval
             {
                 return File.ReadAllText(filePath);
             }
-            return File.ReadAllText(Path.Combine(serivce.SearchPath, filePath));
+            var path = Path.Combine(serivce.SearchPath, filePath);
+            if (string.IsNullOrEmpty(Path.GetExtension(path)))
+            {
+                path += serivce.ExtensionName;
+            }
+            path = path.Replace('/', '\\');
+            return File.ReadAllText(path, Encoding.UTF8);
         }
 
         /// <summary>
@@ -30,11 +38,14 @@ namespace JsService.primeval
         {
             if (serivce.SearchPath == null)
             {
+                filePath = filePath.Replace('/', '\\');
                 File.WriteAllText(filePath, context);
             }
             else 
             {
-                File.WriteAllText(Path.Combine(serivce.SearchPath, filePath), context);
+                string path = Path.Combine(serivce.SearchPath, filePath);
+                path = path.Replace('/', '\\');
+                File.WriteAllText(path, context, Encoding.UTF8);
             }
         }
     }

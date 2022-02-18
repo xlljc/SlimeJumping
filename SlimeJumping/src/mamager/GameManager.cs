@@ -1,16 +1,20 @@
 using Godot;
 using JsService;
+using Microsoft.ClearScript;
+using Microsoft.ClearScript.V8;
 
 /// <summary>
 /// 游戏管理器, 负责管理整个项目其它的Manager, 并更新它们
 /// </summary>
 public class GameManager : Node
 {
+    public static IScriptSerivce JsService;
+
     /// <summary>
     /// 是否已经初始化过
     /// </summary>
     private static bool _inited = false;
-
+    
     /// <summary>
     /// 初始化调用
     /// </summary>
@@ -25,16 +29,32 @@ public class GameManager : Node
         ScriptManager.Out = new GodotLog();
         ScriptManager.SearchPath = (System.Environment.CurrentDirectory + "\\extend").Replace("/", "\\");
 
-        ClearScriptService service = new ClearScriptService(ClearScriptDebugFlag.Disable);
-        ScriptManager.RegisterAndWriteTs(service, "core.d.ts", (s) => 
+        JsService = new ClearScriptService(ClearScriptDebugFlag.AwaitForStart);
+        ScriptManager.RegisterAndWriteTs(JsService, @"mods\TestMod1\.type\core.d.ts", (s) => 
         {
-            service.AddHostInstance(new HostInstance("console.log", new LogMethod(ScriptManager.Out.Log)));
-            service.AddHostInstance(new HostInstance("console.error", new LogMethod(ScriptManager.Out.LogError)));
-            service.AddHostInstance(new HostInstance("console.warn", new LogMethod(ScriptManager.Out.LogWarn)));
-            service.ScanJsClass(typeof(GameManager).Assembly);
+            s.ScanJsClass(typeof(GameManager).Assembly);
         });
 
-        service.RegisterScript("test.js");
+        InitCommonJS();
+        //测试代码
+        AddModel("mods/TestMod1");
+        //JsService.RegisterScript("mods/TestMod1/bin/index");
+    }
+
+    //
+    public static void InitCommonJS()
+    {
+        //JsService.RegisterScript("CommonJS.js");
+        string path = "D:\\GameProject\\SlimeJumping中文路径\\SlimeJumping\\extend\\CommonJS.js";
+        string code = System.IO.File.ReadAllText(path);
+        var engine = (V8ScriptEngine)JsService.Engine;
+        var document = new StringDocument(new DocumentInfo(new System.Uri(path)), code);
+        engine.Execute(new DocumentInfo(new System.Uri(path)), code);
+    }
+
+    public static void AddModel(string path)
+    {
+        path += "bin/index";
     }
 
     public override void _Process(float delta)

@@ -22,6 +22,8 @@ namespace JsService.generate
         /// </summary>
         internal readonly List<string> IgnoreTsType = new List<string>();
 
+        internal bool wrote = false;
+
         //模板引擎
         private VelocityEngine _vltEngine;
 
@@ -270,12 +272,11 @@ namespace JsService.generate
             // 排除类型
             IgnoreTsType.Add("void");
             IgnoreTsType.Add("any");
-            IgnoreTsType.Add("string");
             IgnoreTsType.Add("number");
             IgnoreTsType.Add("object");
-            IgnoreTsType.Add("boolean");
             IgnoreTsType.Add("undefined");
             IgnoreTsType.Add("null");
+            IgnoreTsType.Add("CsArray");
 
             // 创建模板引擎
             _vltEngine = new VelocityEngine();
@@ -295,6 +296,7 @@ namespace JsService.generate
         /// <param name="outFile">写出的文件路径</param>
         public void Write(string templatFile, string outFile)
         {
+            wrote = true;
             if (_vltEngine == null)
             {
                 InitVelocityEngine();
@@ -343,6 +345,7 @@ namespace JsService.generate
         /// <param name="outFile">写出的文件路径</param>
         public void Write(string outFile)
         {
+            wrote = true;
             if (_vltEngine == null)
             {
                 InitVelocityEngine();

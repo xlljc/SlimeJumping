@@ -212,6 +212,10 @@ namespace JsService.generate
                     {
                         str += "any";
                     }
+                    else if (type.IsArray)
+                    {
+                        str += $"CsArray<{type.RefType.GetParamStr()}>";
+                    }
                     else
                     {
                         str += type.RefType.GetParamStr();

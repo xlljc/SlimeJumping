@@ -134,6 +134,13 @@ namespace JsService
         {
             try
             {
+                for (short i = 0; i < args.Length; i++)
+                {
+                    if (args[i] is IScriptObject so)
+                    {
+                        args[i] = so.JsObject;
+                    }
+                }
                 object data = null;
                 switch (valueType)
                 {
@@ -142,7 +149,7 @@ namespace JsService
                     case ValueType.JsObject:
                         if (thisArg is null)
                         {
-                            ((ScriptObject)obj).Invoke(false, args: args);
+                            data = ((ScriptObject)obj).Invoke(false, args: args);
                         }
                         else
                         {

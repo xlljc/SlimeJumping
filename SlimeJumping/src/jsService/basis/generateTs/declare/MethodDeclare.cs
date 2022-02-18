@@ -30,7 +30,6 @@ namespace JsService.generate
             ClassDeclare = classDeclare;
             Name = method.Name;
             IsStatic = method.IsStatic;
-            
             //如果是指定类型
             Attribute attribute;
             if ((attribute = Attribute.GetCustomAttribute(method, typeof(JsReturnType), false)) != null)

@@ -5,6 +5,8 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using JsService.primeval;
+using Microsoft.ClearScript.JavaScript;
 
 namespace JsService
 {
@@ -33,6 +35,8 @@ namespace JsService
         private IScriptObject systemAddObjectFunc;
         private IScriptObject systemModules;
         private ScriptObject JsObjectType;
+        private IScriptObject hostClassFunc;
+        private ExtendedHostFunctions hostFunc;
 
         private GeneratesTs gt;
 
@@ -62,12 +66,21 @@ namespace JsService
                     o = new HostInstance(o.Name, so.JsObject, typeof(object));
                 }
                 //添加到生成环境中
-                if (o.IsWriteTs && gt != null)
+                if (o.IsWriteTs && gt != null && !gt.wrote)
                 {
                     gt.AddInstance(null, o);
                 }
-                var methodInfo = ClearScriptObject.WarpFunc.MakeGenericMethod(o.Obj.GetType());
-                AddByFullName(o.Name, methodInfo.Invoke(null, new object[] { o.Obj, engine }));
+                object temp;
+                if (o.Obj is ScriptObject)
+                {
+                    temp = o.Obj;
+                }
+                else
+                {
+                    var methodInfo = ClearScriptObject.WarpFunc.MakeGenericMethod(o.Obj.GetType());
+                    temp = methodInfo.Invoke(null, new object[] { o.Obj, engine });
+                }
+                AddByFullName(o.Name, temp);
             }
         }
 
@@ -87,12 +100,21 @@ namespace JsService
                     o = new HostInstance(o.Name, so.JsObject, typeof(object));
                 }
                 //添加到生成环境中
-                if (o.IsWriteTs && gt != null)
+                if (o.IsWriteTs && gt != null && !gt.wrote)
                 {
                     gt.AddInstance(path, o);
                 }
-                var methodInfo = ClearScriptObject.WarpFunc.MakeGenericMethod(o.Obj.GetType());
-                CallSystemAddObjectFunc(path, o.Name, methodInfo.Invoke(null, new object[] { o.Obj, engine }));
+                object temp;
+                if (o.Obj is ScriptObject)
+                {
+                    temp = o.Obj;
+                }
+                else
+                {
+                    var methodInfo = ClearScriptObject.WarpFunc.MakeGenericMethod(o.Obj.GetType());
+                    temp = methodInfo.Invoke(null, new object[] { o.Obj, engine });
+                }
+                CallSystemAddObjectFunc(path, o.Name, temp);
             }
         }
 
@@ -106,11 +128,11 @@ namespace JsService
                 }
                 type.Init();
                 //添加到生成环境中
-                if (type.IsWriteTs && gt != null)
+                if (type.IsWriteTs && gt != null && !gt.wrote)
                 {
                     gt.AddType(null, type);
                 }
-                AddByFullName(type.Name, type.Type.ToHostType(engine));
+                AddByFullName(type.Name, hostClassFunc.Invoke(type.Type.ToHostType(engine), hostFunc));
             }
         }
 
@@ -129,11 +151,11 @@ namespace JsService
                     throw new ArgumentException("不能将带有命名空间的对象注入到System模块中: " + type.Name);
                 }
                 //添加到生成环境中
-                if (type.IsWriteTs && gt != null)
+                if (type.IsWriteTs && gt != null && !gt.wrote)
                 {
                     gt.AddType(path, type);
                 }
-                CallSystemAddObjectFunc(path, type.Name, type.Type.ToHostType(engine));
+                CallSystemAddObjectFunc(path, type.Name, hostClassFunc.Invoke(type.Type.ToHostType(engine), hostFunc));
             }
         }
 
@@ -188,11 +210,11 @@ namespace JsService
             {
                 if (systemModules == null)
                 {
-                    systemModules = GetObject("System.modules");
+                    systemModules = GetObject("System.__modules");
                     if (systemModules.Object == null)
                     {
                         systemModules = null;
-                        throw new NullReferenceException("未找到 System.models 方法!");
+                        throw new NullReferenceException("未找到 System.__modules 方法!");
                     }
                 }
             }
@@ -240,6 +262,9 @@ namespace JsService
             //删除默认的console对象
             engine.Global.DeleteProperty("console");
 
+            hostFunc = new ExtendedHostFunctions();
+            //hostFunc.newArr
+
             JsObjectType = (ScriptObject) engine.Global["Object"];
             var assembly = typeof(ScriptEngine).Assembly;
             ClearScriptObject.HostItem = assembly.GetType("Microsoft.ClearScript.HostItem");
@@ -257,6 +282,35 @@ namespace JsService
             ScriptObject temp = engine.Global.GetProperty("EngineInternal") as ScriptObject;
             ClearScriptObject.invokeMethod = temp.GetProperty("invokeMethod") as ScriptObject;
             ClearScriptObject.invokeConstructor = temp.GetProperty("invokeConstructor") as ScriptObject;
+
+            //创建js类函数
+            hostClassFunc = Evaluate(JsScript.HostClassFunc);
+
+            //log函数
+            AddHostInstance(new HostInstance("console.log", new LogMethod(Out.Log)));
+            AddHostInstance(new HostInstance("console.error", new LogMethod(Out.LogError)));
+            AddHostInstance(new HostInstance("console.warn", new LogMethod(Out.LogWarn)));
+            AddHostInstance(new HostInstance("__hostFunc", hostFunc, false));
+
+            //System 模块化
+            Execute(JsScript.SystemJs);
+            //CommonJS 模块化
+
+            //基础类型
+            AddHostType(new HostType("any", typeof(object), "any"));
+            AddHostType(new HostType("byte", typeof(byte), "number"));
+            AddHostType(new HostType("short", typeof(short), "number"));
+            AddHostType(new HostType("int", typeof(int), "number"));
+            AddHostType(new HostType("long", typeof(long), "number"));
+            AddHostType(new HostType("string", typeof(string), "string"));
+            AddHostType(new HostType("float", typeof(float), "number"));
+            AddHostType(new HostType("double", typeof(double), "number"));
+            AddHostType(new HostType("boolean", typeof(bool), "boolean"));
+            AddHostType(new HostType("void", typeof(void), "void"));
+            AddHostType(new HostType("CsArray", typeof(Array), "CsArray"));
+
+            //初始化
+            Execute(JsScript.InitJs);
         }
 
         public IScriptObject Invoke(string fullName, params object[] args)
@@ -297,7 +351,7 @@ namespace JsService
                     if (str.StartsWith("import "))
                     {
                         RegisterScript(str.Substring(6).Replace("\"", "").Replace(" ", ""));
-                        engine.Execute("System.init();");
+                        engine.Execute("System.__init();");
                         Out.Log(">> import success!");
                     }
                     else
@@ -391,11 +445,11 @@ namespace JsService
         {
             if (systemAddObjectFunc == null)
             {
-                systemAddObjectFunc = GetObject("System.addObject");
+                systemAddObjectFunc = GetObject("System.__addObject");
                 if (systemAddObjectFunc.Object == null)
                 {
                     systemAddObjectFunc = null;
-                    throw new NullReferenceException("未找到 System.addObject 方法!");
+                    throw new NullReferenceException("未找到 System.__addObject 方法!");
                 }
             }
             systemAddObjectFunc.Invoke(path, name, obj);
@@ -423,7 +477,7 @@ namespace JsService
             //赋值
             if (nsp is ScriptObject so)
             {
-                so[name] = jsObj;
+                so.SetProperty(name, jsObj);
             }
             else if (nsp is IPropertyBag pb)
             {
@@ -475,7 +529,7 @@ namespace JsService
         {
             if (v is IScriptObject so)
             {
-                return (ClearScriptObject)so.Object;
+                return ((ClearScriptObject)so).Object;
             }
             else if (v is Type t)
             {

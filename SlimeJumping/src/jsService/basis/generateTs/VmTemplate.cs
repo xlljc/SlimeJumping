@@ -9,6 +9,32 @@ namespace JsService.generate
  Generate time: $!{time}
  Runtime environment: $!{environment}
 */
+
+/** Indicates this is a C# type. */
+declare interface CsType {
+    /** The type object of the C# class referred to. */
+    csTarget: any;
+}
+/** Represents an array type in C#. */
+declare interface CsArray<T = any> {
+    [Symbol.iterator](): IterableIterator<T>;
+    [index: number]: T;
+    get Length(): number;
+    get LongLength(): number;
+}
+declare interface CsArrayStatic {
+    /** Convert JS array to C# Object array. */
+    toCsArray<T>(arr: Array<T>): CsArray<T>;
+    /** Converts a JS array to a C# array of the specified type. */
+    toCsArray<T>(csType: CsType, arr: Array<T>): CsArray<T>;
+}
+declare var CsArray: CsArrayStatic;
+
+declare interface ArrayConstructor {
+    /** Convert C# arrays to JS arrays. */
+    toJsArray<T>(csArr: CsArray<T>): Array<T>;
+}
+
 ## Parameter list, list: collection of parameter objects
 #macro(param list)
 #foreach($i in $list)
@@ -35,7 +61,7 @@ ${nspTab}#if($t.Module == '' && $t.TsNamespace == '')declare #end
 type ${t.TsName} = (#param($ps)) => ${item.ReturnType.GetFormatString()};
 #if($item.CanInstance)
 ${nspTab}#if($t.Module == '' && $t.TsNamespace == '')declare #end
-var ${t.TsName}: unknown;
+var ${t.TsName}: CsType;
 #end
 #if($t.TsNamespace != '' || $t.Module != '')
 }
@@ -97,11 +123,11 @@ type ${t.TsName} = any;
 ${nspTab}#if($t.Module == '' && $t.TsNamespace == '')declare #end
 interface ${t.TsName}Enum {
 #foreach($name in $item.Item)
-${nspTab}    ${name}: any,
+${nspTab}    readonly ${name}: any,
 #end
 ${nspTab}}
 ${nspTab}#if($t.Module == '' && $t.TsNamespace == '')declare #end
-var ${t.TsName}: ${t.TsName}Enum;
+var ${t.TsName}: ${t.TsName}Enum & CsType;
 #end
 #if($t.TsNamespace != '' || $t.Module != '')
 }
@@ -164,11 +190,9 @@ ${nspTab}    set ${property.Name}(v: ${property.Type.GetFormatString()});
 #foreach($method in $item.Methods)
 #if(!$method.IsStatic)
 #set($ps = $method.Params)
-#if($method.GenericTypes && $environment != 'ClearScript')
-${nspTab}    //This method is not supported under $!{environment} runtime!
-${nspTab}    //#else
-${nspTab}    #end
-${method.Name}${method.GetGenericString()}(${method.GetGenericParamString()}#param($ps)): ${method.ReturnType.GetFormatString()};
+#if(!$method.GenericTypes)
+${nspTab}   ${method.Name}(${method.GetGenericParamString()}#param($ps)): ${method.ReturnType.GetFormatString()};
+#end
 #end
 #end
 ${nspTab}}
@@ -210,17 +234,16 @@ ${nspTab}    set ${property.Name}(v: ${property.Type.GetFormatString()});
 #foreach($method in $item.Methods)
 #if($method.IsStatic)
 #set($ps = $method.Params)
-#if($method.GenericTypes && $environment != 'ClearScript')
-${nspTab}    //This method is not supported under $!{environment} runtime!
-${nspTab}    //#else
-${nspTab}    #end
-${method.Name}${method.GetGenericString()}(${method.GetGenericParamString()}#param($ps)): ${method.ReturnType.GetFormatString()};
+#if(!$method.GenericTypes)
+${nspTab}    ${method.Name}(${method.GetGenericParamString()}#param($ps)): ${method.ReturnType.GetFormatString()};
+#end
 #end
 #end
 ${nspTab}}
 #if($cls.CanInstance)
 ${nspTab}#if($t.Module == '' && $t.TsNamespace == '')declare #end
-var ${t.TsName}: ${t.TsFullName}Constructor${cls.GetGenericString()} & ${t.TsFullName}Static${cls.GetGenericString()};
+#set($genericString = $cls.GetGenericString())
+var ${t.TsName}: ${t.TsFullName}Constructor${genericString} & ${t.TsFullName}Static${genericString} & CsType;
 #end
 #if($t.TsNamespace != '' || $t.Module != '')
 }
@@ -260,7 +283,7 @@ declare namespace ${t.TsNamespace} {
 ${nspTab}#if($t.Module == '' && $t.TsNamespace == '')declare #end
 type ${t.TsName} = ${item.TypeStr};
 ${nspTab}#if($t.Module == '' && $t.TsNamespace == '')declare #end
-var ${t.TsName}: ${t.TsFullName};
+var ${t.TsName}: CsType;
 #if($t.TsNamespace != '' || $t.Module != '')
 }
 #end

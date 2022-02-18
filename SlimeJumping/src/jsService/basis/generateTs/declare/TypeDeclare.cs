@@ -14,6 +14,11 @@ namespace JsService.generate
         public bool IsArray { get; set; } = false;
 
         /// <summary>
+        /// 数组维数
+        /// </summary>
+        public int ArrayRank { get; set; } = -1;
+
+        /// <summary>
         /// 类型对象
         /// </summary>
         public TsType RefType { get; set; }
@@ -31,6 +36,16 @@ namespace JsService.generate
         {
             Name = name;
             IsArray = type.IsArray;
+            if (IsArray)
+            {
+                //ArrayRank = type.GetArrayRank();
+                Type temp = type;
+                do
+                {
+                    ++ArrayRank;
+                    temp = temp.GetElementType();
+                } while (temp != null);
+            }
         }
 
         public override string GetFormatString()
@@ -59,7 +74,7 @@ namespace JsService.generate
                         TypeDeclare temp = GenericTypes[i];
                         if (temp.IsArray)
                         {
-                            str += Array.GetFormatString();
+                            str += FormatArrRank(temp.GetFormatString(), ArrayRank);
                         }
                         else
                         {
@@ -69,11 +84,11 @@ namespace JsService.generate
                 }
                 if (isParams)
                 {
-                    return $"{RefType.GetImportStr()}<{str}>[]";
+                    return FormatArrRank($"{RefType.GetImportStr()}<{str}>", ArrayRank - 1) + "[]";
                 }
                 else if (IsArray)
                 {
-                    return Array.GetFormatString();
+                    str += FormatArrRank($"{RefType.GetImportStr()}<{str}>", ArrayRank);
                 }
                 return $"{RefType.GetImportStr()}<{str}>";
             }
@@ -81,14 +96,24 @@ namespace JsService.generate
             {
                 if (isParams)
                 {
-                    return $"{RefType.GetImportStr()}[]";
+                    return FormatArrRank(RefType.GetImportStr(), ArrayRank - 1) + "[]";
                 }
                 else if (IsArray)
                 {
-                    return Array.GetFormatString();
+                    return FormatArrRank(RefType.GetImportStr(), ArrayRank);
                 }
                 return RefType.GetImportStr();
             }
+        }
+
+        private string FormatArrRank(string type, int rank)
+        {
+            string str = type;
+            for (int i = 0; i < rank; i++)
+            {
+                str = "CsArray<" + str + ">";
+            }
+            return str;
         }
 
         /// <summary>
@@ -179,7 +204,6 @@ namespace JsService.generate
                 typeData.GenericCount = type.GetGenericArguments().Length;
                 RegisterType.Add(fullName, typeData);
             }
-
             TypeDeclare typeDeclare = new TypeDeclare(type, name);
             typeDeclare.RefType = typeData;
             //子泛型
@@ -331,19 +355,5 @@ namespace JsService.generate
                 return _voidType;
             }
         }
-
-        private static TypeDeclare _arrayType;
-        public static TypeDeclare Array
-        {
-            get
-            {
-                if (_arrayType == null)
-                {
-                    _arrayType = Register(typeof(Array));
-                }
-                return _arrayType;
-            }
-        }
-
     }
 }
