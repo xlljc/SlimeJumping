@@ -258,7 +258,7 @@ namespace JsService
             //脚本加载器
             engine.DocumentSettings.Loader = new ScriptFileLoader(this);
             //启用自动转型
-            engine.EnableAutoHostVariables = true;
+            //engine.EnableAutoHostVariables = true;
             //删除默认的console对象
             engine.Global.DeleteProperty("console");
 

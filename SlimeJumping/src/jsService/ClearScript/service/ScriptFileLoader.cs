@@ -30,6 +30,10 @@ namespace JsService
                 {
                     path = Path.Combine(Environment.CurrentDirectory, specifier);
                 }
+                if (!Path.HasExtension(path))
+                {
+                    path += service.ExtensionName;
+                }
                 Uri uri = new Uri(path);
                 var documentInfo = new DocumentInfo(uri)
                 {
@@ -40,7 +44,7 @@ namespace JsService
                 {
                     contextCallback(documentInfo);
                 }
-                return new StringDocument(documentInfo, service.FileLoadHandler(service, specifier));
+                return new StringDocument(documentInfo, service.FileLoadHandler(service, specifier));                
             }
             catch (AggregateException ex)
             {

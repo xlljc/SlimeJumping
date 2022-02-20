@@ -1,5 +1,7 @@
 using Godot;
 using JsService;
+using System.Collections.Generic;
+using Microsoft.ClearScript.JavaScript;
 using Microsoft.ClearScript;
 using Microsoft.ClearScript.V8;
 
@@ -27,34 +29,19 @@ public class GameManager : Node
         _inited = true;
 
         ScriptManager.Out = new GodotLog();
-        ScriptManager.SearchPath = (System.Environment.CurrentDirectory + "\\extend").Replace("/", "\\");
+        ScriptManager.SearchPath = (System.Environment.CurrentDirectory + @"\extend\mods").Replace("/", "\\");
 
-        JsService = new ClearScriptService(ClearScriptDebugFlag.AwaitForStart);
-        ScriptManager.RegisterAndWriteTs(JsService, @"mods\TestMod1\.type\core.d.ts", (s) => 
+        JsService = new ClearScriptService(ClearScriptDebugFlag.Disable);
+        ScriptManager.RegisterAndWriteTs(JsService, System.Environment.CurrentDirectory + @"\extend\core.d.ts", (s) => 
         {
             s.ScanJsClass(typeof(GameManager).Assembly);
         });
-
-        InitCommonJS();
-        //测试代码
-        AddModel("mods/TestMod1");
-        //JsService.RegisterScript("mods/TestMod1/bin/index");
-    }
-
-    //
-    public static void InitCommonJS()
-    {
-        //JsService.RegisterScript("CommonJS.js");
-        string path = "D:\\GameProject\\SlimeJumping中文路径\\SlimeJumping\\extend\\CommonJS.js";
-        string code = System.IO.File.ReadAllText(path);
         var engine = (V8ScriptEngine)JsService.Engine;
-        var document = new StringDocument(new DocumentInfo(new System.Uri(path)), code);
-        engine.Execute(new DocumentInfo(new System.Uri(path)), code);
-    }
 
-    public static void AddModel(string path)
-    {
-        path += "bin/index";
+        //初始化 CommonJS
+        JsModuleManager.InitModule();
+        //测试
+        JsModuleManager.ExecuteModule("TestMod1/index");
     }
 
     public override void _Process(float delta)

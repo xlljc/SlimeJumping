@@ -14,19 +14,18 @@ namespace JsService.primeval
         /// </summary>
         /// <param name="filePath">文件路径</param>
         /// <returns>文本内容</returns>
-        internal static string Load(IScriptSerivce serivce, string filePath)
+        internal static string Load(IScriptSerivce service, string filePath)
         {
-            if (serivce.SearchPath == null)
+            if (service.SearchPath == null)
             {
                 return File.ReadAllText(filePath);
             }
-            var path = Path.Combine(serivce.SearchPath, filePath);
-            if (string.IsNullOrEmpty(Path.GetExtension(path)))
+            var path = Path.Combine(service.SearchPath, filePath);
+            if (!Path.HasExtension(path))
             {
-                path += serivce.ExtensionName;
+                path += service.ExtensionName;
             }
-            path = path.Replace('/', '\\');
-            return File.ReadAllText(path, Encoding.UTF8);
+            return File.ReadAllText(new Uri(path).LocalPath, Encoding.UTF8);
         }
 
         /// <summary>
@@ -34,18 +33,16 @@ namespace JsService.primeval
         /// </summary>
         /// <param name="context">文本内容</param>
         /// <param name="filePath">文件路径</param>
-        internal static void Write(IScriptSerivce serivce, string context, string filePath)
+        internal static void Write(IScriptSerivce service, string context, string filePath)
         {
-            if (serivce.SearchPath == null)
+            if (service.SearchPath == null)
             {
-                filePath = filePath.Replace('/', '\\');
-                File.WriteAllText(filePath, context);
+                File.WriteAllText(new Uri(filePath).LocalPath, context);
             }
             else 
             {
-                string path = Path.Combine(serivce.SearchPath, filePath);
-                path = path.Replace('/', '\\');
-                File.WriteAllText(path, context, Encoding.UTF8);
+                string path = Path.Combine(service.SearchPath, filePath);
+                File.WriteAllText(new Uri(path).LocalPath, context, Encoding.UTF8);
             }
         }
     }
