@@ -1,0 +1,27 @@
+[gd_scene format=2]
+
+[node name="ProjectManager" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="."]
+margin_left = 67.0
+margin_top = 58.0
+margin_right = 460.0
+margin_bottom = 121.0
+text = "123456"
+
+[node name="Label2" type="Label" parent="."]
+anchor_left = 1.0
+anchor_right = 1.0
+margin_left = -475.0
+margin_top = 132.0
+margin_right = -82.0
+margin_bottom = 195.0
+text = "123456"
+__meta__ = {
+"_edit_use_anchors_": false
+}
