@@ -30,10 +30,15 @@ namespace JsService
             commonJSRegister = commonJS.GetValue("register");
             commonJSExecute = commonJS.GetValue("execute");
         }
-
+        
         public static void LoadModule(string path)
         {
             LoadAllJs(new DirectoryInfo(serivce.SearchPath + "\\" + path), path);
+        }
+
+        public static void LoadDevelopModule(string directory, string path)
+        {
+            LoadAllJs(new DirectoryInfo(directory + "\\" + path), path);
         }
 
         public static void ExecuteModule(string path)

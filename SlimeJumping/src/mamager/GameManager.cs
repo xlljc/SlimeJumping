@@ -38,7 +38,8 @@ public class GameManager : Node
         //初始化 CommonJS
         JsModuleManager.InitModule();
         //测试
-        JsModuleManager.LoadModule("TestMod1/bin");
+        //JsModuleManager.LoadModule("TestMod1/bin");
+        JsModuleManager.LoadDevelopModule((System.Environment.CurrentDirectory + @"\extend\project"), "TestMod1/bin");
         JsModuleManager.ExecuteModule("TestMod1/bin/index");
     }
 
