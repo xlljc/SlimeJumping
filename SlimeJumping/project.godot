@@ -22,9 +22,13 @@ GameManager="res://src/mamager/GameManager.cs"
 
 window/size/width=1920
 window/size/height=1080
-window/size/resizable=false
 window/dpi/allow_hidpi=true
 window/vsync/use_vsync=false
+
+[gui]
+
+theme/custom="res://res/ui/theme/mainTheme.tres"
+theme/custom_font="res://res/ui/font/cn_font_21.tres"
 
 [input]
 
