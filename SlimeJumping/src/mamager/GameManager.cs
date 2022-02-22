@@ -1,8 +1,5 @@
 using Godot;
 using JsService;
-using System.Collections.Generic;
-using Microsoft.ClearScript.JavaScript;
-using Microsoft.ClearScript;
 using Microsoft.ClearScript.V8;
 
 /// <summary>
@@ -41,7 +38,8 @@ public class GameManager : Node
         //初始化 CommonJS
         JsModuleManager.InitModule();
         //测试
-        JsModuleManager.ExecuteModule("TestMod1/index");
+        JsModuleManager.LoadModule("TestMod1/bin");
+        JsModuleManager.ExecuteModule("TestMod1/bin/index");
     }
 
     public override void _Process(float delta)

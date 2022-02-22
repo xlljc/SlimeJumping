@@ -13,3 +13,4 @@ class Main {
 }
 exports.Main = Main;
 Main.main();
+console.log("----------------");

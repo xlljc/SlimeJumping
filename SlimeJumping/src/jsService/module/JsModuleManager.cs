@@ -2,7 +2,6 @@ using System.IO;
 using System.Text;
 using Microsoft.ClearScript;
 using Microsoft.ClearScript.V8;
-using JsService.primeval;
 
 namespace JsService
 {
@@ -22,13 +21,19 @@ namespace JsService
 
             serivce = ScriptManager.GetService("ClearScript");
             engine = (V8ScriptEngine)serivce.Engine;
+
+            //扫描并加载所有runtime下面的js文件
+            LoadAllJs(new DirectoryInfo(serivce.SearchPath + "\\runtime"));
+
             //CommonJS初始化
-            commonJS = serivce.Evaluate(JsScript.CommonJS);
+            commonJS = serivce.GetObject("__commonjs__");
             commonJSRegister = commonJS.GetValue("register");
             commonJSExecute = commonJS.GetValue("execute");
+        }
 
-            //扫描并加载所有js文件
-            LoadAllJs(new DirectoryInfo(serivce.SearchPath), null);
+        public static void LoadModule(string path)
+        {
+            LoadAllJs(new DirectoryInfo(serivce.SearchPath + "\\" + path), path);
         }
 
         public static void ExecuteModule(string path)
@@ -36,7 +41,7 @@ namespace JsService
             commonJSExecute.Invoke(path);
         }
 
-        private static void LoadAllJs(DirectoryInfo root, string parent)
+        private static void LoadAllJs(DirectoryInfo root, string parent = null)
         {
             DirectoryInfo[] dirs = root.GetDirectories();
             FileInfo[] files = root.GetFiles();
@@ -72,7 +77,7 @@ namespace JsService
             const string modelStr = "\"use strict\";\r\nObject.defineProperty(exports, \"__esModule\", { value: true });";
             if (code.StartsWith(modelStr)) //是模块
             {
-                code = "(function(module, exports, require) {\n" + code + "\n})";
+                code = "(function(module, exports, require) {" + code + "})";
                 object handler = engine.Evaluate(new DocumentInfo(new System.Uri(fullPath)), code);
                 //注册模块
                 commonJSRegister.Invoke(handler, moduleName);

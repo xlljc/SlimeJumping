@@ -1,4 +1,4 @@
-(() => {
+var __commonjs__ = __commonjs__ || (() => {
     const module = {};
     function register(handler, path) {
         if (path in module) {
@@ -9,12 +9,7 @@
         let data = {
             inited: false,
             folder,
-            execute: () => {
-                handler(data, data.exports, (p) => {
-                    let mudelName = getPath(folder, p);
-                    return getModule(mudelName);
-                })
-            },
+            execute: () => handler(data, data.exports, p => getModule(getPath(folder, p))),
             exports: {},
         }
         module[path] = data;
@@ -55,4 +50,4 @@
         register,
         execute,
     }
-})()
+})();
