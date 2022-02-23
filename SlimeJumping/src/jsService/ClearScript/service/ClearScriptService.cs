@@ -36,6 +36,7 @@ namespace JsService
         private IScriptObject systemModules;
         private ScriptObject JsObjectType;
         private IScriptObject hostClassFunc;
+        private IScriptObject hostFuncFunc;
         private ExtendedHostFunctions hostFunc;
 
         private GeneratesTs gt;
@@ -75,6 +76,10 @@ namespace JsService
                 {
                     temp = o.Obj;
                 }
+                else if (o.Obj is Delegate)
+                {
+                    temp = hostFuncFunc.Invoke(o.Obj);
+                }
                 else
                 {
                     var methodInfo = ClearScriptObject.WarpFunc.MakeGenericMethod(o.Obj.GetType());
@@ -108,6 +113,10 @@ namespace JsService
                 if (o.Obj is ScriptObject)
                 {
                     temp = o.Obj;
+                }
+                else if (o.Obj is Delegate)
+                {
+                    temp = hostFuncFunc.Invoke(o.Obj);
                 }
                 else
                 {
@@ -186,7 +195,7 @@ namespace JsService
             }
             catch (ScriptEngineException e)
             {
-                Out.LogError(e.ErrorDetails);
+                Out.error(e.ErrorDetails);
                 throw e;
             }
         }
@@ -199,7 +208,7 @@ namespace JsService
             }
             catch (ScriptEngineException e)
             {
-                Out.LogError(e.ErrorDetails);
+                Out.error(e.ErrorDetails);
                 throw e;
             }
         }
@@ -230,7 +239,7 @@ namespace JsService
             }
             catch (ScriptEngineException e)
             {
-                Out.LogError(e.ErrorDetails);
+                Out.error(e.ErrorDetails);
                 throw e;
             }
         }
@@ -283,18 +292,19 @@ namespace JsService
             ClearScriptObject.invokeMethod = temp.GetProperty("invokeMethod") as ScriptObject;
             ClearScriptObject.invokeConstructor = temp.GetProperty("invokeConstructor") as ScriptObject;
 
-            //创建js类函数
-            hostClassFunc = Evaluate(JsScript.HostClassFunc);
-
-            //log函数
-            AddHostInstance(new HostInstance("console.log", new LogMethod(Out.Log)));
-            AddHostInstance(new HostInstance("console.error", new LogMethod(Out.LogError)));
-            AddHostInstance(new HostInstance("console.warn", new LogMethod(Out.LogWarn)));
+            //console 对象
+            AddHostInstance(new HostInstance("console", Out));
             AddHostInstance(new HostInstance("__hostFunc", hostFunc, false));
+
+            //CommonJS 初始化
+            CommonJS.InitModule();
+            //创建js类函数
+            hostClassFunc = GetObject("__WrapHostType");
+            //创建js方法函数
+            hostFuncFunc = GetObject("__WrapHostFunc");
 
             //System 模块化
             Execute(JsScript.SystemJs);
-            //CommonJS 模块化
 
             //基础类型
             AddHostType(new HostType("any", typeof(object), "any"));
@@ -309,8 +319,8 @@ namespace JsService
             AddHostType(new HostType("void", typeof(void), "void"));
             AddHostType(new HostType("CsArray", typeof(Array), "CsArray"));
 
-            //初始化
-            Execute(JsScript.InitJs);
+            //数组转换函数
+            Execute(JsScript.ArrayConversion);
         }
 
         public IScriptObject Invoke(string fullName, params object[] args)
@@ -326,14 +336,14 @@ namespace JsService
             }
             catch (ScriptEngineException e)
             {
-                Out.LogError(e.ErrorDetails);
+                Out.error(e.ErrorDetails);
                 throw e;
             }
         }
 
         public void RunDebugConsole()
         {
-            Out.Log("\n---- js引擎控制台 (ClearScript) ----\n");
+            Out.log("\n---- js引擎控制台 (ClearScript) ----\n");
             while (true)
             {
                 Console.Write("<< ");
@@ -352,17 +362,17 @@ namespace JsService
                     {
                         RegisterScript(str.Substring(6).Replace("\"", "").Replace(" ", ""));
                         engine.Execute("System.__init();");
-                        Out.Log(">> import success!");
+                        Out.log(">> import success!");
                     }
                     else
                     {
                         string v = engine.ExecuteCommand(str);
-                        Out.Log(">> " + v);
+                        Out.log(">> " + v);
                     }
                 }
                 catch (ScriptEngineException e)
                 {
-                    Out.LogError(">> " + e.ErrorDetails);
+                    Out.error(">> " + e.ErrorDetails);
                 }
             }
 

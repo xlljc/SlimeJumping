@@ -7,20 +7,20 @@ namespace JsService.primeval
     /// </summary>
     internal class ConsoleLog : ILog
     {
-        public void Log(params object[] args)
+        public void log(params object[] args)
         {
             Console.ForegroundColor = ConsoleColor.White;
             Console.Write(toLogStr(args) + "\n");
         }
 
-        public void LogError(params object[] args)
+        public void error(params object[] args)
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.Write(toLogStr(args) + "\n");
             Console.ForegroundColor = ConsoleColor.White;
         }
 
-        public void LogWarn(params object[] args)
+        public void warn(params object[] args)
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.Write(toLogStr(args) + "\n");

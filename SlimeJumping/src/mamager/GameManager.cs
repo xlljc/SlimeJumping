@@ -25,22 +25,22 @@ public class GameManager : Node
         }
         _inited = true;
 
+        string currDir = System.Environment.CurrentDirectory;
         ScriptManager.Out = new GodotLog();
-        ScriptManager.SearchPath = (System.Environment.CurrentDirectory + @"\extend\mods").Replace("/", "\\");
+        ScriptManager.SearchPath = (currDir + @"\extend\mods").Replace("/", "\\");
 
         JsService = new ClearScriptService(ClearScriptDebugFlag.Disable);
-        ScriptManager.RegisterAndWriteTs(JsService, System.Environment.CurrentDirectory + @"\extend\core.d.ts", (s) => 
+        //D:\GameProject\SlimeJumping中文路径\SlimeJumping\extend\template\tsDefined\tsDefined.vm
+        ScriptManager.RegisterAndWriteTs(JsService, currDir + @"\extend\template\tsDefined\tsDefined.d.ts.vm", currDir + @"\extend\core.d.ts", (s) => 
         {
             s.ScanJsClass(typeof(GameManager).Assembly);
         });
         var engine = (V8ScriptEngine)JsService.Engine;
 
-        //初始化 CommonJS
-        JsModuleManager.InitModule();
         //测试
         //JsModuleManager.LoadModule("TestMod1/bin");
-        JsModuleManager.LoadDevelopModule((System.Environment.CurrentDirectory + @"\extend\project"), "TestMod1/bin");
-        JsModuleManager.ExecuteModule("TestMod1/bin/index");
+        CommonJS.LoadDevelopModule((System.Environment.CurrentDirectory + @"\extend\project"), "TestMod1/bin");
+        CommonJS.ExecuteModule("TestMod1/bin/index");
     }
 
     public override void _Process(float delta)

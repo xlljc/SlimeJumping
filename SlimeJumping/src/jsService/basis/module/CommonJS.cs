@@ -5,7 +5,7 @@ using Microsoft.ClearScript.V8;
 
 namespace JsService
 {
-    public static class JsModuleManager
+    public static class CommonJS
     {
         private static bool _init = false;
         private static IScriptSerivce serivce;

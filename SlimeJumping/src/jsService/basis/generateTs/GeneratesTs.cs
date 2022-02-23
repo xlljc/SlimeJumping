@@ -333,17 +333,18 @@ namespace JsService.generate
             }
             catch (Exception e)
             {
-                ScriptManager.Out.LogError("模板引擎写出异常: " + e.Message);
+                ScriptManager.Out.error("模板引擎写出异常: " + e.Message);
                 return;
             }
-            ScriptManager.Out.Log($"{writePath}写出成功!");
+            ScriptManager.Out.log($"{writePath}写出成功!");
         }
 
         /// <summary>
-        /// 写出ts代码, 使用默认模板
+        /// 写出ts代码, 使用指定模板
         /// </summary>
         /// <param name="outFile">写出的文件路径</param>
-        public void Write(string outFile)
+        /// <param name="context">模板字符串</param>
+        public void WriteByContext(string outFile, string context)
         {
             wrote = true;
             if (_vltEngine == null)
@@ -355,8 +356,6 @@ namespace JsService.generate
             try
             {
                 writePath = Path.Combine(serivce.SearchPath, outFile);
-                //模板字符串
-                string context = VmTemplate.Context;
                 // 注入对象
                 Inject();
 
@@ -375,7 +374,7 @@ namespace JsService.generate
             }
             catch (Exception e)
             {
-                ScriptManager.Out.LogError("模板引擎写出异常: " + e.Message);
+                ScriptManager.Out.error("模板引擎写出异常: " + e.Message);
                 return;
             }
             ScriptManager.Out.Log($"{writePath}写出成功!");

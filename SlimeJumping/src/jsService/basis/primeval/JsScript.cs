@@ -70,59 +70,22 @@ System.__addObject = function (_path, name, obj) {
     }
 }
 ";
-
-        /// <summary>
-        /// 创建对应主机类型的js类的函数
-        /// </summary>
-        public const string HostClassFunc = @"
-(function (hostType, hostFunc) {
-    let WrapperClass = class {
-        constructor() {
-            let target = new hostType(...arguments);
-            Object.defineProperty(this, 'super', { value: target });
-            Object.setPrototypeOf(this, new Proxy(Object.getPrototypeOf(this), {
-                has: (proto, key) => key in proto || key in target,
-                get: (proto, key) => key in proto ? proto[key] : target[key],
-                set: (proto, key, value) => {
-                    if (typeof value == 'function') proto[key] = value;
-                    else key in proto ? proto[key] = value : target[key] = value;
-                    return true;
-                },
-            }));
-        }
-    };
-    WrapperClass.csTarget = hostType;
-    Object.setPrototypeOf(WrapperClass, new Proxy({...WrapperClass}, {
-        has: (proto, key) => key in proto || key in hostType,
-        get: (proto, key) => key in proto ? proto[key] : hostType[key],
-        set: (proto, key, value) => {
-            if (typeof value == 'function') proto[key] = value;
-            else key in proto ? proto[key] = value : hostType[key] = value;
-            return true;
-        },
-    }));
-    return WrapperClass;
-})
-";
-
         /// <summary>
         /// 初始化脚本
         /// </summary>
-        public const string InitJs = @"
-(function () {
-    Array.toJsArray = (arr) => [...arr];
-    CsArray.toCsArray = (arg1, arg2) => {
-        let csArr;
-        if (arg2 == undefined) {
-            csArr = __hostFunc.newArr(arg1.length);
-        } else {
-            let csType = arg1.csTarget;
-            csArr = __hostFunc.newArr(csType ? csType : arg1, arg2.length)
-        }
-        for (let i = 0; i < arg2.length; i++) csArr[i] = arg2[i];
-        return csArr;
+        public const string ArrayConversion = @"
+Array.toJsArray = (arr) => [...arr];
+CsArray.toCsArray = (arg1, arg2) => {
+    let csArr;
+    if (arg2 == undefined) {
+        csArr = __hostFunc.newArr(arg1.length);
+    } else {
+        let csType = arg1.csType;
+        csArr = __hostFunc.newArr(csType ? csType : arg1, arg2.length)
     }
-})()
+    for (let i = 0; i < arg2.length; i++) csArr[i] = arg2[i];
+    return csArr;
+}
 ";
     }
 }

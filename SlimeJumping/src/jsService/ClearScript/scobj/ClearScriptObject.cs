@@ -164,7 +164,7 @@ namespace JsService
             }
             catch (ScriptEngineException e)
             {
-                service.Out.LogError(e.ErrorDetails);
+                service.Out.error(e.ErrorDetails);
                 throw e;
             }
         }
@@ -199,7 +199,7 @@ namespace JsService
             }
             catch (ScriptEngineException e)
             {
-                service.Out.LogError(e.ErrorDetails);
+                service.Out.error(e.ErrorDetails);
                 throw e;
             }
         }
@@ -231,7 +231,7 @@ namespace JsService
             }
             catch (ScriptEngineException e)
             {
-                service.Out.LogError(e.ErrorDetails);
+                service.Out.error(e.ErrorDetails);
                 throw e;
             }
         }

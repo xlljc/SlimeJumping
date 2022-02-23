@@ -6,15 +6,15 @@ using static Godot.GD;
 /// </summary>
 public class GodotLog : ILog
 {
-    public void Log(params object[] args)
+    public void log(params object[] args)
     {
         Print(what: args);
     }
-    public void LogError(params object[] args)
+    public void error(params object[] args)
     {
         PrintErr(what: args);
     }
-    public void LogWarn(params object[] args)
+    public void warn(params object[] args)
     {
         Print(what: args);
     }

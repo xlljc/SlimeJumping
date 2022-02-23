@@ -1,19 +1,17 @@
 /*
- Generate time: 2022/2/23 2:21:35
- Runtime environment: ClearScript
+ version: 
 */
 
 /** Indicates this is a C# type. */
 declare interface CsType {
     /** The type object of the C# class referred to. */
-    csTarget: any;
+    csType: any;
 }
 /** Represents an array type in C#. */
 declare interface CsArray<T = any> {
     [Symbol.iterator](): IterableIterator<T>;
     [index: number]: T;
     get Length(): number;
-    get LongLength(): number;
 }
 declare interface CsArrayStatic {
     /** Convert JS array to C# Object array. */
@@ -29,21 +27,61 @@ declare interface ArrayConstructor {
 }
 
 
+
+declare namespace globalThis {
+    function CallSay(obj: testA): void;
+}
+
+
+declare namespace globalThis {
+    interface GodotLog extends JsService.ILog {
+       log(...args: any[]): void;
+       error(...args: any[]): void;
+       warn(...args: any[]): void;
+    }
+    interface GodotLogConstructor {
+        new(): GodotLog;
+    }
+    interface GodotLogStatic extends JsService.ILogStatic {
+    }
+}
+declare namespace globalThis {
+    var console: GodotLog;
+}
 declare namespace JsService {
-    type LogMethod = (...args: any[]) => void;
+    interface ILog {
+       log(...args: any[]): void;
+       error(...args: any[]): void;
+       warn(...args: any[]): void;
+    }
+    interface ILogConstructor {
+    }
+    interface ILogStatic {
+    }
 }
-declare namespace console {
-    function log(...args: any[]): void;
+declare namespace globalThis {
+    interface testA {
+        a: int;
+       Say(): void;
+    }
+    interface testAConstructor {
+        new(a: int): testA;
+    }
+    interface testAStatic {
+    }
+    var testA: testAConstructor & testAStatic & CsType;
 }
-declare namespace console {
-    function error(...args: any[]): void;
+declare namespace globalThis {
+    interface TestJs {
+    }
+    interface TestJsConstructor {
+        new(): TestJs;
+    }
+    interface TestJsStatic {
+        CallSay(obj: testA): void;
+    }
+    var TestJs: TestJsConstructor & TestJsStatic & CsType;
 }
-declare namespace console {
-    function warn(...args: any[]): void;
-}
-
-
-
 
 declare namespace globalThis {
     type byte = number;

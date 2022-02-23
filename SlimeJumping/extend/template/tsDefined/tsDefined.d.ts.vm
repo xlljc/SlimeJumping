@@ -1,26 +1,17 @@
-namespace JsService.generate
-{
-    /// <summary>
-    /// 默认的生成模板
-    /// </summary>
-    internal static class VmTemplate
-    {
-        public const string Context = @"/*
- Generate time: $!{time}
- Runtime environment: $!{environment}
+/*
+ version: 
 */
 
 /** Indicates this is a C# type. */
 declare interface CsType {
     /** The type object of the C# class referred to. */
-    csTarget: any;
+    csType: any;
 }
 /** Represents an array type in C#. */
 declare interface CsArray<T = any> {
     [Symbol.iterator](): IterableIterator<T>;
     [index: number]: T;
     get Length(): number;
-    get LongLength(): number;
 }
 declare interface CsArrayStatic {
     /** Convert JS array to C# Object array. */
@@ -322,6 +313,3 @@ declare namespace $item.TsNamespace {
 declare type ${item.GetTypeStr()} = any;
 #end
 #end
-";
-    }
-}

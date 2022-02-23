@@ -47,16 +47,6 @@ namespace JsService
         }
 
         /// <summary>
-        /// 注册service, 并生成基础的接口代码, 使用默认的模板文件
-        /// </summary>
-        /// <param name="writePath">文件写出路径</param>
-        /// <param name="handler">注册对象函数, 在该函数内注册的所有对象都会被写出到ts文件中</param>
-        public static void RegisterAndWriteTs(IScriptSerivce serivce, string writePath, RegisterObjectHandler handler)
-        {
-            RegisterAndWriteTs(serivce, null, writePath, handler);
-        }
-
-        /// <summary>
         /// 注册service, 并生成基础的接口代码, 使用自定义模板文件
         /// </summary>
         /// <param name="templatePath">模板路径地址</param>
@@ -67,14 +57,7 @@ namespace JsService
             var gt = new GeneratesTs(serivce);
             Register(serivce, gt);
             handler(serivce);
-            if (templatePath == null)
-            {
-                gt.Write(writePath);
-            }
-            else 
-            {
-                gt.Write(templatePath, writePath);
-            }
+            gt.WriteByContext(writePath, serivce.FileLoadHandler(serivce, templatePath));
         }
 
         /// <summary>
