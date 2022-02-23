@@ -3,10 +3,7 @@
 */
 
 /** Indicates this is a C# type. */
-declare interface CsType {
-    /** The type object of the C# class referred to. */
-    csType: any;
-}
+declare interface CsType { }
 /** Represents an array type in C#. */
 declare interface CsArray<T = any> {
     [Symbol.iterator](): IterableIterator<T>;

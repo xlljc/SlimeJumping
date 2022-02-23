@@ -35,8 +35,6 @@ namespace JsService
         private IScriptObject systemAddObjectFunc;
         private IScriptObject systemModules;
         private ScriptObject JsObjectType;
-        private IScriptObject hostClassFunc;
-        private IScriptObject hostFuncFunc;
         private ExtendedHostFunctions hostFunc;
 
         private GeneratesTs gt;
@@ -76,10 +74,6 @@ namespace JsService
                 {
                     temp = o.Obj;
                 }
-                else if (o.Obj is Delegate)
-                {
-                    temp = hostFuncFunc.Invoke(o.Obj);
-                }
                 else
                 {
                     var methodInfo = ClearScriptObject.WarpFunc.MakeGenericMethod(o.Obj.GetType());
@@ -114,10 +108,6 @@ namespace JsService
                 {
                     temp = o.Obj;
                 }
-                else if (o.Obj is Delegate)
-                {
-                    temp = hostFuncFunc.Invoke(o.Obj);
-                }
                 else
                 {
                     var methodInfo = ClearScriptObject.WarpFunc.MakeGenericMethod(o.Obj.GetType());
@@ -141,7 +131,7 @@ namespace JsService
                 {
                     gt.AddType(null, type);
                 }
-                AddByFullName(type.Name, hostClassFunc.Invoke(type.Type.ToHostType(engine), hostFunc));
+                AddByFullName(type.Name, type.Type.ToHostType(engine));
             }
         }
 
@@ -164,7 +154,7 @@ namespace JsService
                 {
                     gt.AddType(path, type);
                 }
-                CallSystemAddObjectFunc(path, type.Name, hostClassFunc.Invoke(type.Type.ToHostType(engine), hostFunc));
+                CallSystemAddObjectFunc(path, type.Name, type.Type.ToHostType(engine));
             }
         }
 
@@ -298,10 +288,6 @@ namespace JsService
 
             //CommonJS 初始化
             CommonJS.InitModule();
-            //创建js类函数
-            hostClassFunc = GetObject("__WrapHostType");
-            //创建js方法函数
-            hostFuncFunc = GetObject("__WrapHostFunc");
 
             //System 模块化
             Execute(JsScript.SystemJs);
@@ -317,10 +303,7 @@ namespace JsService
             AddHostType(new HostType("double", typeof(double), "number"));
             AddHostType(new HostType("boolean", typeof(bool), "boolean"));
             AddHostType(new HostType("void", typeof(void), "void"));
-            AddHostType(new HostType("CsArray", typeof(Array), "CsArray"));
-
-            //数组转换函数
-            Execute(JsScript.ArrayConversion);
+            gt.AddType(null, new HostType("CsArray", typeof(Array), "CsArray"));
         }
 
         public IScriptObject Invoke(string fullName, params object[] args)

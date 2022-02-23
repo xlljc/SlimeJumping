@@ -79,8 +79,8 @@ namespace JsService
         private static void RegisterModule(string fullPath, string moduleName, string code)
         {
             //判断是不是模块, 目前先用暴力判断, 以后看看有没有更好的方法
-            const string modelStr = "\"use strict\";\r\nObject.defineProperty(exports, \"__esModule\", { value: true });";
-            if (code.StartsWith(modelStr)) //是模块
+            const string modelStr = "Object.defineProperty(exports, \"__esModule\", { value: true });";
+            if (code.Contains(modelStr)) //是模块
             {
                 code = "(function(module, exports, require) {" + code + "})";
                 object handler = engine.Evaluate(new DocumentInfo(new System.Uri(fullPath)), code);

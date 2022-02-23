@@ -9,7 +9,7 @@
     "strictNullChecks": false,
     "noImplicitAny": false,
     "skipLibCheck": true,
-    "types": ["../../core"],
+    "types": ["../../native"],
     "typeRoots": ["@types"],
     "experimentalDecorators": true,
   }

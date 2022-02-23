@@ -3,10 +3,7 @@
 */
 
 /** Indicates this is a C# type. */
-declare interface CsType {
-    /** The type object of the C# class referred to. */
-    csType: any;
-}
+declare interface CsType { }
 /** Represents an array type in C#. */
 declare interface CsArray<T = any> {
     [Symbol.iterator](): IterableIterator<T>;
@@ -30,6 +27,9 @@ declare interface ArrayConstructor {
 
 declare namespace globalThis {
     function CallSay(obj: testA): void;
+}
+declare namespace globalThis {
+    function Test(o: any): void;
 }
 
 
@@ -63,6 +63,7 @@ declare namespace globalThis {
     interface testA {
         a: int;
        Say(): void;
+       SayArr(arr: CsArray<float>): void;
     }
     interface testAConstructor {
         new(a: int): testA;
@@ -79,6 +80,7 @@ declare namespace globalThis {
     }
     interface TestJsStatic {
         CallSay(obj: testA): void;
+        Test(o: any): void;
     }
     var TestJs: TestJsConstructor & TestJsStatic & CsType;
 }

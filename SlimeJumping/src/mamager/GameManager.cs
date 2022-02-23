@@ -31,7 +31,7 @@ public class GameManager : Node
 
         JsService = new ClearScriptService(ClearScriptDebugFlag.Disable);
         //D:\GameProject\SlimeJumping中文路径\SlimeJumping\extend\template\tsDefined\tsDefined.vm
-        ScriptManager.RegisterAndWriteTs(JsService, currDir + @"\extend\template\tsDefined\tsDefined.d.ts.vm", currDir + @"\extend\core.d.ts", (s) => 
+        ScriptManager.RegisterAndWriteTs(JsService, currDir + @"\extend\template\tsDefined\tsDefined.d.ts.vm", currDir + @"\extend\native.d.ts", (s) => 
         {
             s.ScanJsClass(typeof(GameManager).Assembly);
         });

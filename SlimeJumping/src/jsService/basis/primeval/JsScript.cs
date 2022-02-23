@@ -70,22 +70,5 @@ System.__addObject = function (_path, name, obj) {
     }
 }
 ";
-        /// <summary>
-        /// 初始化脚本
-        /// </summary>
-        public const string ArrayConversion = @"
-Array.toJsArray = (arr) => [...arr];
-CsArray.toCsArray = (arg1, arg2) => {
-    let csArr;
-    if (arg2 == undefined) {
-        csArr = __hostFunc.newArr(arg1.length);
-    } else {
-        let csType = arg1.csType;
-        csArr = __hostFunc.newArr(csType ? csType : arg1, arg2.length)
-    }
-    for (let i = 0; i < arg2.length; i++) csArr[i] = arg2[i];
-    return csArr;
-}
-";
     }
 }
