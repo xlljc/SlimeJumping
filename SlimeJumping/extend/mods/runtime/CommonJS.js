@@ -1,34 +1,48 @@
 var __commonjs__ = __commonjs__ || (() => {
-    const module = {};
+    const modules = {};
     function register(handler, path) {
-        if (path in module) {
-            return;
+        if (path in modules) {
+            throw new Error("发现注册重复的模块: " + path);
         }
         let index = path.lastIndexOf('/');
         let folder = index >= 0 ? path.substring(0, index) : '';
-        let data = {
+        let module = {
             inited: false,
             folder,
-            execute: () => handler(data, data.exports, p => getModule(getPath(folder, p))),
+            execute: () => handler(module, module.exports, p => getModule(getPath(folder, p))),
             exports: {},
         }
-        module[path] = data;
+        modules[path] = module;
     }
     function execute(path) {
-        let data = module[path];
-        if (data && !data.inited) {
-            data.inited = true;
-            data.execute();
+        let module = modules[path];
+        if (module && !module.inited) {
+            module.inited = true;
+            module.execute();
         }
     }
-    function getModule(path) {
-        let data = module[path];
-        if (data) {
-            if (!data.inited) {
-                data.inited = true;
-                data.execute();
+    function addObject(path, name, obj) {
+        let module = modules[path];
+        if (module == null) {
+            let index = path.lastIndexOf('/');
+            let folder = index >= 0 ? path.substring(0, index) : '';
+            module = {
+                inited: true,
+                folder,
+                exports: {},
             }
-            return data.exports;
+            modules[path] = module;
+        }
+        module.exports[name] = obj;
+    }
+    function getModule(path) {
+        let module = modules[path];
+        if (module) {
+            if (!module.inited) {
+                module.inited = true;
+                module.execute();
+            }
+            return module.exports;
         }
         return undefined;
     }
@@ -46,8 +60,9 @@ var __commonjs__ = __commonjs__ || (() => {
     }
 
     return {
-        module,
+        modules,
         register,
         execute,
+        addObject,
     }
 })();

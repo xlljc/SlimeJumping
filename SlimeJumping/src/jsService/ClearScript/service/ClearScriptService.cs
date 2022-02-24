@@ -5,8 +5,6 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using JsService.primeval;
-using Microsoft.ClearScript.JavaScript;
 
 namespace JsService
 {
@@ -33,7 +31,7 @@ namespace JsService
         private bool isInited = false;
 
         private IScriptObject systemAddObjectFunc;
-        private IScriptObject systemModules;
+        private IScriptObject commonJSModules;
         private ScriptObject JsObjectType;
         private ExtendedHostFunctions hostFunc;
 
@@ -205,19 +203,19 @@ namespace JsService
 
         public IScriptObject GetModuleObject(string path, string fullName)
         {
-            if (systemModules == null)
+            if (commonJSModules == null)
             {
-                if (systemModules == null)
+                if (commonJSModules == null)
                 {
-                    systemModules = GetObject("System.__modules");
-                    if (systemModules.Object == null)
+                    commonJSModules = GetObject("__commonjs__.modules");
+                    if (commonJSModules.Object == null)
                     {
-                        systemModules = null;
-                        throw new NullReferenceException("未找到 System.__modules 方法!");
+                        commonJSModules = null;
+                        throw new NullReferenceException("未找到 __commonjs__.modules !");
                     }
                 }
             }
-            var obj = systemModules.GetValue(path) as ClearScriptObject;
+            var obj = commonJSModules.GetValue(path).GetValue("exports");
             return GetObject(obj.JsObject, fullName);
         }
 
@@ -288,9 +286,6 @@ namespace JsService
 
             //CommonJS 初始化
             CommonJS.InitModule();
-
-            //System 模块化
-            Execute(JsScript.SystemJs);
 
             //基础类型
             AddHostType(new HostType("any", typeof(object), "any"));
@@ -438,11 +433,11 @@ namespace JsService
         {
             if (systemAddObjectFunc == null)
             {
-                systemAddObjectFunc = GetObject("System.__addObject");
+                systemAddObjectFunc = GetObject("__commonjs__.addObject");
                 if (systemAddObjectFunc.Object == null)
                 {
                     systemAddObjectFunc = null;
-                    throw new NullReferenceException("未找到 System.__addObject 方法!");
+                    throw new NullReferenceException("未找到 __commonjs__.addObject 方法!");
                 }
             }
             systemAddObjectFunc.Invoke(path, name, obj);
