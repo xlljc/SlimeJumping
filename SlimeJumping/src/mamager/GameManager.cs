@@ -31,16 +31,16 @@ public class GameManager : Node
 
         JsService = new ClearScriptService(ClearScriptDebugFlag.Disable);
         //D:\GameProject\SlimeJumping中文路径\SlimeJumping\extend\template\tsDefined\tsDefined.vm
-        ScriptManager.RegisterAndWriteTs(JsService, currDir + @"\extend\template\tsDefined\tsDefined.d.ts.vm", currDir + @"\extend\native.d.ts", (s) => 
+        ScriptManager.RegisterAndWriteTs(JsService, currDir + @"\extend\template\tsDefined\tsDefined.d.ts.vm", currDir + @"\extend\mods\native\native.d.ts", (s) => 
         {
             s.ScanJsClass(typeof(GameManager).Assembly);
         });
         var engine = (V8ScriptEngine)JsService.Engine;
 
-        //测试
-        //JsModuleManager.LoadModule("TestMod1/bin");
-        CommonJS.LoadDevelopModule((System.Environment.CurrentDirectory + @"\extend\project"), "TestMod1/bin");
-        CommonJS.ExecuteModule("TestMod1/bin/index");
+        //加载开发模块
+        CommonJS.LoadDevelopModule((System.Environment.CurrentDirectory + @"\..\"), "mod-test/bin");
+        //运行模块
+        CommonJS.ExecuteModule("mod-test/bin/index");
     }
 
     public override void _Process(float delta)

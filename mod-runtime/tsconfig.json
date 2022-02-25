@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "CommonJS",
+    "lib": ["ES5", "ES2015", "ES6"],
+    "outDir": "../SlimeJumping/extend/mods/runtime/bin",
+    "rootDir": "./",
+    "declaration": true,
+    "strict": true,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "skipLibCheck": true,
+    "types": ["../SlimeJumping/extend/mods/native/native"],
+    "experimentalDecorators": true,
+  }
+}
