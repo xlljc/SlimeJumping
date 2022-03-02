@@ -14,6 +14,9 @@ namespace JsService
         private static IScriptObject commonJSRegister;
         private static IScriptObject commonJSExecute;
 
+        /// <summary>
+        /// 初始化模块
+        /// </summary>
         public static void InitModule()
         {
             if (_init) return;
@@ -35,6 +38,11 @@ namespace JsService
             CommonJS.ExecuteModule("runtime/bin/index");
         }
 
+        /// <summary>
+        /// 加载模块
+        /// </summary>
+        /// <param name="path">模块路径</param>
+        /// <param name="lib">依赖的其他模块</param>
         public static void LoadModule(string path, string[] lib = null)
         {
             //默认加载runtime
@@ -56,11 +64,11 @@ namespace JsService
         }
 
         /// <summary>
-        /// 
+        /// 加载一个开发环境下的模块
         /// </summary>
-        /// <param name="directory"></param>
-        /// <param name="path"></param>
-        /// <param name="lib"></param>
+        /// <param name="directory">项目的绝对路径</param>
+        /// <param name="path">模块路径</param>
+        /// <param name="lib">依赖的其他模块</param>
         public static void LoadDevelopModule(string directory, string path, string[] lib = null)
         {
             //默认加载runtime

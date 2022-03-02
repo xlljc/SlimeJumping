@@ -94,11 +94,13 @@ size_flags_vertical = 3
 size_flags_stretch_ratio = 4.0
 
 [node name="Button" type="Button" parent="VBoxContainer/HBoxContainer2/VBoxContainer"]
+visible = false
 margin_right = 1532.0
 margin_bottom = 150.0
 rect_min_size = Vector2( 0, 150 )
 
 [node name="Button2" type="Button" parent="VBoxContainer/HBoxContainer2/VBoxContainer"]
+visible = false
 margin_top = 154.0
 margin_right = 1532.0
 margin_bottom = 304.0

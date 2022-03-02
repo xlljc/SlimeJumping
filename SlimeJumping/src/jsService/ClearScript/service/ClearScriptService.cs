@@ -260,7 +260,6 @@ namespace JsService
             engine.Global.DeleteProperty("console");
 
             hostFunc = new ExtendedHostFunctions();
-            //hostFunc.newArr
 
             JsObjectType = (ScriptObject) engine.Global["Object"];
             var assembly = typeof(ScriptEngine).Assembly;
@@ -283,9 +282,6 @@ namespace JsService
             //console 对象
             AddHostInstance(new HostInstance("console", Out));
             AddHostInstance(new HostInstance("__hostFunc", hostFunc, false));
-
-            //CommonJS 初始化
-            CommonJS.InitModule();
 
             //基础类型
             AddHostType(new HostType("any", typeof(object), "any"));

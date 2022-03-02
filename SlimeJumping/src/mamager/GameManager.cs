@@ -33,6 +33,9 @@ public class GameManager : Node
         //D:\GameProject\SlimeJumping中文路径\SlimeJumping\extend\template\tsDefined\tsDefined.vm
         ScriptManager.RegisterAndWriteTs(JsService, currDir + @"\extend\template\tsDefined\tsDefined.d.ts.vm", currDir + @"\extend\mods\native\native.d.ts", (s) => 
         {
+            //CommonJS 初始化
+            CommonJS.InitModule();
+            //注入C#类
             s.ScanJsClass(typeof(GameManager).Assembly);
         });
         var engine = (V8ScriptEngine)JsService.Engine;
