@@ -10,9 +10,8 @@ namespace JsService
         private static bool _init = false;
         private static IScriptSerivce serivce;
         private static V8ScriptEngine engine;
-        private static IScriptObject commonJS;
         private static IScriptObject commonJSRegister;
-        private static IScriptObject commonJSExecute;
+        private static IScriptObject moduleExecute;
 
         /// <summary>
         /// 初始化模块
@@ -28,9 +27,8 @@ namespace JsService
             //初始化核心对象
             LoadAllJs(new DirectoryInfo(serivce.SearchPath + "\\native"), "native", new string[0]);
             //CommonJS
-            commonJS = serivce.GetObject("__commonjs__");
-            commonJSRegister = commonJS.GetValue("register");
-            commonJSExecute = commonJS.GetValue("execute");
+            commonJSRegister = serivce.GetObject("__commonjs__.register");
+            moduleExecute = serivce.GetObject("__module__.execute");
 
             //扫描并加载所有runtime下面的js文件
             LoadAllJs(new DirectoryInfo(serivce.SearchPath + "\\runtime\\bin"), "runtime/bin", new string[0]);
@@ -95,7 +93,7 @@ namespace JsService
         /// <param name="path">模块路径</param>
         public static void ExecuteModule(string path)
         {
-            commonJSExecute.Invoke(path);
+            moduleExecute.Invoke(path);
         }
 
         private static void LoadAllJs(DirectoryInfo root, string parent, string[] lib)

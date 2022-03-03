@@ -31,7 +31,7 @@ namespace JsService
         private bool isInited = false;
 
         private IScriptObject systemAddObjectFunc;
-        private IScriptObject commonJSModules;
+        private IScriptObject Modules;
         private ScriptObject JsObjectType;
         private ExtendedHostFunctions hostFunc;
 
@@ -203,19 +203,19 @@ namespace JsService
 
         public IScriptObject GetModuleObject(string path, string fullName)
         {
-            if (commonJSModules == null)
+            if (Modules == null)
             {
-                if (commonJSModules == null)
+                if (Modules == null)
                 {
-                    commonJSModules = GetObject("__commonjs__.modules");
-                    if (commonJSModules.Object == null)
+                    Modules = GetObject("__module__.modules");
+                    if (Modules.Object == null)
                     {
-                        commonJSModules = null;
-                        throw new NullReferenceException("未找到 __commonjs__.modules !");
+                        Modules = null;
+                        throw new NullReferenceException("未找到 __module__.modules !");
                     }
                 }
             }
-            var obj = commonJSModules.GetValue(path).GetValue("exports");
+            var obj = Modules.GetValue(path).GetValue("exports");
             return GetObject(obj.JsObject, fullName);
         }
 
@@ -429,11 +429,11 @@ namespace JsService
         {
             if (systemAddObjectFunc == null)
             {
-                systemAddObjectFunc = GetObject("__commonjs__.addObject");
+                systemAddObjectFunc = GetObject("__module__.addObject");
                 if (systemAddObjectFunc.Object == null)
                 {
                     systemAddObjectFunc = null;
-                    throw new NullReferenceException("未找到 __commonjs__.addObject 方法!");
+                    throw new NullReferenceException("未找到 __module__.addObject 方法!");
                 }
             }
             systemAddObjectFunc.Invoke(path, name, obj);
