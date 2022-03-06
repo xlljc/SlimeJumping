@@ -1,8 +1,6 @@
+using Jint;
 using System.IO;
 using System.Text;
-using Microsoft.ClearScript;
-using Microsoft.ClearScript.V8;
-
 
 namespace JsService
 {
@@ -10,7 +8,7 @@ namespace JsService
     {
         private static bool _init = false;
         private static IScriptSerivce serivce;
-        private static V8ScriptEngine engine;
+        private static Engine engine;
 
         /// <summary>
         /// 初始化模块
@@ -20,8 +18,8 @@ namespace JsService
             if (_init) return;
             _init = true;
 
-            serivce = ScriptManager.GetService("ClearScript");
-            engine = (V8ScriptEngine)serivce.Engine;
+            serivce = ScriptManager.GetService("Jint");
+            engine = (Engine)serivce.Engine;
 
             //初始化核心对象
             LoadAllJs(new DirectoryInfo(serivce.SearchPath + "\\native"), "native", new string[0]);

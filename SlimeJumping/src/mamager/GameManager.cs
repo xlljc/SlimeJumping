@@ -1,6 +1,5 @@
 using Godot;
 using JsService;
-using Microsoft.ClearScript.V8;
 
 /// <summary>
 /// 游戏管理器, 负责管理整个项目其它的Manager, 并更新它们
@@ -29,7 +28,7 @@ public class GameManager : Node
         ScriptManager.Out = new GodotLog();
         ScriptManager.SearchPath = (currDir + @"\extend\mods").Replace("/", "\\");
 
-        JsService = new ClearScriptService(ClearScriptDebugFlag.Disable);
+        JsService = new JintScriptService();
         //D:\GameProject\SlimeJumping中文路径\SlimeJumping\extend\template\tsDefined\tsDefined.vm
         ScriptManager.RegisterAndWriteTs(JsService, currDir + @"\extend\template\tsDefined\tsDefined.d.ts.vm", currDir + @"\extend\mods\native\native.d.ts", (s) => 
         {
@@ -38,7 +37,6 @@ public class GameManager : Node
             //注入C#类
             s.ScanJsClass(typeof(GameManager).Assembly);
         });
-        var engine = (V8ScriptEngine)JsService.Engine;
 
         //加载开发模块
         CommonJS.LoadDevelopModule((System.Environment.CurrentDirectory + @"\..\"), "mod-test/bin");

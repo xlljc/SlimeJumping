@@ -1,7 +1,6 @@
+using Jint;
 using System.IO;
 using System.Text;
-using Microsoft.ClearScript;
-using Microsoft.ClearScript.V8;
 
 namespace JsService
 {
@@ -9,7 +8,7 @@ namespace JsService
     {
         private static bool _init = false;
         private static IScriptSerivce serivce;
-        private static V8ScriptEngine engine;
+        private static Engine engine;
         private static IScriptObject commonJSRegister;
         private static IScriptObject moduleExecute;
 
@@ -21,8 +20,8 @@ namespace JsService
             if (_init) return;
             _init = true;
 
-            serivce = ScriptManager.GetService("ClearScript");
-            engine = (V8ScriptEngine)serivce.Engine;
+            serivce = ScriptManager.GetService("Jint");
+            engine = (Engine)serivce.Engine;
 
             //初始化核心对象
             LoadAllJs(new DirectoryInfo(serivce.SearchPath + "\\native"), "native", new string[0]);
@@ -133,13 +132,13 @@ namespace JsService
             if (code.Contains(modelStr)) //是模块
             {
                 code = "(function(module, exports, require) {" + code + "\n})";
-                object handler = engine.Evaluate(new DocumentInfo(new System.Uri(fullPath)), code);
+                object handler = engine.Evaluate(code, new Esprima.ParserOptions(fullPath));
                 //注册模块
                 commonJSRegister.Invoke(handler, moduleName, lib);
             }
             else
             {
-                engine.Execute(new DocumentInfo(new System.Uri(fullPath)), code);
+                engine.Execute(code, new Esprima.ParserOptions(fullPath));
             }
         }
 

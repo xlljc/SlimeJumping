@@ -8,7 +8,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="res\**" />
+    <Compile Remove="src\jint\**" />
     <EmbeddedResource Remove="res\**" />
+    <EmbeddedResource Remove="src\jint\**" />
   </ItemGroup>
   <!-- <ItemGroup>
     <None Include="extend\**">
@@ -16,10 +18,10 @@
     </None>
   </ItemGroup> -->
   <ItemGroup>
-    <PackageReference Include="Microsoft.ClearScript.Core" Version="7.2.2" />
-    <PackageReference Include="Microsoft.ClearScript.V8" Version="7.2.2" />
-    <PackageReference Include="Microsoft.ClearScript.V8.Native.win-x64" Version="7.2.2" />
     <PackageReference Include="NVelocity" Version="1.2.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="src\jint\Jint.csproj" />
   </ItemGroup>
 	
 </Project>
