@@ -30,6 +30,12 @@ namespace JsService
         void SetValue(string property, object v);
 
         /// <summary>
+        /// 删除属性值
+        /// </summary>
+        /// <param name="property">属性名称</param>
+        void Delete(string property);
+
+        /// <summary>
         /// 执行方法
         /// </summary>
         /// <param name="args">传的参数</param>

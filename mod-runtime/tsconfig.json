@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "CommonJS",
+    "target": "es5",
+    "module": "System",
     "lib": ["ES5", "ES2015", "ES6"],
     "outDir": "../SlimeJumping/extend/mods/runtime/bin",
+    "outFile": "../SlimeJumping/extend/mods/runtime/bin/index.js",
     "rootDir": "./",
     "declaration": true,
     "strict": true,

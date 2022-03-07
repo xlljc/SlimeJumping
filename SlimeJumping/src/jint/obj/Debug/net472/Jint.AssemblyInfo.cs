@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCopyrightAttribute("Sebastien Ros")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("Javascript interpreter for .NET.")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("3.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("3.0.0-beta-0+80a59f3fbd09280d947dc4e9c7849737bb67a568")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("3.0.0-beta-0+a76ef3c3eeaa06e0c2a0a76abd9b73dc656aaa1c")]
 [assembly: System.Reflection.AssemblyProductAttribute("Jint")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Jint")]
 [assembly: System.Reflection.AssemblyVersionAttribute("3.0.0.0")]

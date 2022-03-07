@@ -153,7 +153,7 @@ namespace JsService
         {
             try
             {
-                return new JintScriptObject(this, engine.Evaluate(code, new ParserOptions(code)), null);
+                return new JintScriptObject(this, engine.Evaluate(code), null);
             }
             catch (JavaScriptException e)
             {
@@ -171,7 +171,7 @@ namespace JsService
         {
             try
             {
-                engine.Execute(code, new ParserOptions(code));
+                engine.Execute(code);
             }
             catch (JavaScriptException e)
             {
@@ -231,50 +231,6 @@ namespace JsService
             {
                 Out.error($"File '{file}' " + e.ToString());
                 throw e;
-            }
-        }
-
-        public void RunDebugConsole()
-        {
-            Out.log("\n---- js引擎控制台 (Jint) ----\n");
-            while (true)
-            {
-                Console.Write("<< ");
-                string str = Console.ReadLine();
-                if (str == "")
-                {
-                    continue;
-                }
-                if (str.ToLower() == "exit")
-                {
-                    break;
-                }
-                try
-                {
-                    if (str.StartsWith("import "))
-                    {
-                        RegisterScript(str.Substring(6).Replace("\"", "").Replace(" ", ""));
-                        engine.Execute("System.init();");
-                        Out.log(">> import success!");
-                    }
-                    else
-                    {
-                        var v = engine.Evaluate(str, new ParserOptions(str));
-                        Out.log(">> " + v);
-                    }
-                }
-                catch (JavaScriptException e)
-                {
-                    Out.error(">> " + e.ToString());
-                }
-                catch (ParserException e)
-                {
-                    Out.error(">> " + e.ToString());
-                }
-                catch (Exception e)
-                {
-                    Out.error(">> " + e.GetType().FullName + ": " + e.Message);
-                }
             }
         }
 

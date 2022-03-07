@@ -157,10 +157,5 @@ namespace JsService
         /// <param name="assembly">程序集对象</param>
         void ScanJsClass(Assembly assembly);
 
-        /// <summary>
-        /// 执行调试控制台
-        /// </summary>
-        void RunDebugConsole();
-
     }
 }

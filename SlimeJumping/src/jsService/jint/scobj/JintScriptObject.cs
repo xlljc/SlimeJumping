@@ -3,6 +3,7 @@ using Jint;
 using Jint.Native;
 using Jint.Runtime;
 using Jint.Runtime.Interop;
+using Jint.Native.Object;
 using System;
 using System.Reflection;
 
@@ -10,9 +11,32 @@ namespace JsService
 {
     public class JintScriptObject : IScriptObject
     {
-        public object Object => jsValue.ToObject();
+        private object _object;
+        public object Object
+        {
+            get
+            {
+                if (_object is null)
+                {
+                    _object = jsValue.ToObject();
+                }
+                return _object;
+            }
+        }
 
-        public object JsObject => jsValue.AsObject();
+        public ObjectInstance _jsObject;
+
+        public object JsObject
+        {
+            get
+            {
+                if (_jsObject is null)
+                {
+                    _jsObject = jsValue.AsObject();
+                }
+                return _jsObject;
+            }
+        }
 
         internal JsValue jsValue;
         private IScriptSerivce _serivce;
@@ -68,6 +92,24 @@ namespace JsService
             try
             {
                 jsValue.Set(property, ToJsValue(_engine, v), jsValue);
+            }
+            catch (JavaScriptException e)
+            {
+                _serivce.Out.error($"Line {e.LineNumber}, Column {e.Column}: ", e.ToString());
+                throw e;
+            }
+            catch (ParserException e)
+            {
+                _serivce.Out.error(e.ToString());
+                throw e;
+            }
+        }
+
+        public void Delete(string property)
+        {
+            try
+            {
+                ((ObjectInstance) JsObject).Delete(property);
             }
             catch (JavaScriptException e)
             {

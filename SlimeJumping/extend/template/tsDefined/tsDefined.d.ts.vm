@@ -2,26 +2,7 @@
  version: 
 */
 
-/** Indicates this is a C# type. */
-declare interface CsType { }
-/** Represents an array type in C#. */
-declare interface CsArray<T = any> {
-    [Symbol.iterator](): IterableIterator<T>;
-    [index: number]: T;
-    get Length(): number;
-}
-declare interface CsArrayStatic {
-    /** Convert JS array to C# Object array. */
-    toCsArray<T>(arr: Array<T>): CsArray<T>;
-    /** Converts a JS array to a C# array of the specified type. */
-    toCsArray<T>(csType: CsType, arr: Array<T>): CsArray<T>;
-}
-declare var CsArray: CsArrayStatic;
-
-declare interface ArrayConstructor {
-    /** Convert C# arrays to JS arrays. */
-    toJsArray<T>(csArr: CsArray<T>): Array<T>;
-}
+type CsArray<T> = T[];
 
 ## Parameter list, list: collection of parameter objects
 #macro(param list)
@@ -49,7 +30,7 @@ ${nspTab}#if($t.Module == '' && $t.TsNamespace == '')declare #end
 type ${t.TsName} = (#param($ps)) => ${item.ReturnType.GetFormatString()};
 #if($item.CanInstance)
 ${nspTab}#if($t.Module == '' && $t.TsNamespace == '')declare #end
-var ${t.TsName}: CsType;
+var ${t.TsName}: never;
 #end
 #if($t.TsNamespace != '' || $t.Module != '')
 }
@@ -115,7 +96,7 @@ ${nspTab}    readonly ${name}: any,
 #end
 ${nspTab}}
 ${nspTab}#if($t.Module == '' && $t.TsNamespace == '')declare #end
-var ${t.TsName}: ${t.TsName}Enum & CsType;
+var ${t.TsName}: ${t.TsName}Enum;
 #end
 #if($t.TsNamespace != '' || $t.Module != '')
 }
@@ -231,7 +212,7 @@ ${nspTab}}
 #if($cls.CanInstance)
 ${nspTab}#if($t.Module == '' && $t.TsNamespace == '')declare #end
 #set($genericString = $cls.GetGenericString())
-var ${t.TsName}: ${t.TsFullName}Constructor${genericString} & ${t.TsFullName}Static${genericString} & CsType;
+var ${t.TsName}: ${t.TsFullName}Constructor${genericString} & ${t.TsFullName}Static${genericString};
 #end
 #if($t.TsNamespace != '' || $t.Module != '')
 }
@@ -271,7 +252,7 @@ declare namespace ${t.TsNamespace} {
 ${nspTab}#if($t.Module == '' && $t.TsNamespace == '')declare #end
 type ${t.TsName} = ${item.TypeStr};
 ${nspTab}#if($t.Module == '' && $t.TsNamespace == '')declare #end
-var ${t.TsName}: CsType;
+var ${t.TsName}: never;
 #if($t.TsNamespace != '' || $t.Module != '')
 }
 #end

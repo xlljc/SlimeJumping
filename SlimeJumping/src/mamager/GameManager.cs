@@ -32,16 +32,16 @@ public class GameManager : Node
         //D:\GameProject\SlimeJumping中文路径\SlimeJumping\extend\template\tsDefined\tsDefined.vm
         ScriptManager.RegisterAndWriteTs(JsService, currDir + @"\extend\template\tsDefined\tsDefined.d.ts.vm", currDir + @"\extend\mods\native\native.d.ts", (s) => 
         {
-            //CommonJS 初始化
-            CommonJS.InitModule();
+            //模块化 初始化
+            SystemJS.InitModule();
             //注入C#类
             s.ScanJsClass(typeof(GameManager).Assembly);
         });
 
         //加载开发模块
-        CommonJS.LoadDevelopModule((System.Environment.CurrentDirectory + @"\..\"), "mod-test/bin");
+        SystemJS.LoadDevelopModule((System.Environment.CurrentDirectory + @"\..\"), "mod-test/bin");
         //运行模块
-        CommonJS.ExecuteModule("mod-test/bin/index");
+        SystemJS.ExecuteModule("mod-test/bin/index");
     }
 
     public override void _Process(float delta)

@@ -2,26 +2,7 @@
  version: 
 */
 
-/** Indicates this is a C# type. */
-declare interface CsType { }
-/** Represents an array type in C#. */
-declare interface CsArray<T = any> {
-    [Symbol.iterator](): IterableIterator<T>;
-    [index: number]: T;
-    get Length(): number;
-}
-declare interface CsArrayStatic {
-    /** Convert JS array to C# Object array. */
-    toCsArray<T>(arr: Array<T>): CsArray<T>;
-    /** Converts a JS array to a C# array of the specified type. */
-    toCsArray<T>(csType: CsType, arr: Array<T>): CsArray<T>;
-}
-declare var CsArray: CsArrayStatic;
-
-declare interface ArrayConstructor {
-    /** Convert C# arrays to JS arrays. */
-    toJsArray<T>(csArr: CsArray<T>): Array<T>;
-}
+type CsArray<T> = T[];
 
 
 
@@ -70,7 +51,7 @@ declare namespace globalThis {
     }
     interface testAStatic {
     }
-    var testA: testAConstructor & testAStatic & CsType;
+    var testA: testAConstructor & testAStatic;
 }
 declare namespace globalThis {
     interface TestJs {
@@ -82,39 +63,39 @@ declare namespace globalThis {
         CallSay(obj: testA): void;
         Test(o: any): void;
     }
-    var TestJs: TestJsConstructor & TestJsStatic & CsType;
+    var TestJs: TestJsConstructor & TestJsStatic;
 }
 
 declare namespace globalThis {
     type byte = number;
-    var byte: CsType;
+    var byte: never;
 }
 declare namespace globalThis {
     type short = number;
-    var short: CsType;
+    var short: never;
 }
 declare namespace globalThis {
     type int = number;
-    var int: CsType;
+    var int: never;
 }
 declare namespace globalThis {
     type long = number;
-    var long: CsType;
+    var long: never;
 }
 declare namespace globalThis {
     type string = string;
-    var string: CsType;
+    var string: never;
 }
 declare namespace globalThis {
     type float = number;
-    var float: CsType;
+    var float: never;
 }
 declare namespace globalThis {
     type double = number;
-    var double: CsType;
+    var double: never;
 }
 declare namespace globalThis {
     type boolean = boolean;
-    var boolean: CsType;
+    var boolean: never;
 }
 

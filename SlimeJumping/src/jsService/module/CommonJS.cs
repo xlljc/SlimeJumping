@@ -32,7 +32,7 @@ namespace JsService
             //扫描并加载所有runtime下面的js文件
             LoadAllJs(new DirectoryInfo(serivce.SearchPath + "\\runtime\\bin"), "runtime/bin", new string[0]);
             //执行runtime
-            CommonJS.ExecuteModule("runtime/bin/index");
+            ExecuteModule("runtime/bin/index");
         }
 
         /// <summary>

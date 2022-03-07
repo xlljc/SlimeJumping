@@ -2,10 +2,8 @@ var __module__ = __module__ || (() => {
     /**
      * {
      *      inited: boolean
-     *      lib: string[]
-     *      folder: string,
+	 *      exports: {},
      *      execute?: function,
-     *      exports: {},
      * }
      */
     const modules = {};
@@ -13,11 +11,8 @@ var __module__ = __module__ || (() => {
     function addObject(path, name, obj) {
 		let module = modules[path];
 		if (module == null) {
-			let index = path.lastIndexOf('/');
-			let folder = index >= 0 ? path.substring(0, index) : '';
 			module = {
 				inited: true,
-				folder,
 				exports: {},
 			};
 			modules[path] = module;
@@ -70,21 +65,13 @@ var __commonjs__ = __commonjs__ || (() => {
 		if (path in __module__.modules) {
 			throw new Error('发现注册重复的模块: ' + path);
 		}
-		if (!lib) { //这里的参数的lib是C#数组
+		if (!lib) {
 			lib = [];
-		} else {
-			let temp = lib;
-			lib = [];
-			for (let item of temp) {
-				lib.push(item);
-			}
 		}
 		let index = path.lastIndexOf('/');
 		let folder = index >= 0 ? path.substring(0, index) : '';
 		let module = {
 			inited: false,
-			lib,
-			folder,
 			execute: () => {
 				handler(module, module.exports, (p) => {
 					if (p === '.')
@@ -109,67 +96,38 @@ var __commonjs__ = __commonjs__ || (() => {
 	};
 })();
 
-var System = System || (() => {
-    
-})();
+var System = System || {};
 
-// var System = System || {};
-// var SystemModle = SystemModle || System;
-// System.__modules = System.__modules || {};
-// System.register = function (_path, arrs, callback) {
-//     var self = this;
-//     if (!self.__modules[_path])
-//         self.__modules[_path] = {};
-//     let result = callback(function (pOrName, cls) {
-//         if (typeof (pOrName) == 'object') {
-//             for (let k in pOrName) {
-//                 if (k != '____imports____' && k != '____config____' && k != '____ready____')
-//                     self.__modules[_path][k] = pOrName[k];
-//             }
-//         } else
-//             self.__modules[_path][pOrName] = cls;
-//     }, '');
-//     self.__modules[_path].____imports____ = arrs;
-//     self.__modules[_path].____config____ = result;
-// }
-// System.__init = function () {
-//     for (let key in this.__modules) {
-//         this.__moduleInit(key);
-//     }
-// }
-// System.__moduleInit = function (key) {
-//     let module = this.__modules[key];
-//     if (!module.____ready____) {
-//         for (let i = 0, len = module.____imports____.length; i < len; ++i) {
-//             let ckey = module.____imports____[i];
-//             let cmodel = this.__modules[ckey];
-//             if (!cmodel) continue;
-//             if (!cmodel.____ready____)
-//                 this.__moduleInit(ckey);
-//             module.____config____.setters[i](cmodel);
-//         }
-//         try {
-//             module.____ready____ = true;
-//             module.____config____.execute();
-//         } catch (e) {
-//             console.error('\'' + key + '\'' + ' init: ' + e + '\n' + e.stack);
-//         }
-//     }
-// }
-// System.__addObject = function (_path, name, obj) {
-//     var model = this.__modules[_path];
-//     if (model) {
-//         model[name] = obj;
-//     } else {
-//         model = {
-//             ____ready____: true,
-//             ____imports____: [],
-//             ____config____: {
-//                 setters: [],
-//                 execute: function () { },
-//             },
-//         }
-//         model[name] = obj;
-//         this.__modules[_path] = model;
-//     }
-// }
+function __systemRegisterFunc__(folder, lib) {
+	return (moduleName, imps, callback) => {
+		let path = (folder == null ? "" : folder + "/") + moduleName;
+		//console.log(`注册模块, folder: ${folder}, moduleName: ${moduleName}, path: ${path}`);
+		if (path in __module__.modules) {
+			throw new Error('发现注册重复的模块: ' + path);
+		}
+		if (!lib) {
+			lib = [];
+		}
+		let module = {
+			inited: false,
+			execute: () => {
+				let data = callback((n, v) => module.exports[n] = v);
+				let setters = data.setters;
+				for (let i = 0; i < imps.length; i++) {
+					let imp = imps[i];
+					let module = __module__.getModule(folder + '/' + imp);
+					if (module === undefined) {
+						for (let l of lib) {
+							module = __module__.getModule(l + '/bin/' + imp);
+							if (module !== undefined) break;
+						}
+					}
+					setters[i](module);
+				}
+				data.execute();
+			},
+			exports: {},
+		};
+		__module__.modules[path] = module;
+	}
+}
