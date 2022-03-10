@@ -29,7 +29,6 @@ public class GameManager : Node
         ScriptManager.SearchPath = (currDir + @"\extend\mods").Replace("/", "\\");
 
         JsService = new JintScriptService();
-        //D:\GameProject\SlimeJumping中文路径\SlimeJumping\extend\template\tsDefined\tsDefined.vm
         ScriptManager.RegisterAndWriteTs(JsService, currDir + @"\extend\template\tsDefined\tsDefined.d.ts.vm", currDir + @"\extend\mods\native\native.d.ts", (s) => 
         {
             //模块化 初始化
