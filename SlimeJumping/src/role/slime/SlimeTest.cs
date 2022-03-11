@@ -3,14 +3,68 @@ using System.Collections.Generic;
 
 public class SlimeTest : Node2D
 {
-	//绘制点的数量
+
+	//中心点
+	public Node2D center;
+
+
+    public override void _Ready()
+    {
+		_Init();
+		center = GetNode<Node2D>("Center");
+    }
+
+    public override void _Process(float delta)
+    {
+		center.GlobalPosition = GetGlobalMousePosition();
+		_UpdateSoft(delta);
+	}
+
+	private void testFunc(float delta)
+    {
+		for (int i = 0; i < points; i++)
+		{
+			//blob[i] = setDistance(blob[i], Vector2.Zero, 40.0f);
+			var len = (blob[i] - center.GlobalPosition).Length();
+            if (len > 50.0f)
+            {
+                blob[i] = setDistance(blob[i], center.GlobalPosition, 50 + (len - 50) * 0.995f);
+            }
+            //if (Input.IsMouseButtonPressed((int)ButtonList.Left) && (blob[i] - GetGlobalMousePosition()).Length() < 40.0f)
+            //{
+            //    blob[i] = setDistance(blob[i], GetGlobalMousePosition(), 40.0f);
+            //}
+            if (blob[i].Length() > 1000.0f)
+            {
+                blob[i] = setDistance(blob[i], Vector2.Zero, 1000.0f);
+            }
+        }
+    }
+
+	private float getLen(float l)
+    {
+		int num = (int)l;
+		float count = 0;
+		for (int i = 1; i <= num; i++)
+        {
+			count += 1 / i;
+		}
+		return count;
+    }
+
+    //--------------------------------------------------
+
+    //绘制点的数量
+    [Export]
 	public int points = 12;
-	//半径
+	//绘制的大小
+	[Export]
 	public float radius = 50.0f;
-	//
+	//柔软度
+	[Export]
 	public float circumfrenceMultiplier = 1.0f;
 
-
+	//预先计算某些内部函数
 	public float area;
 	public float circumfrence;
 	public float length;
@@ -24,9 +78,8 @@ public class SlimeTest : Node2D
 	public Dictionary<int, float> accumulatedDisplacements = new Dictionary<int, float>();
 	//轮廓点的法线
 	public List<List<Vector2>> normals = new List<List<Vector2>>();
-	//中心点
-	public Vector2 center = new Vector2();
 	//重力方向
+	[Export]
 	public Vector2 gravity = new Vector2(0, 30);
 	[Export]
 	public float splineLength = 12.0f;
@@ -60,7 +113,7 @@ public class SlimeTest : Node2D
 		return toAnchor + anchor;
 	}
 
-	public override void _Ready()
+	public void _Init()
 	{
 		resetBlob();
 	}
@@ -127,10 +180,10 @@ public class SlimeTest : Node2D
 
 	public override void _Draw()
 	{
-		for	(int i = 0; i < points; i++)
-		{
-			DrawLine(normals[i][0], normals[i][1], new Color(255, 0, 0), 3);
-		}
+		//for	(int i = 0; i < points; i++)
+		//{
+		//	DrawLine(normals[i][0], normals[i][1], new Color(255, 0, 0), 3);
+		//}
 		
 		var bakedPoints = curve.GetBakedPoints();
 		var drawPoints = new Vector2[bakedPoints.Length];
@@ -141,15 +194,15 @@ public class SlimeTest : Node2D
 			drawPoints = Geometry.ConvexHull2d(bakedPoints);
 		}
 
-		DrawPolyline(drawPoints, Colors.Black, 2.0f, true);
-		//DrawPolygon(drawPoints, new Color[] { new Color(0, 1, 0, 1) });
-		for	(int i = 0; i < points; i++)
-		{
-			DrawLine(blob[i], blob[(i + 1) % points], Colors.Blue, 3);
-		}
-	}
+        DrawPolygon(drawPoints, new Color[] { new Color(0, 1, 0, 1) });
+        //DrawPolyline(drawPoints, Colors.Black, 2.0f, true);
+        //for (int i = 0; i < points; i++)
+        //{
+        //    DrawLine(blob[i], blob[(i + 1) % points], Colors.Blue, 3);
+        //}
+    }
 
-	public override void _Process(float delta)
+    public void _UpdateSoft(float delta)
 	{
 		for (int i = 0; i < points; i++)
 		{
@@ -223,24 +276,17 @@ public class SlimeTest : Node2D
 				accumulatedDisplacements[i] = 0;
 			}
 
-			for (int i = 0; i < points; i++)
-			{
-				if (Input.IsMouseButtonPressed((int)ButtonList.Left) && (blob[i] - GetGlobalMousePosition()).Length() < 40.0f)
-				{
-					blob[i] = setDistance(blob[i], GetGlobalMousePosition(), 40.0f);
-				}
-				if (blob[i].Length() > 175.0f)
-				{
-					blob[i] = setDistance(blob[i], Vector2.Zero, 175.0f);
-				}
+			testFunc(delta);
 
-			}
 		}
 		//# print(curArea)
 		updateSprite();
 		Update();
 	}
 
+	/// <summary>
+	/// 重置
+	/// </summary>
 	public void resetBlob()
 	{
 		blob.Clear();
@@ -285,7 +331,7 @@ public class SlimeTest : Node2D
 		area = radius * radius * Mathf.Pi;
 		circumfrence = radius * 2.0f * Mathf.Pi * circumfrenceMultiplier;
 		length = circumfrence * 1.15f / points;
-		this.Log(area);
+		//this.Log(area);
 	}
 
 	//# Points Slider
@@ -295,7 +341,7 @@ public class SlimeTest : Node2D
 		area = radius * radius * Mathf.Pi;
 		circumfrence = radius * 2.0f * Mathf.Pi * circumfrenceMultiplier;
 		length = circumfrence * 1.15f / points;
-		this.Log(points);
+		//this.Log(points);
 		resetBlob();
 	}
 
