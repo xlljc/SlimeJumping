@@ -1,26 +1,28 @@
 using Godot;
 using System.Collections.Generic;
 
-public class Soft : KinematicBody2D
+/// <summary>
+/// 软体类
+/// </summary>
+public class SoftBody : Role
 {
+    /// <summary>
+    /// 顶点
+    /// </summary>
     [Export]
     public PackedScene Skeleton;
+
+    /// <summary>
+    /// 顶点数量
+    /// </summary>
     [Export]
     public int Point = 20;
 
+    /// <summary>
+    /// 半径
+    /// </summary>
     [Export]
     public float Radius = 80;
-
-    [Export]
-    public float Speed = 300f;
-
-    [Export]
-    public float Gravity = 0;
-
-    [Export]
-    public Curve2D curve;
-    
-    public Vector2 Velocity;
 
     //轮廓点
     private List<RigidBody2D> blob = new List<RigidBody2D>();
@@ -51,7 +53,7 @@ public class Soft : KinematicBody2D
             {
                 start = now;
             }
-            else 
+            else
             {
                 if (i == Point - 1)//最后一个
                 {
@@ -90,13 +92,6 @@ public class Soft : KinematicBody2D
 
     public override void _PhysicsProcess(float delta)
     {
-        Velocity.x = Mathf.MoveToward(Velocity.x, 0, 500 * delta);
-        Velocity.y += Gravity;
-        if (Input.IsMouseButtonPressed((int) ButtonList.Left)) {
-            Velocity = GetGlobalMousePosition() - GlobalPosition;
-            //var d = dir.Clamped(Speed * delta);
-        }
-        Velocity = MoveAndSlide(Velocity, Vector2.Up);
         UpdateOutline();
         for (int i = 0; i < Point; i++)
         {

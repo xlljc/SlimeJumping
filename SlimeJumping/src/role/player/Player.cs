@@ -1,6 +1,6 @@
 using Godot;
 
-public class Player : Slime
+public class Player : SoftBody
 {
 	/// <summary>
 	/// 移动速度
@@ -66,6 +66,7 @@ public class Player : Slime
 
 	public override void _Ready()
 	{
+		base._Ready();
 		//注册状态对象
 		StateCtr.Register(new PlayerIdleState());
 		StateCtr.Register(new PlayerRunState());
@@ -83,6 +84,7 @@ public class Player : Slime
 
 	public override void _PhysicsProcess(float delta)
 	{
+		base._PhysicsProcess(delta);
 		//更新状态
 		StateCtr.PhysicsUpdate(delta);
 		//更新移动
