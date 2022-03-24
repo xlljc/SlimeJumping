@@ -1,15 +1,22 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
-[ext_resource path="res://test/soft/Soft.cs" type="Script" id=1]
+[ext_resource path="res://res/curve/ImpactCurve.tres" type="Curve" id=1]
 [ext_resource path="res://test/soft/Skeleton.tscn" type="PackedScene" id=2]
+[ext_resource path="res://test/soft/SoftBody.cs" type="Script" id=3]
 
 [sub_resource type="CircleShape2D" id=1]
-radius = 16.0
+radius = 18.0
 
 [node name="Center" type="KinematicBody2D"]
 collision_mask = 3
-script = ExtResource( 1 )
+script = ExtResource( 3 )
+MoveSpeed = 500.0
+ImpactSpeed = 3000.0
+ImpactTime = 0.3
+ImpactCurve = ExtResource( 1 )
 Skeleton = ExtResource( 2 )
+Point = 25
+Radius = 40.0
 
 [node name="Outline" type="Line2D" parent="."]
 joint_mode = 2

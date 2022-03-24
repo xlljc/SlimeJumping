@@ -1,6 +1,6 @@
 using Godot;
 
-public class Player : SoftBody
+public class Player : Role
 {
 	/// <summary>
 	/// 移动速度
@@ -21,7 +21,7 @@ public class Player : SoftBody
 	/// 冲刺初始速度
 	/// </summary>
 	[Export]
-	public float ImpactSpeed = 800;
+	public float ImpactSpeed = 1500;
 	/// <summary>
 	/// 冲刺作用力有效时间
 	/// </summary>

@@ -1,19 +1,11 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://test/soft/Soft.tscn" type="PackedScene" id=1]
-[ext_resource path="res://res/curve/SoftCurve.tres" type="Curve2D" id=2]
+[ext_resource path="res://test/soft/Soft.tscn" type="PackedScene" id=2]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 469, 29 )
 
 [node name="TestScene2" type="Node2D"]
-
-[node name="Center" parent="." instance=ExtResource( 1 )]
-position = Vector2( 376, 248 )
-Radius = 25.0
-Speed = 10000.0
-Gravity = 20.0
-curve = ExtResource( 2 )
 
 [node name="Wall" type="RigidBody2D" parent="."]
 position = Vector2( 496, 1008 )
@@ -45,3 +37,6 @@ __meta__ = {
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Wall3"]
 shape = SubResource( 1 )
+
+[node name="Center" parent="." instance=ExtResource( 2 )]
+position = Vector2( 584, 424 )

@@ -12,7 +12,7 @@ public static class GameConfig
     /// <summary>
     /// 下落加速系数
     /// </summary>
-    public static readonly float FallCoefficient = 5.5f * 60;
+    public static readonly float FallCoefficient = 3f * 60;
 
     /// <summary>
     /// 下落每秒增加速度

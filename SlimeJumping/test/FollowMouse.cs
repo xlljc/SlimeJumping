@@ -20,5 +20,7 @@ public class FollowMouse : KinematicBody2D
             //var d = dir.Clamped(Speed * delta);
         }
         Velocity = MoveAndSlide(Velocity, Vector2.Up);
+
+        //GetNode<KinematicBody2D>("Right").MoveAndCollide(Vector2.Zero);
     }
 }

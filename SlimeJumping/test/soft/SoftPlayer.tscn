@@ -1,0 +1,65 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://res/curve/ImpactCurve.tres" type="Curve" id=1]
+[ext_resource path="res://test/soft/TestPlayer.cs" type="Script" id=2]
+[ext_resource path="res://test/soft/BodyBone.tscn" type="PackedScene" id=3]
+
+[sub_resource type="CircleShape2D" id=1]
+radius = 16.0
+
+[sub_resource type="CircleShape2D" id=2]
+
+[node name="SoftPlayer" type="KinematicBody2D"]
+script = ExtResource( 2 )
+ImpactCurve = ExtResource( 1 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource( 1 )
+
+[node name="Up" type="KinematicBody2D" parent="."]
+position = Vector2( 0, -40 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Up"]
+shape = SubResource( 2 )
+
+[node name="BodyBone1" parent="Up" instance=ExtResource( 3 )]
+position = Vector2( 0, -32 )
+
+[node name="1" parent="Up/BodyBone1" index="1"]
+rotation = 1.0472
+node_b = NodePath("../../BodyBone2")
+
+[node name="2" parent="Up/BodyBone1" index="2"]
+node_b = NodePath("../..")
+
+[node name="3" parent="Up/BodyBone1" index="3"]
+rotation = -1.0472
+
+[node name="BodyBone2" parent="Up" instance=ExtResource( 3 )]
+position = Vector2( -24, -16 )
+rotation = -1.0472
+
+[node name="1" parent="Up/BodyBone2" index="1"]
+rotation = 1.0472
+
+[node name="2" parent="Up/BodyBone2" index="2"]
+node_b = NodePath("../..")
+
+[node name="3" parent="Up/BodyBone2" index="3"]
+rotation = -1.0472
+node_b = NodePath("../../BodyBone1")
+
+[node name="Left" type="KinematicBody2D" parent="."]
+position = Vector2( -40, 16 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Left"]
+shape = SubResource( 2 )
+
+[node name="Right" type="KinematicBody2D" parent="."]
+position = Vector2( 40, 16 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Right"]
+shape = SubResource( 2 )
+
+[editable path="Up/BodyBone1"]
+[editable path="Up/BodyBone2"]
