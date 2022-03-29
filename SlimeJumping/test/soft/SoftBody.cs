@@ -97,8 +97,14 @@ public class SoftBody : Player
         UpdateOutline();
         for (int i = 0; i < Point; i++)
         {
-            blobCollisions[i].Disabled = blob[i].Position.Length() > Radius * 1.3f;
-            blob[i].LinearVelocity = this.MoveCtr.Velocity;
+            var b = blob[i];
+            bool flag = b.Position.Length() > Radius * 1.3f;
+            blobCollisions[i].Disabled = flag;
+            if (flag) {
+                //b.Position = b.Position.Clamped(Radius * 1.3f);
+                b.LinearVelocity = (GlobalPosition -  b.GlobalPosition) * 40;
+            }
+            // blob[i].LinearVelocity = this.MoveCtr.Velocity;
         }
     }
 

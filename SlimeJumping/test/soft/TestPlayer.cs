@@ -1,13 +1,17 @@
 using Godot;
 
-public class TestPlayer : Player
+public class TestPlayer : RigidBody2D
 {
     public override void _PhysicsProcess(float delta)
     {
         base._PhysicsProcess(delta);
-
-        // GetNode<KinematicBody2D>("Up").MoveAndSlide(Vector2.Zero);
-        // GetNode<KinematicBody2D>("Left").MoveAndSlide(Vector2.Zero);
-        // GetNode<KinematicBody2D>("Right").MoveAndSlide(Vector2.Zero);
+        for (var i = 1; i < 4; i++)
+        {
+            // GetNode<Bone2D>("Skeleton2D/" + i.ToString()).GlobalPosition = GetNode<RigidBody2D>(i.ToString()).GlobalPosition;
+            // if (i > 0)
+            // {
+            //     GetNode<Bone2D>("Skeleton2D/" + i.ToString()).LookAt(GetNode<Node2D>("0").GlobalPosition);
+            // }
+        }
     }
 }
