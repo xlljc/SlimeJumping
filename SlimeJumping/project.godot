@@ -11,12 +11,16 @@ config_version=4
 [application]
 
 config/name="Slime Jumping"
-run/main_scene="res://test/scene/TestScene2.tscn"
+run/main_scene="res://scenes/TestScene2.tscn"
 config/icon="res://icon.png"
 
 [autoload]
 
 GameManager="res://src/mamager/GameManager.cs"
+
+[debug]
+
+shapes/collision/shape_color=Color( 1, 1, 1, 0.419608 )
 
 [display]
 
@@ -27,8 +31,8 @@ window/vsync/use_vsync=false
 
 [gui]
 
-theme/custom="res://res/ui/theme/mainTheme.tres"
-theme/custom_font="res://res/ui/font/cn_font_21.tres"
+theme/custom="res://resources/theme/mainTheme.tres"
+theme/custom_font="res://resources/font/cn_font_21.tres"
 
 [input]
 

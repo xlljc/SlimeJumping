@@ -1,33 +1,34 @@
+using System.Collections.Generic;
 using Godot;
 
-/// <summary>
-/// 史莱姆类
-/// </summary>
-public class Slime : Role
+public class Slime : RigidBody2D
 {
-    /// <summary>
-    /// 上骨架
-    /// </summary>
-    public SlimeSkeleton UpSkeleton;
-    /// <summary>
-    /// 下骨架
-    /// </summary>
-    public SlimeSkeleton DownSkeleton;
-    /// <summary>
-    /// 左骨架
-    /// </summary>
-    public SlimeSkeleton LeftSkeleton;
-    /// <summary>
-    /// 右骨架
-    /// </summary>
-    public SlimeSkeleton RightSkeleton;
+
+    public readonly List<KeyValuePair<Bone2D, RigidBody2D>> nodes = new List<KeyValuePair<Bone2D, RigidBody2D>>();
 
     public override void _EnterTree()
     {
-        //初始化骨架
-        UpSkeleton = GetNode<SlimeSkeleton>("Skeleton/Up");
-        DownSkeleton = GetNode<SlimeSkeleton>("Skeleton/Down");
-        LeftSkeleton = GetNode<SlimeSkeleton>("Skeleton/Left");
-        RightSkeleton = GetNode<SlimeSkeleton>("Skeleton/Right");
+        for (var i = 0; i <= 4; i++)
+        {
+            string index = i.ToString();
+            nodes.Add(new KeyValuePair<Bone2D, RigidBody2D>(
+                GetNode<Bone2D>("Skeleton2D/" + index),
+                i > 0 ? GetNode<RigidBody2D>(index) : null
+            ));
+        }
+    }
+
+    public override void _PhysicsProcess(float delta)
+    {
+        base._PhysicsProcess(delta);
+        foreach (var item in nodes)
+        {
+            if (item.Value == null) {
+                item.Key.GlobalPosition = GlobalPosition;
+            } else {
+                item.Key.GlobalPosition = item.Value.GlobalPosition;
+                item.Key.LookAt(GlobalPosition);
+            }
+        }
     }
 }

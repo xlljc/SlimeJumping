@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=2]
 
-[ext_resource path="res://res/ui/font/cn_font_35.tres" type="DynamicFont" id=1]
+[ext_resource path="res://resources/font/cn_font_35.tres" type="DynamicFont" id=1]
 
 [node name="ProjectManager" type="Panel"]
 anchor_right = 1.0

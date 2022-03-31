@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/round.png-7044768323c7ef0e9cf627f8b2c16e14.stex"
+path="res://.import/slime.png-84ff46610680b85d2516c37aae0ca5ff.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://res/art/image/round.png"
-dest_files=[ "res://.import/round.png-7044768323c7ef0e9cf627f8b2c16e14.stex" ]
+source_file="res://resources/sprite/role/player/slime.png"
+dest_files=[ "res://.import/slime.png-84ff46610680b85d2516c37aae0ca5ff.stex" ]
 
 [params]
 
@@ -31,5 +31,5 @@ process/invert_color=false
 process/normal_map_invert_y=false
 stream=false
 size_limit=0
-detect_3d=true
+detect_3d=false
 svg/scale=1.0
