@@ -1,6 +1,6 @@
 using Godot;
 
-public class Player : Role
+public class Player : KinematicBody2D, IRole<Player>
 {
 	/// <summary>
 	/// 移动速度
@@ -36,7 +36,7 @@ public class Player : Role
 	/// <summary>
 	/// 角色状态机控制器
 	/// </summary>
-	public new StateCtr<Player> StateCtr { get; }
+	public StateCtr<Player> StateCtr { get; }
 
 	/// <summary>
 	/// 运动控制器, 玩家的移动, 惯性计算交给该控制器

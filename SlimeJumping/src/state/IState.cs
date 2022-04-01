@@ -3,7 +3,7 @@ using Godot;
 /// <summary>
 /// 状态接口
 /// </summary>
-public interface IState<R> where R : Role
+public interface IState<T>
 {
     /// <summary>
     /// 当前状态对象对应的状态枚举类型
@@ -13,12 +13,12 @@ public interface IState<R> where R : Role
     /// <summary>
     /// 当前状态对象挂载的角色对象
     /// </summary>
-    R Role { get; set; }
+    T Role { get; set; }
 
     /// <summary>
     /// 当前状态对象所处的状态机对象
     /// </summary>
-    StateCtr<R> StateController { get; set; }
+    StateCtr<T> StateController { get; set; }
 
     /// <summary>
     /// 当从其他状态进入到当前状态时调用

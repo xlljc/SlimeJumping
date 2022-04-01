@@ -4,30 +4,30 @@ using System.Collections.Generic;
 /// <summary>
 /// 角色状态机控制器
 /// </summary>
-public class StateCtr<R> where R : Role
+public class StateCtr<T>
 {
     /// <summary>
     /// 绑定的角色
     /// </summary>
-    public R Role { get; }
+    public T Role { get; }
     
     /// <summary>
     /// 当前活跃的状态
     /// </summary>
-    public IState<R> CurrState => _currState;
-    private IState<R> _currState;
+    public IState<T> CurrState => _currState;
+    private IState<T> _currState;
     
     /// <summary>
     /// 负责存放状态实例对象
     /// </summary>
-    private readonly Dictionary<StateEnum, IState<R>> _states = new Dictionary<StateEnum, IState<R>>();
+    private readonly Dictionary<StateEnum, IState<T>> _states = new Dictionary<StateEnum, IState<T>>();
 
     /// <summary>
     /// 记录下当前帧是否有改变的状态
     /// </summary>
     private bool _isChangeState = false;
 
-    public StateCtr(R r)
+    public StateCtr(T r)
     {
         Role = r;
     }
@@ -53,7 +53,7 @@ public class StateCtr<R> where R : Role
     /// <summary>
     /// 往状态机力注册一个新的状态
     /// </summary>
-    public void Register(IState<R> state)
+    public void Register(IState<T> state)
     {
         if (GetStateInstance(state.StateType) != null)
         {
@@ -84,9 +84,9 @@ public class StateCtr<R> where R : Role
     /// <summary>
     /// 根据状态类型获取相应的状态对象
     /// </summary>
-    private IState<R> GetStateInstance(StateEnum stateType)
+    private IState<T> GetStateInstance(StateEnum stateType)
     {
-        _states.TryGetValue(stateType, out IState<R> v);
+        _states.TryGetValue(stateType, out IState<T> v);
         return v;
     }
 
