@@ -6,12 +6,12 @@ public class Player : KinematicBody2D, IRole<Player>
 	/// 移动速度
 	/// </summary>
 	[Export]
-	public float MoveSpeed = 300;
+	public float MoveSpeed = 1000;
 	/// <summary>
 	/// 跳跃瞬间速度
 	/// </summary>
 	[Export]
-	public float JumpSpeed = 550;
+	public float JumpSpeed = 500;
 	/// <summary>
 	/// 跳跃上升速度
 	/// </summary>
@@ -21,12 +21,12 @@ public class Player : KinematicBody2D, IRole<Player>
 	/// 冲刺初始速度
 	/// </summary>
 	[Export]
-	public float ImpactSpeed = 1500;
+	public float ImpactSpeed = 1100;
 	/// <summary>
 	/// 冲刺作用力有效时间
 	/// </summary>
 	[Export]
-	public float ImpactTime = 0.15f;
+	public float ImpactTime = 0.2f;
 	/// <summary>
 	/// 冲刺速率曲线
 	/// </summary>

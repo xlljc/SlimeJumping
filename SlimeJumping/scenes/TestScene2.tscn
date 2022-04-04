@@ -1,6 +1,8 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=5 format=2]
 
-[ext_resource path="res://prefab/role/slime/SlimeBody.tscn" type="PackedScene" id=1]
+[ext_resource path="res://prefab/role/slime/Player.tscn" type="PackedScene" id=1]
+[ext_resource path="res://src/role/player/Player.cs" type="Script" id=2]
+[ext_resource path="res://resources/curve/ImpactCurve.tres" type="Curve" id=3]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 469, 58.5 )
@@ -38,17 +40,10 @@ __meta__ = {
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Wall3"]
 shape = SubResource( 1 )
 
-[node name="Wall4" type="RigidBody2D" parent="."]
-position = Vector2( 200, -760 )
-rotation = 1.5708
-gravity_scale = 10.0
-__meta__ = {
-"_edit_group_": true
-}
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Wall4"]
-position = Vector2( 6.10352e-05, 8 )
-shape = SubResource( 1 )
-
 [node name="Player" parent="." instance=ExtResource( 1 )]
-position = Vector2( 248, 312 )
+position = Vector2( 416, 248 )
+script = ExtResource( 2 )
+MoveSpeed = 700.0
+JumpSpeed = 700.0
+ImpactSpeed = 1200.0
+ImpactCurve = ExtResource( 3 )
