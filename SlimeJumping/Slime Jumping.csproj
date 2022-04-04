@@ -7,21 +7,16 @@
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="res\**" />
-    <Compile Remove="src\jint\**" />
-    <EmbeddedResource Remove="res\**" />
-    <EmbeddedResource Remove="src\jint\**" />
-  </ItemGroup>
-  <!-- <ItemGroup>
-    <None Include="extend\**">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup> -->
-  <ItemGroup>
     <PackageReference Include="NVelocity" Version="1.2.0" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="src\jint\Jint.csproj" />
-  </ItemGroup>
+
+	<ItemGroup>
+	  <None Update="libpuerts.so">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="puerts.dll">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
 	
 </Project>

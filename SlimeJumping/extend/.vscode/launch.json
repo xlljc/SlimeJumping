@@ -2,12 +2,13 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Attach to Game",
-            "type": "node",
+            "type": "pwa-node",
+            "name": "attach Program",
             "request": "attach",
-            "protocol": "inspector",
-            "address": "localhost",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
             "port": 9222
-        }
+        },
     ]
 }
