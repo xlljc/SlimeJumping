@@ -23,7 +23,7 @@ public class GameManager : Node
         }
         _inited = true;
 
-        PuertsScriptManager.Init(9222);
+        PuertsScriptManager.Init(DebugFlag.Enable, 9223);
 
         string currDir = System.Environment.CurrentDirectory;
         // ScriptManager.Out = new GodotLog();

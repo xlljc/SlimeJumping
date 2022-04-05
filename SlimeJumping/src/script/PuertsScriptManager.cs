@@ -4,6 +4,13 @@ using System.Net;
 using System.IO;
 using Puerts;
 
+public enum DebugFlag
+{
+    Disable,
+    Enable,
+    AwaitConnection,
+}
+
 public static class PuertsScriptManager
 {
 
@@ -14,13 +21,13 @@ public static class PuertsScriptManager
     public static string LoadPath { get; private set; }
 
     private static bool _init = false;
-    private static Action<string, string[]> __readyRegisterModule__;
+    private static Action<string> __readyRegisterModule__;
     private static Action __overRegisterModule__;
     private static Action<string> __moduleExecute__;
     private static Action<object> __process__;
     private static Action<object> __physicsProcess__;
 
-    public static void Init(int debugPort = -1)
+    public static void Init(DebugFlag debugFlag = DebugFlag.Disable, int port = 9222)
     {
         if (_init) return;
         _init = true;
@@ -28,25 +35,39 @@ public static class PuertsScriptManager
         string currDir = System.Environment.CurrentDirectory;
         LoadPath = (currDir + @"\extend\mods").Replace("/", "\\");
 
-        JsService = new JsEnv(new DefaultLoader(), debugPort);
+        if (debugFlag == DebugFlag.Enable)
+        {
+            JsService = new JsEnv(new DefaultLoader(), port);
+        }
+        else if (debugFlag == DebugFlag.AwaitConnection)
+        {
+            JsService = new JsEnv(new DefaultLoader(), port);
+            JsService.WaitDebugger();
+        }
+        else
+        {
+            JsService = new JsEnv(new DefaultLoader());
+        }
 
         //log输出
-        JsService.Eval(code2);
+        string logPath = LoadPath + "/runtime/init/log.js";
+        JsService.Eval(File.ReadAllText(logPath));
         //SystenJs模块化准备阶段代码
-        JsService.Eval(code1);
+        string modulePath = LoadPath + "/runtime/init/module.js";
+        JsService.Eval(File.ReadAllText(modulePath));
 
         //注册模块函数
-        __readyRegisterModule__ = JsService.Eval<Action<string, string[]>>("__readyRegisterModule__");
+        __readyRegisterModule__ = JsService.Eval<Action<string>>("__readyRegisterModule__");
         __overRegisterModule__ = JsService.Eval<Action>("__overRegisterModule__");
         //执行模块函数
         __moduleExecute__ = JsService.Eval<Action<string>>("__module__.execute");
 
         //扫描并加载所有runtime下面的js文件
-        LoadAllJs(new DirectoryInfo(LoadPath + "\\runtime\\bin"), "runtime/bin", new string[0]);
+        LoadModule("runtime");
         //执行runtime
-        ExecuteModule("runtime/bin/index");
-        __process__ = JsService.Eval<Action<object>>("__module__.getModule('runtime/bin/index').Process");
-        __physicsProcess__ = JsService.Eval<Action<object>>("__module__.getModule('runtime/bin/index').PhysicsProcess");
+        ExecuteModule("runtime");
+        __process__ = JsService.Eval<Action<object>>("__module__.getModule('runtime/index').Process");
+        __physicsProcess__ = JsService.Eval<Action<object>>("__module__.getModule('runtime/index').PhysicsProcess");
     }
 
     public static void Process(float delta)
@@ -65,25 +86,9 @@ public static class PuertsScriptManager
     /// 加载模块
     /// </summary>
     /// <param name="path">模块路径</param>
-    /// <param name="lib">依赖的其他模块</param>
-    public static void LoadModule(string path, string[] lib = null)
+    public static void LoadModule(string path)
     {
-        //默认加载runtime
-        string[] lib2;
-        if (lib is null)
-        {
-            lib2 = new string[] { "runtime" };
-        }
-        else
-        {
-            lib2 = new string[lib.Length + 1];
-            for (var i = 0; i <= lib.Length; ++i)
-            {
-                lib2[i] = lib[i];
-            }
-            lib2[lib2.Length - 1] = "runtime";
-        }
-        LoadAllJs(new DirectoryInfo(LoadPath + "\\" + path), path, lib2);
+        LoadAllJs(new DirectoryInfo(LoadPath + "\\" + path + "\\bin"), path);
     }
 
     /// <summary>
@@ -91,25 +96,9 @@ public static class PuertsScriptManager
     /// </summary>
     /// <param name="directory">项目的绝对路径</param>
     /// <param name="path">模块路径</param>
-    /// <param name="lib">依赖的其他模块</param>
-    public static void LoadDevelopModule(string directory, string path, string[] lib = null)
+    public static void LoadDevelopModule(string directory, string path)
     {
-        //默认加载runtime
-        string[] lib2;
-        if (lib is null)
-        {
-            lib2 = new string[] { "runtime" };
-        }
-        else
-        {
-            lib2 = new string[lib.Length + 1];
-            for (var i = 0; i <= lib.Length; ++i)
-            {
-                lib2[i] = lib[i];
-            }
-            lib2[lib2.Length - 1] = "runtime";
-        }
-        LoadAllJs(new DirectoryInfo(directory + "\\" + path), path, lib2);
+        LoadAllJs(new DirectoryInfo(directory + "\\" + path + "\\bin"), path);
     }
 
     /// <summary>
@@ -121,7 +110,7 @@ public static class PuertsScriptManager
         __moduleExecute__(path);
     }
 
-    private static void LoadAllJs(DirectoryInfo root, string parent, string[] lib)
+    private static void LoadAllJs(DirectoryInfo root, string parent)
     {
         DirectoryInfo[] dirs = root.GetDirectories();
         FileInfo[] files = root.GetFiles();
@@ -140,20 +129,20 @@ public static class PuertsScriptManager
                 sr.Close();
                 fileStream.Close();
                 //注册模块
-                RegisterModule(file.FullName, folder, code, lib);
+                RegisterModule(file.FullName, folder, code);
             }
         }
 
         foreach (var dir in dirs)
         {
             string moduleName = parent is null ? dir.Name : parent + "/" + dir.Name;
-            LoadAllJs(dir, moduleName, lib);
+            LoadAllJs(dir, moduleName);
         }
     }
 
-    private static void RegisterModule(string fullPath, string folder, string code, string[] lib)
+    private static void RegisterModule(string fullPath, string folder, string code)
     {
-        __readyRegisterModule__(folder, lib);
+        __readyRegisterModule__(folder);
         JsService.Eval(code, fullPath);
         __overRegisterModule__();
     }
@@ -167,135 +156,4 @@ public static class PuertsScriptManager
         }
         return name;
     }
-
-    private const string code1 = @"
-globalThis.__module__ = globalThis.__module__ || (() => {
-    /**
-     * {
-     *      inited: boolean
-	 *      exports: {},
-     *      execute?: function,
-     * }
-     */
-    const modules = {};
-
-    function addObject(path, name, obj) {
-		let module = modules[path];
-		if (module == null) {
-			module = {
-				inited: true,
-				exports: {},
-			};
-			modules[path] = module;
-		}
-		module.exports[name] = obj;
-	}
-    function execute(path) {
-		let module = modules[path];
-		if (module && !module.inited) {
-			module.inited = true;
-			module.execute();
-		}
-	}
-	function getModule(path) {
-		let module = modules[path];
-		if (module) {
-			if (!module.inited) {
-				module.inited = true;
-				module.execute();
-			}
-			return module.exports;
-		}
-		return undefined;
-	}
-	function getPath(folder, path) {
-		let nodes = folder.split('/');
-		let node2s = path.split('/');
-		for (let node of node2s) {
-			switch (node) {
-				case '.': break;
-				case '..':
-					nodes.pop();
-					break;
-				default: nodes.push(node);
-			}
-		}
-		return nodes.join('/');
-	}
-    return {
-        modules,
-        addObject,
-        getModule,
-        getPath,
-        execute,
-    }
-})();
-
-globalThis.System = globalThis.System || {};
-
-function __readyRegisterModule__(folder, lib) {
-	System.register = (moduleName, imps, callback) => {
-		let path = (folder == null ? '' : folder + '/') + moduleName;
-		//console.log(`注册模块, folder: ${folder}, moduleName: ${moduleName}, path: ${path}`);
-		if (path in __module__.modules) {
-			throw new Error('发现注册重复的模块: ' + path);
-		}
-		if (!lib) {
-			lib = [];
-		}
-		let module = {
-			inited: false,
-			execute: () => {
-				let data = callback((n, v) => module.exports[n] = v);
-				let setters = data.setters;
-				for (let i = 0; i < imps.length; i++) {
-					let imp = imps[i];
-					let module = __module__.getModule(folder + '/' + imp);
-					if (module === undefined) {
-						for (let l of lib) {
-							module = __module__.getModule(l + '/bin/' + imp);
-							if (module !== undefined) break;
-						}
-					}
-					setters[i](module);
-				}
-				data.execute();
-			},
-			exports: {},
-		};
-		__module__.modules[path] = module;
-	}
-}
-function __overRegisterModule__() {
-    delete System.register;
-}
-";
-
-    private const string code2 = @"
-(() => {
-	function toString(args) {
-		return Array.prototype.map.call(args, x => {
-			try {
-				return x+'';
-            } catch (err) {
-				return err;
-            }
-        }).join(',');
-    }
-	let gd = __tgjsLoadType('Godot.GD');
-    globalThis.console = {};
-    console.log = function() {
-        gd.Print(toString(arguments));
-    }
-    console.info = function() {
-        gd.Print(toString(arguments));
-    }
-    console.warn = function() {
-        gd.Print(toString(arguments));
-    }
-    console.error = function() {
-        gd.PrintErr(toString(arguments));
-    }
-})();
-";
 }
