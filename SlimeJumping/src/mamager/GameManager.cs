@@ -23,25 +23,13 @@ public class GameManager : Node
         }
         _inited = true;
 
-        PuertsScriptManager.Init(DebugFlag.Enable, 9223);
+        PuertsScriptManager.Init(DebugFlag.Disable, 9223);
+        PuertsScriptManager.GeneratesTsCode();
+    }
 
-        string currDir = System.Environment.CurrentDirectory;
-        // ScriptManager.Out = new GodotLog();
-        // ScriptManager.SearchPath = (currDir + @"\extend\mods").Replace("/", "\\");
-
-        // JsService = new JintScriptService();
-        // ScriptManager.RegisterAndWriteTs(JsService, currDir + @"\extend\template\tsDefined\tsDefined.d.ts.vm", currDir + @"\extend\mods\native\native.d.ts", (s) => 
-        // {
-        //     //模块化 初始化
-        //     SystemJS.InitModule();
-        //     //注入C#类
-        //     s.ScanJsClass(typeof(GameManager).Assembly);
-        // });
-
-        // //加载开发模块
-        // SystemJS.LoadDevelopModule((System.Environment.CurrentDirectory + @"\..\"), "mod-test/bin");
-        // //运行模块
-        // SystemJS.ExecuteModule("mod-test/bin/index");
+    public override void _EnterTree()
+    {
+        Init();
     }
 
     public override void _Process(float delta)
@@ -56,10 +44,5 @@ public class GameManager : Node
         //更新物理帧输入事件
         InputManager.PhysicsUpdate(delta);
         PuertsScriptManager.PhysicsProcess(delta);
-    }
-
-    public GameManager()
-    {
-        Init();
     }
 }

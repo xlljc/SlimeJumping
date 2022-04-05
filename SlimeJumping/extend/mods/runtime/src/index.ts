@@ -1,4 +1,5 @@
-import { a } from "./Test";
+
+console.log("init runtime!");
 
 export function Process(delta: float) {
 

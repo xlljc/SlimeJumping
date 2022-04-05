@@ -4,66 +4,56 @@
 
 type CsArray<T> = T[];
 
+interface Console {
+    error(...data: any[]): void;
+    info(...data: any[]): void;
+    log(...data: any[]): void;
+    warn(...data: any[]): void;
+}
+declare var console: Console;
 
 
-declare namespace globalThis {
-    function CallSay(obj: testA): void;
-}
-declare namespace globalThis {
-    function Test(o: any): void;
-}
+
 
 
 declare namespace globalThis {
-    interface GodotLog extends JsService.ILog {
-       log(...args: any[]): void;
-       error(...args: any[]): void;
-       warn(...args: any[]): void;
+    interface CsTest {
+        say(): void;
     }
-    interface GodotLogConstructor {
-        new(): GodotLog;
+    interface CsTestConstructor {
+        new(): CsTest;
     }
-    interface GodotLogStatic extends JsService.ILogStatic {
+    interface CsTestStatic {
+        a: string;
+        StaticSay(): void;
     }
+    var CsTest: CsTestConstructor & CsTestStatic;
 }
 declare namespace globalThis {
-    var console: GodotLog;
-}
-declare namespace JsService {
-    interface ILog {
-       log(...args: any[]): void;
-       error(...args: any[]): void;
-       warn(...args: any[]): void;
+    interface PuertsScriptManager {
     }
-    interface ILogConstructor {
+    interface PuertsScriptManagerConstructor {
     }
-    interface ILogStatic {
+    interface PuertsScriptManagerStatic {
+        readonly ExtensionName: string;
+        get JsService(): Puerts.JsEnv;
+        get LoadPath(): string;
+        Test(t: CsTest): void;
+        Init(debugFlag?: DebugFlag, port?: int): void;
+        AddHostInstance(obj: JsService.HostInstance): void;
+        AddHostInstanceToModule(path: string, obj: JsService.HostInstance): void;
+        AddHostType(type: JsService.HostType): void;
+        AddHostTypeToModule(path: string, type: JsService.HostType): void;
+        Alias(type: System.Type, name: string): void;
+        GeneratesTsCode(): void;
+        Process(delta: float): void;
+        PhysicsProcess(delta: float): void;
+        LoadModule(path: string): void;
+        LoadDevelopModule(directory: string, path: string): void;
+        ExecuteModule(path: string): void;
+        ExecuteFile(path: string): void;
     }
-}
-declare namespace globalThis {
-    interface testA {
-        a: int;
-       Say(): void;
-       SayArr(arr: CsArray<float>): void;
-    }
-    interface testAConstructor {
-        new(a: int): testA;
-    }
-    interface testAStatic {
-    }
-    var testA: testAConstructor & testAStatic;
-}
-declare namespace globalThis {
-    interface TestJs {
-    }
-    interface TestJsConstructor {
-        new(): TestJs;
-    }
-    interface TestJsStatic {
-        CallSay(obj: testA): void;
-        Test(o: any): void;
-    }
-    var TestJs: TestJsConstructor & TestJsStatic;
+    var PuertsScriptManager: PuertsScriptManagerConstructor & PuertsScriptManagerStatic;
 }
 
 declare namespace globalThis {
@@ -99,3 +89,18 @@ declare namespace globalThis {
     var boolean: never;
 }
 
+declare namespace Puerts {
+    type JsEnv = any;
+}
+declare namespace globalThis {
+    type DebugFlag = any;
+}
+declare namespace JsService {
+    type HostInstance = any;
+}
+declare namespace JsService {
+    type HostType = any;
+}
+declare namespace System {
+    type Type = any;
+}

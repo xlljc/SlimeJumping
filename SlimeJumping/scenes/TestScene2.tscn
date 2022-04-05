@@ -10,6 +10,7 @@ extents = Vector2( 469, 58.5 )
 [node name="TestScene2" type="Node2D"]
 
 [node name="Wall" type="RigidBody2D" parent="."]
+visible = false
 position = Vector2( 496, 1008 )
 mode = 1
 __meta__ = {
@@ -20,6 +21,7 @@ __meta__ = {
 shape = SubResource( 1 )
 
 [node name="Wall2" type="RigidBody2D" parent="."]
+visible = false
 position = Vector2( 448, 896 )
 mode = 1
 __meta__ = {
@@ -30,6 +32,7 @@ __meta__ = {
 shape = SubResource( 1 )
 
 [node name="Wall3" type="RigidBody2D" parent="."]
+visible = false
 position = Vector2( 1016, 1016 )
 rotation = 1.5708
 mode = 1
@@ -41,6 +44,7 @@ __meta__ = {
 shape = SubResource( 1 )
 
 [node name="Player" parent="." instance=ExtResource( 1 )]
+visible = false
 position = Vector2( 416, 248 )
 script = ExtResource( 2 )
 MoveSpeed = 700.0

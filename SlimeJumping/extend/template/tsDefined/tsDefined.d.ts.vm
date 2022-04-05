@@ -4,12 +4,20 @@
 
 type CsArray<T> = T[];
 
+interface Console {
+    error(...data: any[]): void;
+    info(...data: any[]): void;
+    log(...data: any[]): void;
+    warn(...data: any[]): void;
+}
+declare var console: Console;
+
 ## Parameter list, list: collection of parameter objects
 #macro(param list)
 #foreach($i in $list)
 #if($velocityCount > 1), #end
 #if($i.IsParams)...#end
-#if($i.Name == 'function' || $i.Name == 'export')_#end
+#if($i.Name == 'function' || $i.Name == 'export' || $i.Name == 'class')_#end
 ${i.Name}#if($i.HasDefaultValue)?#end
 : ${i.Type.GetFormatString($i.IsParams)}#end
 #end
@@ -160,7 +168,7 @@ ${nspTab}    set ${property.Name}(v: ${property.Type.GetFormatString()});
 #if(!$method.IsStatic)
 #set($ps = $method.Params)
 #if(!$method.GenericTypes)
-${nspTab}   ${method.Name}(${method.GetGenericParamString()}#param($ps)): ${method.ReturnType.GetFormatString()};
+${nspTab}    ${method.Name}(${method.GetGenericParamString()}#param($ps)): ${method.ReturnType.GetFormatString()};
 #end
 #end
 #end
