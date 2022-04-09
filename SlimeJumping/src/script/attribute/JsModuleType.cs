@@ -3,7 +3,7 @@ using System;
 namespace JsService
 {
     /// <summary>
-    /// 用作类型上面, 表示当前类型需要被注入到 js 的 System 模块中, 如果 js 环境中未初始化 System 模块, 则报错
+    /// 用在类上面, 表示当前类型需要被注入到 js 的 System 模块中, 如果 js 环境中未初始化 System 模块, 则报错
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface | AttributeTargets.Enum | AttributeTargets.Delegate)]
     public class JsModuleType : Attribute

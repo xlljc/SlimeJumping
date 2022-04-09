@@ -25,18 +25,6 @@ public enum DebugFlag
     AwaitConnection,
 }
 
-[JsType("CsTest")]
-public class Test
-{
-    public static string a = "111";
-    public void say(string[] arr)
-    {
-        Godot.GD.Print("2222222");
-    }
-    public static void StaticSay() {
-
-    }
-}
 public static class PuertsScriptManager
 {
 
@@ -66,11 +54,17 @@ public static class PuertsScriptManager
     private static Action<object> __process__;
     //物理帧回调函数
     private static Action<object> __physicsProcess__;
+    //注册主机类型
     private static Action<string, string> __registerHostType__;
+    //注册主机类型到模块
     private static Action<string, string, string> __registerHostTypeToModule__;
+    //注册主机实例
     private static Action<object, string> __registerHostInstance__;
+    //注册主机实例到模块
     private static Action<object, string, string> __registerHostInstanceToModule__;
+    //注册主机函数
     private static Action<string, string, string> __registerHostFunction__;
+    //注册数据函数到模块
     private static Action<string, string, string, string> __registerHostFunctionToModule__;
     //代码生成类
     private static readonly GeneratesTs gt = new GeneratesTs();
@@ -107,6 +101,8 @@ public static class PuertsScriptManager
         ExecuteFile("runtime/init/host");
         //log输出
         ExecuteFile("runtime/init/log");
+        //数组转换
+        ExecuteFile("runtime/init/array");
 
         //注册模块函数
         __readyRegisterModule__ = JsService.Eval<Action<string>>("__module__.readyRegisterModule");
@@ -133,6 +129,8 @@ public static class PuertsScriptManager
         AddHostType(new HostType("boolean", typeof(bool), "boolean"));
         AddHostType(new HostType("void", typeof(void), "void"));
         AddHostType(new HostType("CsArray", typeof(System.Array), "CsArray"));
+        //数组转换
+        ExecuteFile("runtime/init/array");
 
         //扫描注册主机对象
         ScanJsClass(typeof(PuertsScriptManager).Assembly);
@@ -350,15 +348,11 @@ public static class PuertsScriptManager
     private static void ScanJsClass(Assembly assembly)
     {
         var types = assembly.GetTypes();
-        var jsType = typeof(JsType);
-        var jsModuleType = typeof(JsModuleType);
-        var jsFunction = typeof(JsFunction);
-        var jsModuleFunction = typeof(JsModuleFunction);
         foreach (var type in types)
         {
             //注入类
             Attribute attribute;
-            if ((attribute = Attribute.GetCustomAttribute(type, jsType, false)) != null)
+            if ((attribute = Attribute.GetCustomAttribute(type, typeof(JsType), false)) != null)
             {
                 var att = (JsType)attribute;
                 if (att.Generics.Length > 0)
@@ -371,7 +365,7 @@ public static class PuertsScriptManager
                     AddHostType(new HostType(att.FullPath, type));
                 }
             }
-            else if ((attribute = Attribute.GetCustomAttribute(type, jsModuleType, false)) != null)
+            else if ((attribute = Attribute.GetCustomAttribute(type, typeof(JsModuleType), false)) != null)
             {
                 var att = (JsModuleType)attribute;
                 if (att.Generics.Length > 0)
@@ -384,17 +378,37 @@ public static class PuertsScriptManager
                     AddHostTypeToModule(att.Path, new HostType(att.Name, type));
                 }
             }
-            //注入方法
-            MethodInfo[] methods = type.GetMethods(BindingFlags.Public | BindingFlags.Static);
+            //注入实例
+            if ((attribute = Attribute.GetCustomAttribute(type, typeof(JsInstance), false)) != null)
+            {
+                var att = (JsInstance)attribute;
+                object inst = Activator.CreateInstance(type);
+                AddHostInstance(new HostInstance(att.FullPath, inst));
+            }
+            else if ((attribute = Attribute.GetCustomAttribute(type, typeof(JsModuleInstance), false)) != null)
+            {
+                var att = (JsModuleInstance)attribute;
+                object inst = Activator.CreateInstance(type);
+                AddHostInstanceToModule(att.Path, new HostInstance(att.Name, inst));
+            }
+
+            MethodInfo[] methods = type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
             foreach (var method in methods)
             {
                 Attribute mAttribute;
-                if ((mAttribute = Attribute.GetCustomAttribute(method, jsFunction, false)) != null)
+                //自定义注册函数
+                if ((mAttribute = Attribute.GetCustomAttribute(method, typeof(JsRegister), false)) != null)
+                {
+                    method.Invoke(null, new object[0]);
+                }
+                if (!method.IsPublic) continue;
+                //注入函数 (允许有多个)
+                if ((mAttribute = Attribute.GetCustomAttribute(method, typeof(JsFunction), false)) != null)
                 {
                     var att = (JsFunction)mAttribute;
                     AddHostFunction(new HostFunction(att.FullPath, method));
                 }
-                if ((mAttribute = Attribute.GetCustomAttribute(method, jsModuleFunction, false)) != null)
+                if ((mAttribute = Attribute.GetCustomAttribute(method, typeof(JsModuleFunction), false)) != null)
                 {
                     var att = (JsModuleFunction)mAttribute;
                     AddHostFunctionToModule(att.Path, new HostFunction(att.Name, method));
@@ -402,18 +416,4 @@ public static class PuertsScriptManager
             }
         }
     }
-
-    // private static Delegate CreateDelegate(MethodInfo method)
-    // {
-    //     Type delegateType;
-    //     var typeArgs = method.GetParameters()
-    //             .Select(p => p.ParameterType)
-    //             .ToList();
-
-    //     typeArgs.Add(method.ReturnType);
-    //     delegateType = Expression.GetDelegateType(typeArgs.ToArray());
-
-    //     var result = Delegate.CreateDelegate(delegateType, method);
-    //     return result;
-    // }
 }

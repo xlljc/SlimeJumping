@@ -70,7 +70,7 @@ namespace JsService.generate
                 if (!field.Name.EndsWith("k__BackingField"))
                 {
                     //不是被排除
-                    if (Attribute.GetCustomAttribute(field, typeof(IgnoreGenerate), false) == null)
+                    if (Attribute.GetCustomAttribute(field, typeof(JsIgnore), false) == null)
                     {
                         Fields.Add(new FieldDeclare(this, field));
                     }
@@ -81,7 +81,7 @@ namespace JsService.generate
             foreach (var property in propertys)
             {
                 //不是被排除
-                if (Attribute.GetCustomAttribute(property, typeof(IgnoreGenerate), false) == null)
+                if (Attribute.GetCustomAttribute(property, typeof(JsIgnore), false) == null)
                 {
                     if (property.CanRead && property.GetMethod.IsPublic)
                     {
@@ -98,7 +98,7 @@ namespace JsService.generate
             foreach (var constructor in constructors)
             {
                 //不是被排除
-                if (Attribute.GetCustomAttribute(constructor, typeof(IgnoreGenerate), false) == null)
+                if (Attribute.GetCustomAttribute(constructor, typeof(JsIgnore), false) == null)
                 {
                     ConstructorDeclare data = new ConstructorDeclare(this, constructor);
                     data.Name = tsFullName;
@@ -112,7 +112,7 @@ namespace JsService.generate
                 if (method.Name != "GetType" && method.Name != "ToString" && method.Name != "Equals" && method.Name != "GetHashCode")
                 {
                     //不是被排除
-                    if (Attribute.GetCustomAttribute(method, typeof(IgnoreGenerate), false) == null)
+                    if (Attribute.GetCustomAttribute(method, typeof(JsIgnore), false) == null)
                     {
                         Methods.Add(new MethodDeclare(this, method));
                     }
