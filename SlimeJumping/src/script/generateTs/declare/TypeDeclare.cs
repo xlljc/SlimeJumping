@@ -152,6 +152,14 @@ namespace JsService.generate
         }
 
         /// <summary>
+        /// 注册占位对象
+        /// </summary>
+        public static void RegisterPlaceholder(string module, string tsFullName)
+        {
+            new TsType(module, tsFullName).IsDetails = true;
+        }
+
+        /// <summary>
         /// 注册并返回类型, 如果已经存在, 就返回存在的对象
         /// </summary>
         public static TypeDeclare Register(Type type, string tsFullName = null)

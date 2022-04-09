@@ -4,9 +4,9 @@ using System;
 namespace JsService
 {
     /// <summary>
-    /// 主机实例
+    /// 主机函数
     /// </summary>
-    public class HostInstance
+    public class HostFunction
     {
         /// <summary>
         /// 脚本中的对象名
@@ -14,9 +14,9 @@ namespace JsService
         public string Name { get; set; }
 
         /// <summary>
-        /// 脚本中的对象
+        /// 脚本中的函数对象
         /// </summary>
-        public object Obj { get; set; }
+        public MethodInfo MethodInfo { get; set; }
 
         /// <summary>
         /// 是否生成对应的 d.ts 代码
@@ -29,28 +29,28 @@ namespace JsService
         public Type Type { get; set; }
 
         /// <summary>
-        /// 注入到 js 引擎的实例对象
+        /// 注入到 js 引擎的函数对象
         /// </summary>
         /// <param name="name">全路径名</param>
-        /// <param name="obj">注入的实例对象</param>
+        /// <param name="methodInfo">注入的函数对象</param>
         /// <param name="isWriteTs">是否生成对应的ts代码</param>
-        public HostInstance(string name, object obj, bool isWriteTs = true)
+        public HostFunction(string name, MethodInfo methodInfo, bool isWriteTs = true)
         {
             Name = name;
-            Obj = obj;
+            MethodInfo = methodInfo;
             IsWriteTs = isWriteTs;
         }
 
         /// <summary>
-        /// 注入到 js 引擎的实例对象
+        /// 注入到 js 引擎的函数对象
         /// </summary>
         /// <param name="name">全路径名</param>
-        /// <param name="obj">注入的实例对象</param>
+        /// <param name="methodInfo">注入的函数对象</param>
         /// <param name="type">使用指定的类型替换掉生成的ts代码</param>
-        public HostInstance(string name, object obj, Type type)
+        public HostFunction(string name, MethodInfo methodInfo, Type type)
         {
             Name = name;
-            Obj = obj;
+            MethodInfo = methodInfo;
             Type = type;
             IsWriteTs = true;
         }

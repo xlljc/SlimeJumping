@@ -26,57 +26,16 @@ ${i.Name}#if($i.HasDefaultValue)?#end
 ## Write a function
 #foreach($item in $func)
 #set($ps = $item.Params)
-#set($t = $item.TypeDeclare.RefType)
 #set($nspTab = '')
-#if($t.TsNamespace != '' || $t.Module != '')#set($nspTab = '    ')#end
-#if($t.Module != '')
-declare module '${t.Module}' {
-#elseif($t.TsNamespace != '')
-declare namespace ${t.TsNamespace} {
+#if($item.TsNamespace != '' || $item.Module != '')#set($nspTab = '    ')#end
+#if($item.Module != '')
+declare module '${item.Module}' {
+#elseif($item.TsNamespace != '')
+declare namespace ${item.TsNamespace} {
 #end
-${nspTab}#if($t.Module == '' && $t.TsNamespace == '')declare #end
-type ${t.TsName} = (#param($ps)) => ${item.ReturnType.GetFormatString()};
-#if($item.CanInstance)
-${nspTab}#if($t.Module == '' && $t.TsNamespace == '')declare #end
-var ${t.TsName}: never;
-#end
-#if($t.TsNamespace != '' || $t.Module != '')
-}
-#end
-########################
-## The function instance
-#foreach($inst in $item.InstanceList)
-#set($it = $inst.TsType)
-#set($nspTab = '')
-#if($it.TsNamespace != '' || $it.Module != '')#set($nspTab = '    ')#end
-#if($it.Module != '')
-declare module '${it.Module}' {
-#elseif($it.TsNamespace != '')
-declare namespace ${it.TsNamespace} {
-#end
-${nspTab}#if($it.Module == '' && $it.TsNamespace == '')declare #end
-function ${inst.GetFormatString()}(#param($ps)): ${item.ReturnType.GetFormatString()};
-#if($it.TsNamespace != '' || $it.Module != '')
-}
-#end
-#end
-#end
-
-## ----------------------------------------
-## Dynamic function
-#foreach($inst in $dynamicFunc)
-#set($it = $inst.TsType)
-#set($ps = $inst.FunctionDeclare.Params)
-#set($nspTab = '')
-#if($it.TsNamespace != '' || $it.Module != '')#set($nspTab = '    ')#end
-#if($it.Module != '')
-declare module '${it.Module}' {
-#elseif($it.TsNamespace != '')
-declare namespace ${it.TsNamespace} {
-#end
-${nspTab}#if($it.Module == '' && $it.TsNamespace == '')declare #end
-function ${inst.GetFormatString()}(#param($ps)): ${inst.FunctionDeclare.ReturnType.GetFormatString()};
-#if($it.TsNamespace != '' || $it.Module != '')
+${nspTab}#if($item.Module == '' && $item.TsNamespace == '')declare #end
+function ${item.TsName}(#param($ps)): ${item.ReturnType.GetFormatString()};
+#if($item.TsNamespace != '' || $item.Module != '')
 }
 #end
 #end

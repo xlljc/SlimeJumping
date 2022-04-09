@@ -3,3 +3,4 @@ declare module "index" {
         static main(): void;
     }
 }
+//# sourceMappingURL=index.d.ts.map

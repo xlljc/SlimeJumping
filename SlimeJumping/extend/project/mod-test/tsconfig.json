@@ -1,17 +1,19 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es6",
     "module": "System",
     "lib": ["ES5", "ES2015", "ES6"],
     "outDir": "./bin",
     "outFile": "./bin/index.js",
     "rootDir": "./src",
     "declaration": true,
+    "declarationMap": true,
     "strict": true,
     "strictNullChecks": false,
     "noImplicitAny": false,
     "skipLibCheck": true,
-    "types": ["../SlimeJumping/extend/mods/native/native", "../SlimeJumping/extend/mods/runtime/bin/index"],
+    "inlineSourceMap": true,
+    "sourceRoot": "../src",
     "typeRoots": ["@types"],
     "experimentalDecorators": true,
   }

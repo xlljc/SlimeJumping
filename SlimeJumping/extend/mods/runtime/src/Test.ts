@@ -1,3 +1,4 @@
-export function a() {
-    return 1 + 1;
+
+export function Test1() {
+    //TestFunc(new CsTest());
 }

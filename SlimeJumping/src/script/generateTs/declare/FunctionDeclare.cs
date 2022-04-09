@@ -14,40 +14,28 @@ namespace JsService.generate
         // 返回值类型
         public TypeDeclare ReturnType { get; set; } = TypeDeclare.Void;
 
-        public Type FuncType { get; }
+        // ts 模块名
+        public string Module { get; set; } = "";
+
+        // ts 名称
+        public string TsName { get; set; }
+
+        // ts 命名空间
+        public string TsNamespace { get; set; }
 
         // 方法类型对象
         public MethodInfo MethodInfo { get; }
 
-        // 定义类型
-        public TypeDeclare TypeDeclare { get; }
-
-        //
-        public bool CanInstance { get; set; }
-
-        // 实例集合
-        public List<InstanceDeclare> InstanceList { get; } = new List<InstanceDeclare>();
-
-        public FunctionDeclare(Type type, string name)
-        {
-            MethodInfo = type.GetMethod("Invoke");
-            Name = name;
-            ReturnType = TypeDeclare.Register(MethodInfo.ReturnType, null, this, true);
-            ParameterInfo[] parameterInfos = MethodInfo.GetParameters();
-            foreach (var parameterInfo in parameterInfos)
-            {
-                Params.Add(new ParamDecType(this, parameterInfo));
-            }
-            //注册类型
-            TypeDeclare = TypeDeclare.Register(type, name);
-        }
-
-        public FunctionDeclare(MethodInfo methodInfo, string name)
+        public FunctionDeclare(MethodInfo methodInfo, string module, string name)
         {
             MethodInfo = methodInfo;
             Name = name;
-            //ReturnType = TypeDeclare.Register(MethodInfo.ReturnType, null, this, true);
-            //如果是指定类型
+            if (module != null)
+            {
+                Module = module;
+            }
+            TsName = TypeDeclare.GetName(name);
+            TsNamespace = TypeDeclare.GetNamespace(name);
             Attribute attribute;
             if ((attribute = Attribute.GetCustomAttribute(methodInfo, typeof(JsReturnType), false)) != null)
             {
@@ -70,6 +58,7 @@ namespace JsService.generate
             {
                 Params.Add(new ParamDecType(this, parameterInfo));
             }
+            TypeDeclare.RegisterPlaceholder(module, name);
         }
     }
 }

@@ -1,6 +1,3 @@
-using System.Diagnostics;
-using System.Linq.Expressions;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 using System;
@@ -28,20 +25,18 @@ public enum DebugFlag
     AwaitConnection,
 }
 
-[JsService.JsType("CsTest")]
+[JsType("CsTest")]
 public class Test
 {
     public static string a = "111";
-    public void say()
+    public void say(string[] arr)
     {
-        //Godot.GD.Print("2222222");
+        Godot.GD.Print("2222222");
     }
     public static void StaticSay() {
 
     }
 }
-
-[JsService.JsType("PuertsScriptManager")]
 public static class PuertsScriptManager
 {
 
@@ -75,12 +70,10 @@ public static class PuertsScriptManager
     private static Action<string, string, string> __registerHostTypeToModule__;
     private static Action<object, string> __registerHostInstance__;
     private static Action<object, string, string> __registerHostInstanceToModule__;
+    private static Action<string, string, string> __registerHostFunction__;
+    private static Action<string, string, string, string> __registerHostFunctionToModule__;
     //代码生成类
     private static readonly GeneratesTs gt = new GeneratesTs();
-    
-    public static void Test(Test t) {
-        t.say();
-    }
 
     /// <summary>
     /// 运行js引擎, 并加载基本的runtime环境
@@ -125,6 +118,8 @@ public static class PuertsScriptManager
         __registerHostTypeToModule__ = JsService.Eval<Action<string, string, string>>("__host__.registerHostTypeToModule");
         __registerHostInstance__ = JsService.Eval<Action<object, string>>("__host__.registerHostInstance");
         __registerHostInstanceToModule__ = JsService.Eval<Action<object, string, string>>("__host__.registerHostInstanceToModule");
+        __registerHostFunction__ = JsService.Eval<Action<string, string, string>>("__host__.registerHostFunction");
+        __registerHostFunctionToModule__ = JsService.Eval<Action<string, string, string, string>>("__host__.registerHostFunctionToModule");
 
         //基础类型
         AddHostType(new HostType("any", typeof(object), "any"));
@@ -154,28 +149,62 @@ public static class PuertsScriptManager
 
     public static void AddHostInstance(HostInstance obj)
     {
-        var o = obj;
         //添加到生成环境中
-        if (o.IsWriteTs && gt != null && !gt.wrote)
+        if (obj.IsWriteTs && gt != null && !gt.wrote)
         {
-            gt.AddInstance(null, o);
+            gt.AddInstance(null, (HostInstance)obj);
         }
-        __registerHostInstance__(o.Obj, o.Name);
+        __registerHostInstance__((object)obj.Obj, (string)obj.Name);
     }
 
     public static void AddHostInstanceToModule(string path, HostInstance obj)
     {
-        var o = obj;
-        if (o.Name.Contains("."))
+        if (obj.Name.Contains("."))
         {
-            throw new ArgumentException("不能将带有命名空间的对象注入到System模块中: " + o.Name);
+            throw new ArgumentException("不能将带有命名空间的对象注入到System模块中: " + obj.Name);
         }
         //添加到生成环境中
-        if (o.IsWriteTs && gt != null && !gt.wrote)
+        if (obj.IsWriteTs && gt != null && !gt.wrote)
         {
-            gt.AddInstance(path, o);
+            gt.AddInstance(path, (HostInstance)obj);
         }
-        __registerHostInstanceToModule__(o.Obj, path, o.Name);
+        __registerHostInstanceToModule__((object)obj.Obj, path, (string)obj.Name);
+    }
+
+    public static void AddHostFunction(HostFunction fun)
+    {
+        string clsName = TypeDeclare.GetRealName(fun.MethodInfo.DeclaringType.FullName);
+        string funcName = fun.MethodInfo.Name;
+        if (!fun.MethodInfo.IsStatic || !fun.MethodInfo.IsPublic)
+        {
+            throw new ArgumentException("只能注入静态且共有的方法: " + fun.Name);
+        }
+        //添加到生成环境中
+        if (fun.IsWriteTs && gt != null && !gt.wrote)
+        {
+            gt.AddFunction(null, clsName + "." + funcName, (HostFunction)fun);
+        }
+        __registerHostFunction__(clsName, funcName, fun.Name);
+    }
+
+    public static void AddHostFunctionToModule(string path, HostFunction fun)
+    {
+        if (fun.Name.Contains("."))
+        {
+            throw new ArgumentException("不能将带有命名空间的对象注入到System模块中: " + fun.Name);
+        }
+        string clsName = TypeDeclare.GetRealName(fun.MethodInfo.DeclaringType.FullName);
+        string funcName = fun.MethodInfo.Name;
+        if (!fun.MethodInfo.IsStatic || !fun.MethodInfo.IsPublic)
+        {
+            throw new ArgumentException("只能注入静态且共有的方法: " + fun.Name);
+        }
+        //添加到生成环境中
+        if (fun.IsWriteTs && gt != null && !gt.wrote)
+        {
+            gt.AddFunction(path, clsName + "." + funcName, (HostFunction)fun);
+        }
+        __registerHostFunctionToModule__(clsName, funcName, path, fun.Name);
     }
 
     public static void AddHostType(HostType type)
@@ -363,34 +392,28 @@ public static class PuertsScriptManager
                 if ((mAttribute = Attribute.GetCustomAttribute(method, jsFunction, false)) != null)
                 {
                     var att = (JsFunction)mAttribute;
-                    Delegate func = CreateDelegate(method);
-                    var hostInst = new HostInstance(att.FullPath, func);
-                    hostInst.IsDynamicFunc = true;
-                    AddHostInstance(hostInst);
+                    AddHostFunction(new HostFunction(att.FullPath, method));
                 }
-                else if ((mAttribute = Attribute.GetCustomAttribute(method, jsModuleFunction, false)) != null)
+                if ((mAttribute = Attribute.GetCustomAttribute(method, jsModuleFunction, false)) != null)
                 {
                     var att = (JsModuleFunction)mAttribute;
-                    Delegate func = CreateDelegate(method);
-                    var hostInst = new HostInstance(att.Name, func);
-                    hostInst.IsDynamicFunc = true;
-                    AddHostInstanceToModule(att.Path, hostInst);
+                    AddHostFunctionToModule(att.Path, new HostFunction(att.Name, method));
                 }
             }
         }
     }
 
-    private static Delegate CreateDelegate(MethodInfo method)
-    {
-        Type delegateType;
-        var typeArgs = method.GetParameters()
-                .Select(p => p.ParameterType)
-                .ToList();
+    // private static Delegate CreateDelegate(MethodInfo method)
+    // {
+    //     Type delegateType;
+    //     var typeArgs = method.GetParameters()
+    //             .Select(p => p.ParameterType)
+    //             .ToList();
 
-        typeArgs.Add(method.ReturnType);
-        delegateType = Expression.GetDelegateType(typeArgs.ToArray());
+    //     typeArgs.Add(method.ReturnType);
+    //     delegateType = Expression.GetDelegateType(typeArgs.ToArray());
 
-        var result = Delegate.CreateDelegate(delegateType, method);
-        return result;
-    }
+    //     var result = Delegate.CreateDelegate(delegateType, method);
+    //     return result;
+    // }
 }

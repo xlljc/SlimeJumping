@@ -23,7 +23,7 @@ public class GameManager : Node
         }
         _inited = true;
 
-        PuertsScriptManager.Init(DebugFlag.Disable, 9223);
+        PuertsScriptManager.Init(DebugFlag.Enable, 9223);
         PuertsScriptManager.GeneratesTsCode();
     }
 

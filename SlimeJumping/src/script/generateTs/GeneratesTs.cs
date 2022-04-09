@@ -1,3 +1,4 @@
+using System.Reflection;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -91,21 +92,6 @@ namespace JsService.generate
                         edt.TypeDeclare.RefType.TsFullName = hostType.Name;
                     }
                 }
-                else if (dt is FunctionDeclare fdt && !fdt.CanInstance)
-                {
-                    if (hostType.TypeStr != null)
-                    {
-                        flag = true;
-                        instanceList = fdt.InstanceList;
-                    }
-                    else
-                    {
-                        fdt.CanInstance = true;
-                        fdt.TypeDeclare.Name = hostType.Name;
-                        fdt.TypeDeclare.RefType.Module = module;
-                        fdt.TypeDeclare.RefType.TsFullName = hostType.Name;
-                    }
-                }
                 else if (dt is CustomDeclare cut && !cut.CanInstance)
                 {
                     cut.CanInstance = true;
@@ -137,21 +123,13 @@ namespace JsService.generate
                     custom.CanInstance = canInstance;
                     DecType.Add(fullName, custom);
                 }
-                else if (type.IsEnum)
+                else if (type.IsEnum) //枚举
                 {
                     var enu = new EnumDeclare(type, hostType.Name);
                     enu.TypeDeclare.RefType.IsDetails = true;
                     enu.TypeDeclare.RefType.Module = module;
                     enu.CanInstance = canInstance;
                     DecType.Add(fullName, enu);
-                }
-                else if (type.IsSubclassOf(typeof(Delegate))) //是委托
-                {
-                    var fun = new FunctionDeclare(type, hostType.Name);
-                    fun.TypeDeclare.RefType.IsDetails = true;
-                    fun.TypeDeclare.RefType.Module = module;
-                    fun.CanInstance = canInstance;
-                    DecType.Add(fullName, fun);
                 }
                 else //类
                 {
@@ -212,48 +190,39 @@ namespace JsService.generate
 
             //实例对象
             // 定义实例变量
-            InstanceDeclare vd;
-            if (hostInst.IsDynamicFunc)
-            {
-                // 动态委托
-                vd = new InstanceDeclare(module, hostInst.Name, (hostInst.Obj as Delegate).Method);
-            }
-            else
-            {
-                vd = new InstanceDeclare(module, hostInst.Name, type);
-            }
+            InstanceDeclare vd = new InstanceDeclare(module, hostInst.Name, type);
 
-            if (hostInst.IsDynamicFunc)
-            {
-                DecType["dynamicFunc_#" + index++] = vd;
-            }
-            else
-            {
-                // 当前类型全称
-                var fullName = TypeDeclare.GetRealName(type.FullName);
+            // 当前类型全称
+            var fullName = TypeDeclare.GetRealName(type.FullName);
 
-                if (!DecType.ContainsKey(fullName))
-                {
-                    AddType(module, new HostType(fullName, type), false);
-                }
-                DeclareBase declare = DecType[fullName];
-                if (declare is ClassDeclare cls)
-                {
-                    cls.InstanceList.Add(vd);
-                }
-                else if (declare is EnumDeclare edt)
-                {
-                    edt.InstanceList.Add(vd);
-                }
-                else if (declare is FunctionDeclare fdt)
-                {
-                    fdt.InstanceList.Add(vd);
-                }
-                else if (declare is CustomDeclare cut)
-                {
-                    cut.InstanceList.Add(vd);
-                }
+            if (!DecType.ContainsKey(fullName))
+            {
+                AddType(module, new HostType(fullName, type), false);
             }
+            DeclareBase declare = DecType[fullName];
+            if (declare is ClassDeclare cls)
+            {
+                cls.InstanceList.Add(vd);
+            }
+            else if (declare is EnumDeclare edt)
+            {
+                edt.InstanceList.Add(vd);
+            }
+            else if (declare is CustomDeclare cut)
+            {
+                cut.InstanceList.Add(vd);
+            }
+        }
+
+        /// <summary>
+        /// 添加函数到写出文件中
+        /// </summary>
+        /// <param name="module">模块名, 可以为 null</param>
+        /// <param name="hostInst">主机函数</param>
+        public void AddFunction(string module, string csFullName, HostFunction hostFunction)
+        {
+            var fun = new FunctionDeclare(hostFunction.MethodInfo, module, hostFunction.Name);
+            DecType.Add(csFullName + "#_" + index++, fun);
         }
 
         /// <summary>
@@ -343,8 +312,6 @@ namespace JsService.generate
             List<DeclareBase> custList = new List<DeclareBase>();
             // 引用类型
             List<TsType> refList = new List<TsType>();
-            // 动态函数
-            List<InstanceDeclare> dynamicFuncList = new List<InstanceDeclare>();
 
             foreach (var item in DecType)
             {
@@ -376,13 +343,6 @@ namespace JsService.generate
                         custList.Add(cls);
                     }
                 }
-                else if (item.Value is InstanceDeclare id)
-                {
-                    if (id.IsDynamicFunc)
-                    {
-                        dynamicFuncList.Add(id);
-                    }
-                }
             }
 
             //引用类型
@@ -403,8 +363,6 @@ namespace JsService.generate
             _vltContext.Put("enum", enumList);
             _vltContext.Put("cust", custList);
             _vltContext.Put("ref", refList);
-            _vltContext.Put("dynamicFunc", dynamicFuncList);
         }
-
     }
 }

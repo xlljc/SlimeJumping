@@ -36,5 +36,13 @@ globalThis.__host__ = (() => {
         registerHostInstanceToModule(instance, modulePath, name) {
             __module__.addObject(modulePath, name, instance);
         },
+        registerHostFunction(clsName, funcName, path) {
+            cls = importHostType(clsName);
+            addObject(cls[funcName], path);
+        },
+        registerHostFunctionToModule(clsName, funcName, modulePath, name) {
+            cls = importHostType(clsName);
+            __module__.addObject(modulePath, name, cls[funcName]);
+        },
     }
 })();

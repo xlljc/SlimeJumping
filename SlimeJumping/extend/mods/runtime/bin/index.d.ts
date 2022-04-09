@@ -1,6 +1,6 @@
 /// <reference types="../native" />
 declare module "Test" {
-    export function a(): number;
+    export function Test1(): void;
 }
 declare module "index" {
     export function Process(delta: float): void;

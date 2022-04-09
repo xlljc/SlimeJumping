@@ -12,10 +12,6 @@ namespace JsService.generate
 
         public TsType TsType { get; }
 
-        public bool IsDynamicFunc { get; } = false;
-        public MethodInfo FuncInfo { get; }
-        public FunctionDeclare FunctionDeclare { get; }
-
         public InstanceDeclare(string module, string name, Type type)
         {
             Name = name;
@@ -23,16 +19,6 @@ namespace JsService.generate
             TsType = new TsType(module, name);
             TsType.IsDetails = true;
             Type = TypeDeclare.Register(type, null);
-        }
-
-        public InstanceDeclare(string module, string name, MethodInfo methodInfo)
-        {
-            Name = name;
-            //注册类型
-            TsType = new TsType(module, name);
-            TsType.IsDetails = true;
-            FunctionDeclare = new FunctionDeclare(methodInfo, name);
-            IsDynamicFunc = true;
         }
 
         public override string GetFormatString()

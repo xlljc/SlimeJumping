@@ -15,10 +15,9 @@ declare var console: Console;
 
 
 
-
 declare namespace globalThis {
     interface CsTest {
-        say(): void;
+        say(arr: CsArray<string>): void;
     }
     interface CsTestConstructor {
         new(): CsTest;
@@ -28,32 +27,6 @@ declare namespace globalThis {
         StaticSay(): void;
     }
     var CsTest: CsTestConstructor & CsTestStatic;
-}
-declare namespace globalThis {
-    interface PuertsScriptManager {
-    }
-    interface PuertsScriptManagerConstructor {
-    }
-    interface PuertsScriptManagerStatic {
-        readonly ExtensionName: string;
-        get JsService(): Puerts.JsEnv;
-        get LoadPath(): string;
-        Test(t: CsTest): void;
-        Init(debugFlag?: DebugFlag, port?: int): void;
-        AddHostInstance(obj: JsService.HostInstance): void;
-        AddHostInstanceToModule(path: string, obj: JsService.HostInstance): void;
-        AddHostType(type: JsService.HostType): void;
-        AddHostTypeToModule(path: string, type: JsService.HostType): void;
-        Alias(type: System.Type, name: string): void;
-        GeneratesTsCode(): void;
-        Process(delta: float): void;
-        PhysicsProcess(delta: float): void;
-        LoadModule(path: string): void;
-        LoadDevelopModule(directory: string, path: string): void;
-        ExecuteModule(path: string): void;
-        ExecuteFile(path: string): void;
-    }
-    var PuertsScriptManager: PuertsScriptManagerConstructor & PuertsScriptManagerStatic;
 }
 
 declare namespace globalThis {
@@ -89,18 +62,3 @@ declare namespace globalThis {
     var boolean: never;
 }
 
-declare namespace Puerts {
-    type JsEnv = any;
-}
-declare namespace globalThis {
-    type DebugFlag = any;
-}
-declare namespace JsService {
-    type HostInstance = any;
-}
-declare namespace JsService {
-    type HostType = any;
-}
-declare namespace System {
-    type Type = any;
-}
