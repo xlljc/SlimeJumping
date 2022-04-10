@@ -95,10 +95,37 @@ public static class PuertsScriptManager
         {
             JsService = new JsEnv(new DefaultLoader());
         }
-        //SystenJs模块化准备阶段代码
-        ExecuteFile("runtime/init/modular");
+
         //主机类型操作脚本
         ExecuteFile("runtime/init/host");
+        //注册主机类函数
+        __registerHostType__ = JsService.Eval<Action<string, string>>("__host__.registerHostType");
+        __registerHostTypeToModule__ = JsService.Eval<Action<string, string, string>>("__host__.registerHostTypeToModule");
+        __registerHostInstance__ = JsService.Eval<Action<object, string>>("__host__.registerHostInstance");
+        __registerHostInstanceToModule__ = JsService.Eval<Action<object, string, string>>("__host__.registerHostInstanceToModule");
+        __registerHostFunction__ = JsService.Eval<Action<string, string, string>>("__host__.registerHostFunction");
+        __registerHostFunctionToModule__ = JsService.Eval<Action<string, string, string, string>>("__host__.registerHostFunctionToModule");
+
+        //基础类型
+        AddHostType(new HostType("any", typeof(object), "any", RegisterFlag.OnlyInterface));
+        AddHostType(new HostType("byte", typeof(byte), "number", RegisterFlag.OnlyInterface));
+        AddHostType(new HostType("short", typeof(short), "number", RegisterFlag.OnlyInterface));
+        AddHostType(new HostType("int", typeof(int), "number", RegisterFlag.OnlyInterface));
+        AddHostType(new HostType("long", typeof(long), "number", RegisterFlag.OnlyInterface));
+        AddHostType(new HostType("string", typeof(string), "string", RegisterFlag.OnlyInterface));
+        AddHostType(new HostType("float", typeof(float), "number", RegisterFlag.OnlyInterface));
+        AddHostType(new HostType("double", typeof(double), "number", RegisterFlag.OnlyInterface));
+        AddHostType(new HostType("boolean", typeof(bool), "boolean", RegisterFlag.OnlyInterface));
+        AddHostType(new HostType("void", typeof(void), "void", RegisterFlag.OnlyInterface));
+        AddHostType(new HostType("CsArray", typeof(System.Array), "CsArray", RegisterFlag.OnlyInterface));
+
+        //扫描注册主机对象
+        ScanJsClass(typeof(PuertsScriptManager).Assembly);
+        //生成ts接口代码
+        GeneratesTsCode();
+
+        //SystenJs模块化准备阶段代码
+        ExecuteFile("runtime/init/modular");
         //log输出
         ExecuteFile("runtime/init/log");
         //数组转换
@@ -109,31 +136,6 @@ public static class PuertsScriptManager
         __overRegisterModule__ = JsService.Eval<Action>("__module__.overRegisterModule");
         //执行模块函数
         __moduleExecute__ = JsService.Eval<Action<string>>("__module__.execute");
-        //注册主机类函数
-        __registerHostType__ = JsService.Eval<Action<string, string>>("__host__.registerHostType");
-        __registerHostTypeToModule__ = JsService.Eval<Action<string, string, string>>("__host__.registerHostTypeToModule");
-        __registerHostInstance__ = JsService.Eval<Action<object, string>>("__host__.registerHostInstance");
-        __registerHostInstanceToModule__ = JsService.Eval<Action<object, string, string>>("__host__.registerHostInstanceToModule");
-        __registerHostFunction__ = JsService.Eval<Action<string, string, string>>("__host__.registerHostFunction");
-        __registerHostFunctionToModule__ = JsService.Eval<Action<string, string, string, string>>("__host__.registerHostFunctionToModule");
-
-        //基础类型
-        AddHostType(new HostType("any", typeof(object), "any"));
-        AddHostType(new HostType("byte", typeof(byte), "number"));
-        AddHostType(new HostType("short", typeof(short), "number"));
-        AddHostType(new HostType("int", typeof(int), "number"));
-        AddHostType(new HostType("long", typeof(long), "number"));
-        AddHostType(new HostType("string", typeof(string), "string"));
-        AddHostType(new HostType("float", typeof(float), "number"));
-        AddHostType(new HostType("double", typeof(double), "number"));
-        AddHostType(new HostType("boolean", typeof(bool), "boolean"));
-        AddHostType(new HostType("void", typeof(void), "void"));
-        AddHostType(new HostType("CsArray", typeof(System.Array), "CsArray"));
-        //数组转换
-        ExecuteFile("runtime/init/array");
-
-        //扫描注册主机对象
-        ScanJsClass(typeof(PuertsScriptManager).Assembly);
 
         //扫描并加载所有runtime下面的js文件
         LoadModule("runtime");
@@ -147,12 +149,15 @@ public static class PuertsScriptManager
 
     public static void AddHostInstance(HostInstance obj)
     {
-        //添加到生成环境中
-        if (obj.IsWriteTs && gt != null && !gt.wrote)
+        if (obj.RegisterFlag == RegisterFlag.InjectAndInterface || obj.RegisterFlag == RegisterFlag.OnlyInterface)
         {
+            //添加到生成环境中
             gt.AddInstance(null, (HostInstance)obj);
         }
-        __registerHostInstance__((object)obj.Obj, (string)obj.Name);
+        if (obj.RegisterFlag == RegisterFlag.InjectAndInterface || obj.RegisterFlag == RegisterFlag.OnlyInject)
+        {
+            __registerHostInstance__((object)obj.Obj, (string)obj.Name);
+        }
     }
 
     public static void AddHostInstanceToModule(string path, HostInstance obj)
@@ -161,12 +166,15 @@ public static class PuertsScriptManager
         {
             throw new ArgumentException("不能将带有命名空间的对象注入到System模块中: " + obj.Name);
         }
-        //添加到生成环境中
-        if (obj.IsWriteTs && gt != null && !gt.wrote)
+        if (obj.RegisterFlag == RegisterFlag.InjectAndInterface || obj.RegisterFlag == RegisterFlag.OnlyInterface)
         {
+            //添加到生成环境中
             gt.AddInstance(path, (HostInstance)obj);
         }
-        __registerHostInstanceToModule__((object)obj.Obj, path, (string)obj.Name);
+        if (obj.RegisterFlag == RegisterFlag.InjectAndInterface || obj.RegisterFlag == RegisterFlag.OnlyInject)
+        {
+            __registerHostInstanceToModule__((object)obj.Obj, path, (string)obj.Name);
+        }
     }
 
     public static void AddHostFunction(HostFunction fun)
@@ -177,12 +185,15 @@ public static class PuertsScriptManager
         {
             throw new ArgumentException("只能注入静态且共有的方法: " + fun.Name);
         }
-        //添加到生成环境中
-        if (fun.IsWriteTs && gt != null && !gt.wrote)
+        if (fun.RegisterFlag == RegisterFlag.InjectAndInterface || fun.RegisterFlag == RegisterFlag.OnlyInterface)
         {
+            //添加到生成环境中
             gt.AddFunction(null, clsName + "." + funcName, (HostFunction)fun);
         }
-        __registerHostFunction__(clsName, funcName, fun.Name);
+        if (fun.RegisterFlag == RegisterFlag.InjectAndInterface || fun.RegisterFlag == RegisterFlag.OnlyInject)
+        {
+            __registerHostFunction__(clsName, funcName, fun.Name);
+        }
     }
 
     public static void AddHostFunctionToModule(string path, HostFunction fun)
@@ -197,22 +208,28 @@ public static class PuertsScriptManager
         {
             throw new ArgumentException("只能注入静态且共有的方法: " + fun.Name);
         }
-        //添加到生成环境中
-        if (fun.IsWriteTs && gt != null && !gt.wrote)
+        if (fun.RegisterFlag == RegisterFlag.InjectAndInterface || fun.RegisterFlag == RegisterFlag.OnlyInterface)
         {
+            //添加到生成环境中
             gt.AddFunction(path, clsName + "." + funcName, (HostFunction)fun);
         }
-        __registerHostFunctionToModule__(clsName, funcName, path, fun.Name);
+        if (fun.RegisterFlag == RegisterFlag.InjectAndInterface || fun.RegisterFlag == RegisterFlag.OnlyInject)
+        {
+            __registerHostFunctionToModule__(clsName, funcName, path, fun.Name);
+        }
     }
 
     public static void AddHostType(HostType type)
     {
-        //添加到生成环境中
-        if (type.IsWriteTs && gt != null && !gt.wrote)
+        if (type.RegisterFlag == RegisterFlag.InjectAndInterface || type.RegisterFlag == RegisterFlag.OnlyInterface)
         {
+            //添加到生成环境中
             gt.AddType(null, type);
         }
-        __registerHostType__(TypeDeclare.GetCsFullName(type.Type), type.Name);
+        if (type.RegisterFlag == RegisterFlag.InjectAndInterface || type.RegisterFlag == RegisterFlag.OnlyInject)
+        {
+            __registerHostType__(TypeDeclare.GetCsFullName(type.Type), type.Name);
+        }
     }
 
     public static void AddHostTypeToModule(string path, HostType type)
@@ -221,12 +238,15 @@ public static class PuertsScriptManager
         {
             throw new ArgumentException("不能将带有命名空间的对象注入到System模块中: " + type.Name);
         }
-        //添加到生成环境中
-        if (type.IsWriteTs && gt != null && !gt.wrote)
+        if (type.RegisterFlag == RegisterFlag.InjectAndInterface || type.RegisterFlag == RegisterFlag.OnlyInterface)
         {
+            //添加到生成环境中
             gt.AddType(path, type);
         }
-        __registerHostTypeToModule__(TypeDeclare.GetCsFullName(type.Type), path, type.Name);
+        if (type.RegisterFlag == RegisterFlag.InjectAndInterface || type.RegisterFlag == RegisterFlag.OnlyInject)
+        {
+            __registerHostTypeToModule__(TypeDeclare.GetCsFullName(type.Type), path, type.Name);
+        }
     }
 
     public static void Alias(Type type, string name)
@@ -235,11 +255,6 @@ public static class PuertsScriptManager
         {
             gt.Alias(type, name);
         }
-    }
-
-    public static void GeneratesTsCode()
-    {
-        gt.WriteByContext(LoadPath + "\\native.d.ts", File.ReadAllText("extend\\template\\tsDefined\\tsDefined.d.ts.vm"));
     }
 
     /// <summary>
@@ -295,7 +310,7 @@ public static class PuertsScriptManager
     public static void ExecuteFile(string path)
     {
         string modulePath = LoadPath + "/" + path + ExtensionName;
-        JsService.Eval(File.ReadAllText(modulePath));
+        JsService.Eval(File.ReadAllText(modulePath), modulePath);
     }
 
     private static void LoadAllJs(DirectoryInfo root, string parent)
@@ -328,6 +343,11 @@ public static class PuertsScriptManager
         }
     }
 
+    private static void GeneratesTsCode()
+    {
+        gt.WriteByContext(LoadPath + "\\native.d.ts", File.ReadAllText("extend\\template\\tsDefined\\tsDefined.d.ts.vm"));
+    }
+
     private static void RegisterModule(string fullPath, string folder, string code)
     {
         __readyRegisterModule__(folder);
@@ -355,27 +375,27 @@ public static class PuertsScriptManager
             if ((attribute = Attribute.GetCustomAttribute(type, typeof(JsType), false)) != null)
             {
                 var att = (JsType)attribute;
-                if (att.Generics.Length > 0)
+                if (att.Generics != null)
                 {
                     Type newType = type.MakeGenericType(att.Generics);
-                    AddHostType(new HostType(att.FullPath, newType));
+                    AddHostType(new HostType(att.FullPath, newType, att.RegisterFlag));
                 }
                 else
                 {
-                    AddHostType(new HostType(att.FullPath, type));
+                    AddHostType(new HostType(att.FullPath, type, att.RegisterFlag));
                 }
             }
             else if ((attribute = Attribute.GetCustomAttribute(type, typeof(JsModuleType), false)) != null)
             {
                 var att = (JsModuleType)attribute;
-                if (att.Generics.Length > 0)
+                if (att.Generics != null)
                 {
                     Type newType = type.MakeGenericType(att.Generics);
-                    AddHostTypeToModule(att.Path, new HostType(att.Name, newType));
+                    AddHostTypeToModule(att.Path, new HostType(att.Name, newType, att.RegisterFlag));
                 }
                 else
                 {
-                    AddHostTypeToModule(att.Path, new HostType(att.Name, type));
+                    AddHostTypeToModule(att.Path, new HostType(att.Name, type, att.RegisterFlag));
                 }
             }
             //注入实例
@@ -383,13 +403,13 @@ public static class PuertsScriptManager
             {
                 var att = (JsInstance)attribute;
                 object inst = Activator.CreateInstance(type);
-                AddHostInstance(new HostInstance(att.FullPath, inst));
+                AddHostInstance(new HostInstance(att.FullPath, inst, att.RegisterFlag));
             }
             else if ((attribute = Attribute.GetCustomAttribute(type, typeof(JsModuleInstance), false)) != null)
             {
                 var att = (JsModuleInstance)attribute;
                 object inst = Activator.CreateInstance(type);
-                AddHostInstanceToModule(att.Path, new HostInstance(att.Name, inst));
+                AddHostInstanceToModule(att.Path, new HostInstance(att.Name, inst, att.RegisterFlag));
             }
 
             MethodInfo[] methods = type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
@@ -406,12 +426,12 @@ public static class PuertsScriptManager
                 if ((mAttribute = Attribute.GetCustomAttribute(method, typeof(JsFunction), false)) != null)
                 {
                     var att = (JsFunction)mAttribute;
-                    AddHostFunction(new HostFunction(att.FullPath, method));
+                    AddHostFunction(new HostFunction(att.FullPath, method, att.RegisterFlag));
                 }
                 if ((mAttribute = Attribute.GetCustomAttribute(method, typeof(JsModuleFunction), false)) != null)
                 {
                     var att = (JsModuleFunction)mAttribute;
-                    AddHostFunctionToModule(att.Path, new HostFunction(att.Name, method));
+                    AddHostFunctionToModule(att.Path, new HostFunction(att.Name, method, att.RegisterFlag));
                 }
             }
         }

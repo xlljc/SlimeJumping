@@ -19,9 +19,9 @@ namespace JsService
         public MethodInfo MethodInfo { get; set; }
 
         /// <summary>
-        /// 是否生成对应的 d.ts 代码
+        /// 注册操作类型
         /// </summary>
-        public bool IsWriteTs { get; set; }
+        public RegisterFlag RegisterFlag { get; set; }
 
         /// <summary>
         /// 指定生成的的类型
@@ -33,12 +33,12 @@ namespace JsService
         /// </summary>
         /// <param name="name">全路径名</param>
         /// <param name="methodInfo">注入的函数对象</param>
-        /// <param name="isWriteTs">是否生成对应的ts代码</param>
-        public HostFunction(string name, MethodInfo methodInfo, bool isWriteTs = true)
+        /// <param name="registerFlag">注册操作类型</param>
+        public HostFunction(string name, MethodInfo methodInfo, RegisterFlag registerFlag = RegisterFlag.InjectAndInterface)
         {
             Name = name;
             MethodInfo = methodInfo;
-            IsWriteTs = isWriteTs;
+            RegisterFlag = registerFlag;
         }
 
         /// <summary>
@@ -47,12 +47,12 @@ namespace JsService
         /// <param name="name">全路径名</param>
         /// <param name="methodInfo">注入的函数对象</param>
         /// <param name="type">使用指定的类型替换掉生成的ts代码</param>
-        public HostFunction(string name, MethodInfo methodInfo, Type type)
+        public HostFunction(string name, MethodInfo methodInfo, Type type, RegisterFlag registerFlag = RegisterFlag.InjectAndInterface)
         {
             Name = name;
             MethodInfo = methodInfo;
             Type = type;
-            IsWriteTs = true;
+            RegisterFlag = registerFlag;
         }
     }
 }

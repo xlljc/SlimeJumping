@@ -14,6 +14,11 @@ namespace JsService
         public string FullPath { get; }
 
         /// <summary>
+        /// 注册操作类型
+        /// </summary>
+        public RegisterFlag RegisterFlag { get; set; } = RegisterFlag.InjectAndInterface;
+
+        /// <summary>
         /// 设置特性
         /// </summary>
         /// <param name="fullPath">全路径名 (命名空间 + 方法名)</param>

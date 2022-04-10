@@ -1,4 +1,4 @@
-globalThis.__host__ = (() => {
+globalThis.__host__ = globalThis.__host__ || (() => {
     let importHostType = __tgjsLoadType;
     delete globalThis.__tgjsLoadType;
 

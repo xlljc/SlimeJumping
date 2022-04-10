@@ -21,19 +21,22 @@ namespace JsService
         /// <summary>
         /// 包含的泛型
         /// </summary>
-        public Type[] Generics { get; }
+        public Type[] Generics { get; set; }
+        
+        /// <summary>
+        /// 注册操作类型
+        /// </summary>
+        public RegisterFlag RegisterFlag { get; set; } = RegisterFlag.InjectAndInterface;
 
         /// <summary>
         /// 设置特性
         /// </summary>
         /// <param name="path">所在的路径</param>
         /// <param name="name">名称</param>
-        /// <param name="generics">泛型</param>
-        public JsModuleType(string path, string name, params Type[] generics)
+        public JsModuleType(string path, string name)
         {
             Path = path;
             Name = name;
-            Generics = generics;
         }
     }
 }

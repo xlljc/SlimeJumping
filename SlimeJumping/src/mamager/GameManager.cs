@@ -5,8 +5,6 @@ using Godot;
 /// </summary>
 public class GameManager : Node
 {
-    //public static IScriptSerivce JsService;
-
     /// <summary>
     /// 是否已经初始化过
     /// </summary>
@@ -24,7 +22,6 @@ public class GameManager : Node
         _inited = true;
 
         PuertsScriptManager.Init(DebugFlag.Enable, 9223);
-        PuertsScriptManager.GeneratesTsCode();
     }
 
     public override void _EnterTree()

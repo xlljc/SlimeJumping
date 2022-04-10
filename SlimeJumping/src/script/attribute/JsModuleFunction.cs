@@ -17,6 +17,11 @@ namespace JsService
         /// 名称
         /// </summary>
         public string Name { get; }
+        
+        /// <summary>
+        /// 注册操作类型
+        /// </summary>
+        public RegisterFlag RegisterFlag { get; set; } = RegisterFlag.InjectAndInterface;
 
         /// <summary>
         /// 设置特性

@@ -3,16 +3,22 @@
 */
 
 /** Indicates this is a C# type. */
-declare interface CsType { }
+declare type CsType = {
+    "System.Int32": number,
+    "System.String": string,
+    "System.Boolean": boolean,
+    "System.Object": Object,
+}
 /** Represents an array type in C#. */
 declare interface CsArray<T = any> {
     [Symbol.iterator](): IterableIterator<T>;
-    [index: number]: T;
     get Length(): number;
+    Get(index: number): T;
+    Set(index: number, value: T): void;
 }
 declare interface CsArrayStatic {
-    /** Convert JS array to C# Object array. */
-    toCsArray<T>(arr: Array<T>): CsArray<T>;
+    createCsArray<T1 extends keyof CsType, V extends CsType[T1]>(csType: T1, ...length: number[]): CsArray<V>;
+    createCsArray(csType: string, ...length: number[]): CsArray<any>;
     /** Converts a JS array to a C# array of the specified type. */
     toCsArray<T>(csType: CsType, arr: Array<T>): CsArray<T>;
 }
@@ -32,21 +38,26 @@ interface Console {
 declare var console: Console;
 
 
-
-
-declare namespace aa {
-    interface bb {
-        say(): void;
-    }
-    interface bbConstructor {
-        new(): aa.bb;
-    }
-    interface bbStatic {
-    }
-    var bb: aa.bbConstructor & aa.bbStatic;
+declare namespace globalThis {
+    function TestArr1(array: any): void;
 }
-declare module 'rt' {
-    var TestInst: aa.bb;
+declare namespace globalThis {
+    function TestArr2(array: CsArray<int>): void;
+}
+
+
+declare namespace globalThis {
+    interface TestJsObject {
+    }
+    interface TestJsObjectConstructor {
+        new(): TestJsObject;
+    }
+    interface TestJsObjectStatic {
+        Test(): void;
+        TestArr1(array: any): void;
+        TestArr2(array: CsArray<int>): void;
+    }
+    var TestJsObject: TestJsObjectConstructor & TestJsObjectStatic;
 }
 
 declare namespace globalThis {
