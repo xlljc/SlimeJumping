@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Namotion.Reflection;
 
 namespace JsService.generate
 {
@@ -54,6 +55,9 @@ namespace JsService.generate
 
         //导入的模块
         public List<TsType> ImportTypes { get; } = new List<TsType>();
+
+        //注释
+        public string DocSummary { get; private set; }
 
         public ClassDeclare(Type type, string tsFullName)
         {
@@ -120,6 +124,8 @@ namespace JsService.generate
             }
             //注册类型
             TypeDeclare = TypeDeclare.Register(type, tsFullName, this, null, false);
+            //读取注释
+            DocSummary = type.GetXmlDocsSummary();
         }
 
         internal void SetCanInstance(bool v, Type type)
@@ -273,6 +279,11 @@ namespace JsService.generate
         public bool CanNew()
         {
             return !IsInterface && !IsAbstract;
+        }
+
+        public string GetDocument(string nspTab)
+        {
+            return TypeDeclare.GetFormatDocument(nspTab, DocSummary);
         }
 
         internal static Type[] GetImplInterface(Type type)

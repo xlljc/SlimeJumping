@@ -38,7 +38,7 @@ interface Console {
 declare var console: Console;
 
 ## Parameter list, list: collection of parameter objects
-#macro(param list)
+#macro(param $list)
 #foreach($i in $list)
 #if($velocityCount > 1), #end
 #if($i.IsParams)...#end
@@ -58,7 +58,7 @@ declare module '${item.Module}' {
 #elseif($item.TsNamespace != '')
 declare namespace ${item.TsNamespace} {
 #end
-${nspTab}#if($item.Module == '' && $item.TsNamespace == '')declare #end
+$item.GetDocument($nspTab)${nspTab}#if($item.Module == '' && $item.TsNamespace == '')declare #end
 function ${item.TsName}(#param($ps)): ${item.ReturnType.GetFormatString()};
 #if($item.TsNamespace != '' || $item.Module != '')
 }
@@ -70,14 +70,15 @@ function ${item.TsName}(#param($ps)): ${item.ReturnType.GetFormatString()};
 #foreach($item in $enum)
 #set($t = $item.TypeDeclare.RefType)
 #set($nspTab = '')
-#if($t.TsNamespace != '' || $t.Module != '')#set($nspTab = '    ')#end
+#set($nspTab2 = '    ')
+#if($t.TsNamespace != '' || $t.Module != '')#set($nspTab = '    ')#set($nspTab2 = '        ')#end
 #if($t.Module != '')
 declare module '${t.Module}' {
 #elseif($t.TsNamespace != '')
 declare namespace ${t.TsNamespace} {
 #end
 ## Enumerated type
-${nspTab}#if($t.Module == '' && $t.TsNamespace == '')declare #end
+$item.GetDocument($nspTab)${nspTab}#if($t.Module == '' && $t.TsNamespace == '')declare #end
 type ${t.TsName} = any;
 ## Enumeration parameter
 #if($item.CanInstance)
@@ -118,7 +119,8 @@ var ${inst.GetFormatString()}: ${inst.Type.GetFormatString()};
 #set($cls = $item)
 #set($t = $cls.TypeDeclare.RefType)
 #set($nspTab = '')
-#if($t.TsNamespace != '' || $t.Module != '')#set($nspTab = '    ')#end
+#set($nspTab2 = '    ')
+#if($t.TsNamespace != '' || $t.Module != '')#set($nspTab = '    ')#set($nspTab2 = '        ')#end
 #if($t.Module != '')
 declare module '${t.Module}' {
 #elseif($t.TsNamespace != '')
@@ -130,21 +132,21 @@ ${nspTab}import { ${imp.TsName}, ${imp.TsName}Constructor } from '${imp.Module}'
 #end
 ########################
 ## The write member property
-${nspTab}#if($t.Module == '' && $t.TsNamespace == '')declare #end
+$cls.GetDocument($nspTab)${nspTab}#if($t.Module == '' && $t.TsNamespace == '')declare #end
 interface ${t.TsName}${cls.GetClassGenericString()}${cls.GetExtendsString('')} {
 ## Members of the field
 #foreach($field in $item.Fields)
 #if(!$field.IsStatic)
-${nspTab}    #if($field.IsReadonly)readonly #end${field.Name}: ${field.Type.GetFormatString()};
+$field.GetDocument($nspTab2)${nspTab}    #if($field.IsReadonly)readonly #end${field.Name}: ${field.Type.GetFormatString()};
 #end
 #end
 ## Member attribute
 #foreach($property in $item.Propertys)
 #if(!$property.IsStatic && $property.PropertyType == 'Read')## get
-${nspTab}    get ${property.Name}(): ${property.Type.GetFormatString()};
+$property.GetDocument($nspTab2)${nspTab}    get ${property.Name}(): ${property.Type.GetFormatString()};
 #end
 #if(!$property.IsStatic && $property.PropertyType == 'Write')## set
-${nspTab}    set ${property.Name}(v: ${property.Type.GetFormatString()});
+$property.GetDocument($nspTab2)${nspTab}    set ${property.Name}(v: ${property.Type.GetFormatString()});
 #end
 #end
 ## Members of the method
@@ -152,7 +154,7 @@ ${nspTab}    set ${property.Name}(v: ${property.Type.GetFormatString()});
 #if(!$method.IsStatic)
 #set($ps = $method.Params)
 #if(!$method.GenericTypes)
-${nspTab}    ${method.Name}(${method.GetGenericParamString()}#param($ps)): ${method.ReturnType.GetFormatString()};
+$method.GetDocument($nspTab2)${nspTab}    ${method.Name}(${method.GetGenericParamString()}#param($ps)): ${method.ReturnType.GetFormatString()};
 #end
 #end
 #end
@@ -167,7 +169,7 @@ ${nspTab}    new(): ${t.TsFullName}${cls.GetClassGenericTypeString()};
 #end
 #foreach($constructor in $item.Constructors)
 #set($ps = $constructor.Params)
-${nspTab}    new(#param($ps)): ${t.TsFullName}${cls.GetClassGenericTypeString()};
+$constructor.GetDocument($nspTab2)${nspTab}    new(#param($ps)): ${t.TsFullName}${cls.GetClassGenericTypeString()};
 #end
 #end
 ${nspTab}}
@@ -178,17 +180,17 @@ interface ${t.TsName}Static${cls.GetClassGenericString()}${cls.GetExtendsString(
 #foreach($field in $item.Fields)
 #if($field.IsStatic)
 #set($f = $field)
-${nspTab}    #if($field.IsReadonly)readonly #end${field.Name}: ${field.Type.GetFormatString()};
+$field.GetDocument($nspTab2)${nspTab}    #if($field.IsReadonly)readonly #end${field.Name}: ${field.Type.GetFormatString()};
 #end
 #end
 ########################
 ## Static attributes
 #foreach($property in $item.Propertys)
 #if($property.IsStatic && $property.PropertyType == 'Read')## get
-${nspTab}    get ${property.Name}(): ${property.Type.GetFormatString()};
+$property.GetDocument($nspTab2)${nspTab}    get ${property.Name}(): ${property.Type.GetFormatString()};
 #end
 #if($property.IsStatic && $property.PropertyType == 'Write')## set
-${nspTab}    set ${property.Name}(v: ${property.Type.GetFormatString()});
+$property.GetDocument($nspTab2)${nspTab}    set ${property.Name}(v: ${property.Type.GetFormatString()});
 #end
 #end
 ## A static method
@@ -196,7 +198,7 @@ ${nspTab}    set ${property.Name}(v: ${property.Type.GetFormatString()});
 #if($method.IsStatic)
 #set($ps = $method.Params)
 #if(!$method.GenericTypes)
-${nspTab}    ${method.Name}(${method.GetGenericParamString()}#param($ps)): ${method.ReturnType.GetFormatString()};
+$method.GetDocument($nspTab2)${nspTab}    ${method.Name}(${method.GetGenericParamString()}#param($ps)): ${method.ReturnType.GetFormatString()};
 #end
 #end
 #end

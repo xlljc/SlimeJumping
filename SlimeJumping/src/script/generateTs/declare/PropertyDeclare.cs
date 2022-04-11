@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using Namotion.Reflection;
 
 namespace JsService.generate
 {
@@ -16,6 +17,9 @@ namespace JsService.generate
         public TypeDeclare Type { get; set; } = TypeDeclare.Any;
 
         public ClassDeclare ClassDeclare { get; }
+
+        //注释
+        public string DocSummary { get; private set; }
 
         public PropertyDeclare(ClassDeclare classDeclare, PropertyInfo property, PropertyType propertyType)
         {
@@ -50,6 +54,13 @@ namespace JsService.generate
                 m = property.SetMethod;
             }
             IsStatic = m.IsStatic;
+            //读取注释
+            DocSummary = property.GetXmlDocsSummary();
+        }
+
+        public string GetDocument(string nspTab)
+        {
+            return TypeDeclare.GetFormatDocument(nspTab, DocSummary);
         }
     }
 

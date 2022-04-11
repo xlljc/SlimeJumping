@@ -302,6 +302,34 @@ namespace JsService.generate
             return "globalThis";
         }
 
+        internal static string GetFormatDocument(string nspTab, string summary, List<ParamDecType> pds = null, string rt = null)
+        {
+            string doc = "";
+            if (!string.IsNullOrEmpty(summary))
+            {
+                doc += nspTab + " * " + summary.Replace("\n", "\n" + nspTab + " * ") + "\n";
+            }
+            if (pds != null)
+            {
+                foreach (var item in pds)
+                {
+                    if (!string.IsNullOrEmpty(item.DocSummary))
+                    {
+                        doc += nspTab + " * @params " + item.Name + " " + item.DocSummary.Replace("\n", "\n" + nspTab + " * ") + "\n";
+                    }
+                }
+            }
+            if (!string.IsNullOrEmpty(rt))
+            {
+                doc += nspTab + " * @returns " + rt.Replace("\n", "\n" + nspTab + " * ") + "\n";
+            }
+            if (!string.IsNullOrEmpty(doc))
+            {
+                doc = nspTab + "/**\n" + doc + nspTab + "*/\n";
+            }
+            return doc;
+        }
+
         // 检测是否是泛型
         private static bool IsGeneric(string name, ClassDeclare classDeclare, MethodDeclare methodDeclare, FunctionDeclare functionDeclare)
         {

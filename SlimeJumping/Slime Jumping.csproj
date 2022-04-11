@@ -2,11 +2,16 @@
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <RootNamespace>SlimeJumping</RootNamespace>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <ItemGroup>
+    <None Include=".editorconfig" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Namotion.Reflection" Version="2.0.10" />
     <PackageReference Include="NVelocity" Version="1.2.0" />
   </ItemGroup>
 

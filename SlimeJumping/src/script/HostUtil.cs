@@ -6,11 +6,18 @@ namespace JsService
 {
     internal static class HostUtils
     {
-
         private readonly static Dictionary<string, Type> arrTypeDic = new Dictionary<string, Type>();
         private readonly static object obj = new object();
 
-        [JsFunction("__createHostArr", RegisterFlag = RegisterFlag.OnlyInject)]
+        /// <summary>
+        /// 哈哈哈哈555
+        /// asdf
+        /// xxx55555
+        /// </summary>
+        /// <param name="typeName">aaaaf45</param>
+        /// <param name="length">阿斯顿发份</param>
+        /// <returns>aaaxxx</returns>
+        [JsFunction("__createHostArr", RegisterFlag = RegisterFlag.InjectAndInterface)]
         public static object CreateHostArr(string typeName, params object[] length)
         {
             object[] args;
@@ -27,10 +34,7 @@ namespace JsService
                 typeName += "[]";
             }
             var arrType = GetArrType(typeName);
-            var arr = arrType.InvokeMember("Set", BindingFlags.CreateInstance, null, obj, args);
-            ((int[])arr)[5] = 99922;
-            //PuertsScriptManager.JsService.objectPool.FindOrAddObject(arr);
-            return arr;
+            return arrType.InvokeMember("Set", BindingFlags.CreateInstance, null, obj, args);
         }
 
         private static Type GetArrType(string typeName)

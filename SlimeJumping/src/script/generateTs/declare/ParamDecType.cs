@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using Namotion.Reflection;
 
 namespace JsService.generate
 {
@@ -16,11 +17,17 @@ namespace JsService.generate
         // 是否有默认值
         public bool HasDefaultValue { get; } = false;
 
+        //所在的方法
         public MethodDeclare MethodDeclare { get; }
 
+        //所在的构造函数
         public ConstructorDeclare ConstructorDeclare { get; }
 
+        //所在的函数
         public FunctionDeclare FunctionDeclare { get; }
+
+        //注释
+        public string DocSummary { get; private set; }
 
         public ParamDecType(MethodDeclare methodDeclare, ParameterInfo parameterInfo)
         {
@@ -47,6 +54,8 @@ namespace JsService.generate
             {
                 Type = TypeDeclare.Register(parameterInfo.ParameterType, null, MethodDeclare.ClassDeclare, MethodDeclare, true);
             }
+            //注释
+            DocSummary = parameterInfo.GetXmlDocs();
         }
 
         public ParamDecType(ConstructorDeclare constructorDeclare, ParameterInfo parameterInfo)
@@ -74,6 +83,8 @@ namespace JsService.generate
             {
                 Type = TypeDeclare.Register(parameterInfo.ParameterType, null, ConstructorDeclare.ClassDeclare, null, true);
             }
+            //注释
+            DocSummary = parameterInfo.GetXmlDocs();
         }
 
         public ParamDecType(FunctionDeclare functionDeclare, ParameterInfo parameterInfo)
@@ -101,6 +112,8 @@ namespace JsService.generate
             {
                 Type = TypeDeclare.Register(parameterInfo.ParameterType, null, FunctionDeclare, true);
             }
+            //注释
+            DocSummary = parameterInfo.GetXmlDocs();
         }
     }
 }

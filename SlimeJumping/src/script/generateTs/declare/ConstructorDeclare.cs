@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Reflection;
+using Namotion.Reflection;
 
 namespace JsService.generate
 {
@@ -12,6 +13,9 @@ namespace JsService.generate
 
         public ClassDeclare ClassDeclare { get; }
 
+        //注释
+        public string DocSummary { get; private set; }
+
         public ConstructorDeclare(ClassDeclare classDeclare, ConstructorInfo constructorInfo)
         {
             ClassDeclare = classDeclare;
@@ -20,6 +24,13 @@ namespace JsService.generate
             {
                 Params.Add(new ParamDecType(this, parameterInfo));
             }
+            //读取注释
+            DocSummary = constructorInfo.GetXmlDocsSummary();
+        }
+
+        public string GetDocument(string nspTab)
+        {
+            return TypeDeclare.GetFormatDocument(nspTab, DocSummary);
         }
     }
 }

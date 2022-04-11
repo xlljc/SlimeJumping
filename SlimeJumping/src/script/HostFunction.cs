@@ -47,6 +47,7 @@ namespace JsService
         /// <param name="name">全路径名</param>
         /// <param name="methodInfo">注入的函数对象</param>
         /// <param name="type">使用指定的类型替换掉生成的ts代码</param>
+        /// <param name="registerFlag">注册操作类型</param>
         public HostFunction(string name, MethodInfo methodInfo, Type type, RegisterFlag registerFlag = RegisterFlag.InjectAndInterface)
         {
             Name = name;

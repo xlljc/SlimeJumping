@@ -26,7 +26,7 @@ namespace JsService
         /// <summary>
         /// 设置特性
         /// </summary>
-        /// <param name="generics">泛型</param>
+        /// <param name="fullPath">全路径</param>
         public JsType(string fullPath)
         {
             FullPath = fullPath;

@@ -11,11 +11,9 @@ var arr = CsArray.createCsArray("System.Int32", 10);
 arr.Set(0, 100);
 arr.Set(1, 111);
 arr.Set(2, 222);
+let a: Godot.KinematicBody2D;
 
 TestArr2(arr);
-// console.log(arr);
-// console.log(arr[3]);
-// console.log(arr.Length);
 
 export function Process(delta: float) {
 

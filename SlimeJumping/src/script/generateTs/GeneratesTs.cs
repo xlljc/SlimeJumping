@@ -1,4 +1,3 @@
-using System.Reflection;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -218,7 +217,8 @@ namespace JsService.generate
         /// 添加函数到写出文件中
         /// </summary>
         /// <param name="module">模块名, 可以为 null</param>
-        /// <param name="hostInst">主机函数</param>
+        /// <param name="csFullName">C#全名</param>
+        /// <param name="hostFunction">主机函数</param>
         public void AddFunction(string module, string csFullName, HostFunction hostFunction)
         {
             var fun = new FunctionDeclare(hostFunction.MethodInfo, module, hostFunction.Name);

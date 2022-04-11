@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Namotion.Reflection;
 
 namespace JsService.generate
 {
@@ -25,6 +26,12 @@ namespace JsService.generate
 
         // 方法类型对象
         public MethodInfo MethodInfo { get; }
+
+        //注释
+        public string DocSummary { get; private set; }
+
+        //返回值注释
+        public string DocReturns { get; private set; }
 
         public FunctionDeclare(MethodInfo methodInfo, string module, string name)
         {
@@ -58,7 +65,16 @@ namespace JsService.generate
             {
                 Params.Add(new ParamDecType(this, parameterInfo));
             }
+            //注册类型
             TypeDeclare.RegisterPlaceholder(module, name);
+            //读取注释
+            DocSummary = methodInfo.GetXmlDocsSummary();
+            DocReturns = methodInfo.GetXmlDocsTag("returns");
+        }
+
+        public string GetDocument(string nspTab)
+        {
+            return TypeDeclare.GetFormatDocument(nspTab, DocSummary, Params, DocReturns);
         }
     }
 }

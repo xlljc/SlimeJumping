@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Namotion.Reflection;
 
 namespace JsService.generate
 {
@@ -18,6 +19,9 @@ namespace JsService.generate
         // 是否可实例化
         public bool CanInstance { get; set; }
 
+        //注释
+        public string DocSummary { get; private set; }
+
         public EnumDeclare(Type type, string tsFullName)
         {
             Name = tsFullName;
@@ -27,6 +31,12 @@ namespace JsService.generate
                 Item.Add(s);
             }
             TypeDeclare = TypeDeclare.Register(type, tsFullName);
+            //读取注释
+            DocSummary = type.GetXmlDocsSummary();
+        }
+        public string GetDocument(string nspTab)
+        {
+            return TypeDeclare.GetFormatDocument(nspTab, DocSummary);
         }
     }
 }

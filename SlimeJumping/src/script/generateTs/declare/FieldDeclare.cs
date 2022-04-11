@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using Namotion.Reflection;
 
 namespace JsService.generate
 {
@@ -18,6 +19,9 @@ namespace JsService.generate
         public TypeDeclare Type { get; set; } = TypeDeclare.Any;
 
         public ClassDeclare ClassDeclare { get; }
+
+        //注释
+        public string DocSummary { get; private set; }
 
         public FieldDeclare(ClassDeclare classDeclare, FieldInfo field)
         {
@@ -43,6 +47,13 @@ namespace JsService.generate
             {
                 Type = TypeDeclare.Register(field.FieldType, null, ClassDeclare, null, true);
             }
+            //读取注释
+            DocSummary = field.GetXmlDocsSummary();
+        }
+
+        public string GetDocument(string nspTab)
+        {
+            return TypeDeclare.GetFormatDocument(nspTab, DocSummary);
         }
     }
 }

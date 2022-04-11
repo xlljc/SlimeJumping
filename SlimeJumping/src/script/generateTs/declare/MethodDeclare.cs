@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Namotion.Reflection;
 
 namespace JsService.generate
 {
@@ -23,6 +24,12 @@ namespace JsService.generate
         public ClassDeclare ClassDeclare { get; }
 
         public MethodInfo MethodInfo { get; }
+
+        //注释
+        public string DocSummary { get; private set; }
+
+        //返回值注释
+        public string DocReturns { get; private set; }
 
         public MethodDeclare(ClassDeclare classDeclare, MethodInfo method)
         {
@@ -64,6 +71,9 @@ namespace JsService.generate
                     GenericTypes.Add(TypeDeclare.Register(gType, null, ClassDeclare, this, true));
                 }
             }
+            //读取注释
+            DocSummary = method.GetXmlDocsSummary();
+            DocReturns = method.GetXmlDocsTag("returns");
         }
 
         public string GetGenericString()
@@ -96,6 +106,11 @@ namespace JsService.generate
                 return str;
             }
             return "";
+        }
+
+        public string GetDocument(string nspTab)
+        {
+            return TypeDeclare.GetFormatDocument(nspTab, DocSummary, Params, DocReturns);
         }
     }
 }
