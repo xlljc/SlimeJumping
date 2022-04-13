@@ -6,6 +6,18 @@ using Namotion.Reflection;
 
 namespace JsService.generate
 {
+
+    internal class ClassData
+    {
+        public ClassData(ClassDeclare classType, Type[] genericsArgs)
+        {
+            this.ClassType = classType;
+            this.GenericsArgs = genericsArgs;
+        }
+        public ClassDeclare ClassType { get; set; }
+        public Type[] GenericsArgs { get; set; }
+    }
+
     internal class ClassDeclare : DeclareBase
     {
         public override string DeclareType => "class";
@@ -48,10 +60,10 @@ namespace JsService.generate
         public Type ClsType { get; }
 
         //父类
-        public ClassDeclare BaseType { get; set; }
+        public ClassData BaseType { get; set; }
 
         //实现接口
-        public List<ClassDeclare> ImplTypes { get; } = new List<ClassDeclare>();
+        public List<ClassData> ImplTypes { get; } = new List<ClassData>();
 
         //导入的模块
         public List<TsType> ImportTypes { get; } = new List<TsType>();
@@ -151,7 +163,7 @@ namespace JsService.generate
         {
             if (BaseType != null)
             {
-                TsType refType = BaseType.TypeDeclare.RefType;
+                TsType refType = BaseType.ClassType.TypeDeclare.RefType;
                 if (refType.Module != "" && !ImportTypes.Contains(refType))
                 {
                     ImportTypes.Add(refType);
@@ -159,7 +171,7 @@ namespace JsService.generate
             }
             foreach (var item in ImplTypes)
             {
-                TsType refType = item.TypeDeclare.RefType;
+                TsType refType = item.ClassType.TypeDeclare.RefType;
                 if (refType.Module != "" && !ImportTypes.Contains(refType))
                 {
                     ImportTypes.Add(refType);
@@ -178,7 +190,8 @@ namespace JsService.generate
                     {
                         str += ", ";
                     }
-                    str += type.RefType.TsFullName + " = any";
+                    // str += type.RefType.TsFullName + " = any";
+                    str += type.RefType.TsFullName;
                 }
                 return $"<{str}>";
             }
@@ -261,10 +274,10 @@ namespace JsService.generate
             return str;
         }
 
-        private string __getString(ClassDeclare cd, string append)
+        private string __getString(ClassData cd, string append)
         {
             string str;
-            TypeDeclare type = cd.TypeDeclare;
+            TypeDeclare type = cd.ClassType.TypeDeclare;
             if (type.RefType.Module == "")
             {
                 str = type.RefType.TsFullName;
@@ -273,7 +286,21 @@ namespace JsService.generate
             {
                 str = type.RefType.TsName;
             }
-            return str + append;
+            str += append;
+            if (cd.GenericsArgs != null && cd.GenericsArgs.Length > 0)
+            {
+                str += "<";
+                for (var i = 0; i < cd.GenericsArgs.Length; i++)
+                {
+                    if (i > 0)
+                    {
+                        str += ", ";
+                    }
+                    str += "any";
+                }
+                str += ">";
+            }
+            return str;
         }
 
         public bool CanNew()

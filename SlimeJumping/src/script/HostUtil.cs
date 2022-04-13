@@ -9,15 +9,7 @@ namespace JsService
         private readonly static Dictionary<string, Type> arrTypeDic = new Dictionary<string, Type>();
         private readonly static object obj = new object();
 
-        /// <summary>
-        /// 哈哈哈哈555
-        /// asdf
-        /// xxx55555
-        /// </summary>
-        /// <param name="typeName">aaaaf45</param>
-        /// <param name="length">阿斯顿发份</param>
-        /// <returns>aaaxxx</returns>
-        [JsFunction("__createHostArr", RegisterFlag = RegisterFlag.InjectAndInterface)]
+        [JsFunction("__createHostArr", RegisterFlag = RegisterFlag.OnlyInject)]
         public static object CreateHostArr(string typeName, params object[] length)
         {
             object[] args;

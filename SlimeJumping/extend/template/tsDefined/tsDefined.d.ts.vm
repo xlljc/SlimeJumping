@@ -42,7 +42,7 @@ declare var console: Console;
 #foreach($i in $list)
 #if($velocityCount > 1), #end
 #if($i.IsParams)...#end
-#if($i.Name == 'function' || $i.Name == 'export' || $i.Name == 'class')_#end
+#if($i.Name == 'function' || $i.Name == 'export' || $i.Name == 'class' || $i.Name == 'with')_#end
 ${i.Name}#if($i.HasDefaultValue)?#end
 : ${i.Type.GetFormatString($i.IsParams)}#end
 #end
@@ -245,8 +245,10 @@ declare namespace ${t.TsNamespace} {
 ##
 ${nspTab}#if($t.Module == '' && $t.TsNamespace == '')declare #end
 type ${t.TsName} = ${item.TypeStr};
+#if($item.CanInstance)
 ${nspTab}#if($t.Module == '' && $t.TsNamespace == '')declare #end
-var ${t.TsName}: never;
+var ${t.TsName}: any;
+#end
 #if($t.TsNamespace != '' || $t.Module != '')
 }
 #end

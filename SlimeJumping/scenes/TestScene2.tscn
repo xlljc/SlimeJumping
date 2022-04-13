@@ -51,3 +51,5 @@ MoveSpeed = 700.0
 JumpSpeed = 700.0
 ImpactSpeed = 1200.0
 ImpactCurve = ExtResource( 3 )
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]

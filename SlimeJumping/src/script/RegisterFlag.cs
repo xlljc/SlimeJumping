@@ -17,6 +17,10 @@ namespace JsService
         /// <summary>
         /// 仅生成接口
         /// </summary>
-        OnlyInterface
+        OnlyInterface,
+        /// <summary>
+        /// 引导类型指向, 用于指向ts的基础类型, 仅对注入类型生效, 不会注入js环境也不会生成接口代码
+        /// </summary>
+        Guide,
     }
 }

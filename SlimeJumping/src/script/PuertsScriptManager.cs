@@ -98,6 +98,8 @@ public static class PuertsScriptManager
 
         //主机类型操作脚本
         ExecuteFile("runtime/init/host");
+        //SystenJs模块化准备阶段代码
+        ExecuteFile("runtime/init/modular");
         //注册主机类函数
         __registerHostType__ = JsService.Eval<Action<string, string>>("__host__.registerHostType");
         __registerHostTypeToModule__ = JsService.Eval<Action<string, string, string>>("__host__.registerHostTypeToModule");
@@ -107,25 +109,27 @@ public static class PuertsScriptManager
         __registerHostFunctionToModule__ = JsService.Eval<Action<string, string, string, string>>("__host__.registerHostFunctionToModule");
 
         //基础类型
-        AddHostType(new HostType("any", typeof(object), "any", RegisterFlag.OnlyInterface));
+        AddHostType(new HostType("any", typeof(object), "any", RegisterFlag.Guide));
+        AddHostType(new HostType("char", typeof(char), "string", RegisterFlag.OnlyInterface));
         AddHostType(new HostType("byte", typeof(byte), "number", RegisterFlag.OnlyInterface));
         AddHostType(new HostType("short", typeof(short), "number", RegisterFlag.OnlyInterface));
+        AddHostType(new HostType("ushort", typeof(ushort), "number", RegisterFlag.OnlyInterface));
         AddHostType(new HostType("int", typeof(int), "number", RegisterFlag.OnlyInterface));
+        AddHostType(new HostType("uint", typeof(uint), "number", RegisterFlag.OnlyInterface));
         AddHostType(new HostType("long", typeof(long), "number", RegisterFlag.OnlyInterface));
-        AddHostType(new HostType("string", typeof(string), "string", RegisterFlag.OnlyInterface));
+        AddHostType(new HostType("ulong", typeof(ulong), "number", RegisterFlag.OnlyInterface));
+        AddHostType(new HostType("string", typeof(string), "string", RegisterFlag.Guide));
         AddHostType(new HostType("float", typeof(float), "number", RegisterFlag.OnlyInterface));
         AddHostType(new HostType("double", typeof(double), "number", RegisterFlag.OnlyInterface));
-        AddHostType(new HostType("boolean", typeof(bool), "boolean", RegisterFlag.OnlyInterface));
-        AddHostType(new HostType("void", typeof(void), "void", RegisterFlag.OnlyInterface));
-        AddHostType(new HostType("CsArray", typeof(System.Array), "CsArray", RegisterFlag.OnlyInterface));
+        AddHostType(new HostType("boolean", typeof(bool), "boolean", RegisterFlag.Guide));
+        AddHostType(new HostType("void", typeof(void), "void", RegisterFlag.Guide));
+        AddHostType(new HostType("CsArray", typeof(System.Array), "CsArray", RegisterFlag.Guide));
 
         //扫描注册主机对象
         ScanJsClass(typeof(PuertsScriptManager).Assembly);
         //生成ts接口代码
         GeneratesTsCode();
 
-        //SystenJs模块化准备阶段代码
-        ExecuteFile("runtime/init/modular");
         //log输出
         ExecuteFile("runtime/init/log");
         //数组转换
@@ -221,14 +225,24 @@ public static class PuertsScriptManager
 
     public static void AddHostType(HostType type)
     {
-        if (type.RegisterFlag == RegisterFlag.InjectAndInterface || type.RegisterFlag == RegisterFlag.OnlyInterface)
+        if (type.Type.GetGenericArguments().Length > 0 && type.Type.GenericTypeArguments.Length <= 0)
+        {
+            throw new ArgumentException($"未给类型'{type.Name}'赋予对应的泛型参数");
+        }
+        if (type.RegisterFlag == RegisterFlag.InjectAndInterface
+            || type.RegisterFlag == RegisterFlag.OnlyInterface
+            || type.RegisterFlag == RegisterFlag.Guide)
         {
             //添加到生成环境中
-            gt.AddType(null, type);
+            gt.AddType(null, type, type.RegisterFlag != RegisterFlag.OnlyInterface);
+            if (type.RegisterFlag == RegisterFlag.Guide)
+            {
+                gt.IgnoreTsType.Add(type.Name);
+            }
         }
         if (type.RegisterFlag == RegisterFlag.InjectAndInterface || type.RegisterFlag == RegisterFlag.OnlyInject)
         {
-            __registerHostType__(TypeDeclare.GetCsFullName(type.Type), type.Name);
+            __registerHostType__(type.Type.FullName, type.Name);
         }
     }
 
@@ -238,14 +252,24 @@ public static class PuertsScriptManager
         {
             throw new ArgumentException("不能将带有命名空间的对象注入到System模块中: " + type.Name);
         }
-        if (type.RegisterFlag == RegisterFlag.InjectAndInterface || type.RegisterFlag == RegisterFlag.OnlyInterface)
+        if (type.Type.GetGenericArguments().Length > 0 && type.Type.GenericTypeArguments.Length <= 0)
+        {
+            throw new ArgumentException($"未给类型'{type.Name}'赋予对应的泛型参数");
+        }
+        if (type.RegisterFlag == RegisterFlag.InjectAndInterface
+            || type.RegisterFlag == RegisterFlag.OnlyInterface
+            || type.RegisterFlag == RegisterFlag.Guide)
         {
             //添加到生成环境中
             gt.AddType(path, type);
+            if (type.RegisterFlag == RegisterFlag.Guide)
+            {
+                gt.IgnoreTsType.Add(type.Name);
+            }
         }
         if (type.RegisterFlag == RegisterFlag.InjectAndInterface || type.RegisterFlag == RegisterFlag.OnlyInject)
         {
-            __registerHostTypeToModule__(TypeDeclare.GetCsFullName(type.Type), path, type.Name);
+            __registerHostTypeToModule__(type.Type.FullName, path, type.Name);
         }
     }
 

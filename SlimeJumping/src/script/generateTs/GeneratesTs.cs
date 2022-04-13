@@ -150,7 +150,8 @@ namespace JsService.generate
                             {
                                 AddType(null, new HostType(baseName, type.BaseType), false);
                             }
-                            cls.BaseType = (ClassDeclare)DecType[baseName];
+                            cls.BaseType = new ClassData((ClassDeclare)DecType[baseName],
+                                type.BaseType.GetGenericArguments());
                         }
                         //实现的接口
                         Type[] types = ClassDeclare.GetImplInterface(type);
@@ -161,7 +162,8 @@ namespace JsService.generate
                             {
                                 AddType(null, new HostType(n, item), false);
                             }
-                            cls.ImplTypes.Add((ClassDeclare)DecType[n]);
+                            cls.ImplTypes.Add(new ClassData((ClassDeclare)DecType[n],
+                                type.BaseType.GetGenericArguments()));
                         }
                     }
                 }
@@ -236,15 +238,6 @@ namespace JsService.generate
 
         private void InitVelocityEngine()
         {
-            // 排除类型
-            IgnoreTsType.Add("void");
-            IgnoreTsType.Add("any");
-            IgnoreTsType.Add("number");
-            IgnoreTsType.Add("object");
-            IgnoreTsType.Add("undefined");
-            IgnoreTsType.Add("null");
-            IgnoreTsType.Add("CsArray");
-
             // 创建模板引擎
             _vltEngine = new VelocityEngine();
             _vltEngine.SetProperty(RuntimeConstants.INPUT_ENCODING, "utf-8");
