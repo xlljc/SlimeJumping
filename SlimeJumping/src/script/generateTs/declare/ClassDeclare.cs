@@ -9,13 +9,23 @@ namespace JsService.generate
 
     internal class ClassData
     {
-        public ClassData(ClassDeclare classType, Type[] genericsArgs)
+        public ClassData(ClassDeclare classType, Type[] genericsArgs, Type[] generics)
         {
             this.ClassType = classType;
+            if (generics != null)
+            {
+                Generics = new TypeDeclare[generics.Length];
+                for (int i = 0; i < generics.Length; i++)
+                {
+                    Generics[i] = TypeDeclare.Register(generics[i]);
+                }
+            }
             this.GenericsArgs = genericsArgs;
+            
         }
         public ClassDeclare ClassType { get; set; }
         public Type[] GenericsArgs { get; set; }
+        public TypeDeclare[] Generics { get; set; }
     }
 
     internal class ClassDeclare : DeclareBase
@@ -287,7 +297,20 @@ namespace JsService.generate
                 str = type.RefType.TsName;
             }
             str += append;
-            if (cd.GenericsArgs != null && cd.GenericsArgs.Length > 0)
+            if (cd.Generics != null && cd.Generics.Length > 0)
+            {
+                str += "<";
+                for (var i = 0; i < cd.Generics.Length; i++)
+                {
+                    if (i > 0)
+                    {
+                        str += ", ";
+                    }
+                    str += cd.Generics[i].GetFormatString();
+                }
+                str += ">";
+            }
+            else if (cd.GenericsArgs != null && cd.GenericsArgs.Length > 0)
             {
                 str += "<";
                 for (var i = 0; i < cd.GenericsArgs.Length; i++)
@@ -296,7 +319,7 @@ namespace JsService.generate
                     {
                         str += ", ";
                     }
-                    str += "any";
+                    str += (char)((int)'T' + i);
                 }
                 str += ">";
             }

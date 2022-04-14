@@ -97,3 +97,9 @@ globalThis.__host__ = globalThis.__host__ || (() => {
         },
     }
 })();
+
+class Ref {
+    constructor(v) {
+        this.value = v;
+    }
+}

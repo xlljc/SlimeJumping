@@ -109,9 +109,10 @@ public static class PuertsScriptManager
         __registerHostFunctionToModule__ = JsService.Eval<Action<string, string, string, string>>("__host__.registerHostFunctionToModule");
 
         //基础类型
-        AddHostType(new HostType("any", typeof(object), "any", RegisterFlag.Guide));
+        AddHostType(new HostType("Object", typeof(object), "Object", RegisterFlag.Guide));
         AddHostType(new HostType("char", typeof(char), "string", RegisterFlag.OnlyInterface));
         AddHostType(new HostType("byte", typeof(byte), "number", RegisterFlag.OnlyInterface));
+        AddHostType(new HostType("sbyte", typeof(sbyte), "number", RegisterFlag.OnlyInterface));
         AddHostType(new HostType("short", typeof(short), "number", RegisterFlag.OnlyInterface));
         AddHostType(new HostType("ushort", typeof(ushort), "number", RegisterFlag.OnlyInterface));
         AddHostType(new HostType("int", typeof(int), "number", RegisterFlag.OnlyInterface));
@@ -189,6 +190,10 @@ public static class PuertsScriptManager
         {
             throw new ArgumentException("只能注入静态且共有的方法: " + fun.Name);
         }
+        if (fun.MethodInfo.GetGenericArguments().Length > 0)
+        {
+            throw new ArgumentException("不能注入带泛型的函数: " + fun.Name);
+        }
         if (fun.RegisterFlag == RegisterFlag.InjectAndInterface || fun.RegisterFlag == RegisterFlag.OnlyInterface)
         {
             //添加到生成环境中
@@ -212,6 +217,10 @@ public static class PuertsScriptManager
         {
             throw new ArgumentException("只能注入静态且共有的方法: " + fun.Name);
         }
+        if (fun.MethodInfo.GetGenericArguments().Length > 0)
+        {
+            throw new ArgumentException("不能注入带泛型的函数: " + fun.Name);
+        }
         if (fun.RegisterFlag == RegisterFlag.InjectAndInterface || fun.RegisterFlag == RegisterFlag.OnlyInterface)
         {
             //添加到生成环境中
@@ -225,10 +234,6 @@ public static class PuertsScriptManager
 
     public static void AddHostType(HostType type)
     {
-        if (type.Type.GetGenericArguments().Length > 0 && type.Type.GenericTypeArguments.Length <= 0)
-        {
-            throw new ArgumentException($"未给类型'{type.Name}'赋予对应的泛型参数");
-        }
         if (type.RegisterFlag == RegisterFlag.InjectAndInterface
             || type.RegisterFlag == RegisterFlag.OnlyInterface
             || type.RegisterFlag == RegisterFlag.Guide)
@@ -242,6 +247,10 @@ public static class PuertsScriptManager
         }
         if (type.RegisterFlag == RegisterFlag.InjectAndInterface || type.RegisterFlag == RegisterFlag.OnlyInject)
         {
+            if (type.Type.GetGenericArguments().Length > 0 && type.Type.GenericTypeArguments.Length <= 0)
+            {
+                throw new ArgumentException($"未给类型'{type.Name}'赋予对应的泛型参数");
+            }
             __registerHostType__(type.Type.FullName, type.Name);
         }
     }
@@ -251,10 +260,6 @@ public static class PuertsScriptManager
         if (type.Name.Contains("."))
         {
             throw new ArgumentException("不能将带有命名空间的对象注入到System模块中: " + type.Name);
-        }
-        if (type.Type.GetGenericArguments().Length > 0 && type.Type.GenericTypeArguments.Length <= 0)
-        {
-            throw new ArgumentException($"未给类型'{type.Name}'赋予对应的泛型参数");
         }
         if (type.RegisterFlag == RegisterFlag.InjectAndInterface
             || type.RegisterFlag == RegisterFlag.OnlyInterface
@@ -269,6 +274,10 @@ public static class PuertsScriptManager
         }
         if (type.RegisterFlag == RegisterFlag.InjectAndInterface || type.RegisterFlag == RegisterFlag.OnlyInject)
         {
+            if (type.Type.GetGenericArguments().Length > 0 && type.Type.GenericTypeArguments.Length <= 0)
+            {
+                throw new ArgumentException($"未给类型'{type.Name}'赋予对应的泛型参数");
+            }
             __registerHostTypeToModule__(type.Type.FullName, path, type.Name);
         }
     }

@@ -1,9 +1,5 @@
 
-
-// new Test3();
-console.log(new Test4().toString());
-// console.log(Test2);
-Test4.Value
+// let a = CsArray.createCsArray("Godot.Node2D", 10)
 
 export function Process(delta: float) {
     

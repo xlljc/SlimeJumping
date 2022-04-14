@@ -4,21 +4,24 @@
 
 /** Indicates this is a C# type. */
 declare type CsType = {
-    "System.Int32": number,
-    "System.String": string,
-    "System.Boolean": boolean,
-    "System.Object": Object,
+#foreach($item in $definition)
+$item;
+#end
 }
+declare interface Ref<T> {
+    value: T;
+}
+declare var Ref: new <T>(value: T) => Ref<T>;
 /** Represents an array type in C#. */
-declare interface CsArray<T = any> {
+declare interface CsArray<T> {
     [Symbol.iterator](): IterableIterator<T>;
     get Length(): number;
     Get(index: number): T;
     Set(index: number, value: T): void;
 }
 declare interface CsArrayStatic {
-    createCsArray<T1 extends keyof CsType, V extends CsType[T1]>(csType: T1, ...length: number[]): CsArray<V>;
-    createCsArray(csType: string, ...length: number[]): CsArray<any>;
+    createCsArray<T1 extends keyof CsType, V extends CsType[T1]>(csType: T1, ...lengths: number[]): CsArray<V>;
+    createCsArray(csType: string, ...lengths: number[]): CsArray<Object>;
     /** Converts a JS array to a C# array of the specified type. */
     toCsArray<T>(csType: CsType, arr: Array<T>): CsArray<T>;
 }
@@ -30,10 +33,10 @@ declare interface ArrayConstructor {
 }
 
 interface Console {
-    error(...data: any[]): void;
-    info(...data: any[]): void;
-    log(...data: any[]): void;
-    warn(...data: any[]): void;
+    error(...data: Object[]): void;
+    info(...data: Object[]): void;
+    log(...data: Object[]): void;
+    warn(...data: Object[]): void;
 }
 declare var console: Console;
 
@@ -44,7 +47,7 @@ declare var console: Console;
 #if($i.IsParams)...#end
 #if($i.Name == 'function' || $i.Name == 'export' || $i.Name == 'class' || $i.Name == 'with')_#end
 ${i.Name}#if($i.HasDefaultValue)?#end
-: ${i.Type.GetFormatString($i.IsParams)}#end
+: #if($i.Type.IsRef)Ref<#end${i.Type.GetFormatString($i.IsParams)}#if($i.Type.IsRef)>#end#end
 #end
 
 ## ----------------------------------------

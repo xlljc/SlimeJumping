@@ -24,6 +24,11 @@ namespace JsService.generate
         public TsType RefType { get; set; }
 
         /// <summary>
+        /// 是否为引用参数
+        /// </summary>
+        public bool IsRef { get; set; }
+
+        /// <summary>
         /// 包含的泛型类
         /// </summary>
         public List<TypeDeclare> GenericTypes { get; set; }

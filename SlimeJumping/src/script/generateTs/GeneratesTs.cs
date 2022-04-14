@@ -151,7 +151,7 @@ namespace JsService.generate
                                 AddType(null, new HostType(baseName, type.BaseType), false);
                             }
                             cls.BaseType = new ClassData((ClassDeclare)DecType[baseName],
-                                type.BaseType.GetGenericArguments());
+                                type.BaseType.GetGenericArguments(), type.BaseType.GenericTypeArguments);
                         }
                         //实现的接口
                         Type[] types = ClassDeclare.GetImplInterface(type);
@@ -163,7 +163,7 @@ namespace JsService.generate
                                 AddType(null, new HostType(n, item), false);
                             }
                             cls.ImplTypes.Add(new ClassData((ClassDeclare)DecType[n],
-                                type.BaseType.GetGenericArguments()));
+                                item.GetGenericArguments(), item.GenericTypeArguments));
                         }
                     }
                 }
@@ -305,6 +305,8 @@ namespace JsService.generate
             List<DeclareBase> custList = new List<DeclareBase>();
             // 引用类型
             List<TsType> refList = new List<TsType>();
+            // 注册定义类型
+            List<String> hostDefinitionList = new List<string>();
 
             foreach (var item in DecType)
             {
@@ -313,11 +315,13 @@ namespace JsService.generate
                 if (item.Value is ClassDeclare)
                 {
                     clsList.Add(item.Value);
+                    hostDefinitionList.Add($"    \"{item.Key}\": {item.Value.Name}");
                 }
                 //枚举
                 else if (item.Value is EnumDeclare)
                 {
                     enumList.Add(item.Value);
+                    hostDefinitionList.Add($"    \"{item.Key}\": {item.Value.Name}");
                 }
                 //方法
                 else if (item.Value is FunctionDeclare)
@@ -334,6 +338,7 @@ namespace JsService.generate
                     {
                         cls.Ignore = IgnoreTsType.Contains(cls.TypeDeclare.RefType.TsFullName);
                         custList.Add(cls);
+                        hostDefinitionList.Add($"    \"{item.Key}\": {item.Value.Name}");
                     }
                 }
             }
@@ -346,6 +351,7 @@ namespace JsService.generate
                     if (!item.Value.IsDetails && !IgnoreTsType.Contains(item.Key))
                     {
                         refList.Add(item.Value);
+                        hostDefinitionList.Add($"    \"{item.Key}\": {item.Value.TsFullName}");
                     }
                 }
 
@@ -356,6 +362,7 @@ namespace JsService.generate
             _vltContext.Put("enum", enumList);
             _vltContext.Put("cust", custList);
             _vltContext.Put("ref", refList);
+            _vltContext.Put("definition", hostDefinitionList);
         }
     }
 }

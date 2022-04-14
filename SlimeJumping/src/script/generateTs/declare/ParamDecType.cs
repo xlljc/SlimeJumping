@@ -54,6 +54,7 @@ namespace JsService.generate
             {
                 Type = TypeDeclare.Register(parameterInfo.ParameterType, null, MethodDeclare.ClassDeclare, MethodDeclare, true);
             }
+            Type.IsRef = parameterInfo.IsIn ? false : parameterInfo.ParameterType.IsByRef;
             //注释
             DocSummary = parameterInfo.GetXmlDocs();
         }
@@ -83,6 +84,7 @@ namespace JsService.generate
             {
                 Type = TypeDeclare.Register(parameterInfo.ParameterType, null, ConstructorDeclare.ClassDeclare, null, true);
             }
+            Type.IsRef = parameterInfo.IsIn ? false : parameterInfo.ParameterType.IsByRef;
             //注释
             DocSummary = parameterInfo.GetXmlDocs();
         }
@@ -112,6 +114,7 @@ namespace JsService.generate
             {
                 Type = TypeDeclare.Register(parameterInfo.ParameterType, null, FunctionDeclare, true);
             }
+            Type.IsRef = parameterInfo.IsIn ? false : parameterInfo.ParameterType.IsByRef;
             //注释
             DocSummary = parameterInfo.GetXmlDocs();
         }
