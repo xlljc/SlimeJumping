@@ -93,9 +93,15 @@ namespace JsService.generate
         /// </summary>
         public bool IsDetails { get; set; } = false;
 
+        /// <summary>
+        /// 指向类型
+        /// </summary>
+        public Type Type { get; set; }
+
         //注册类型
-        public TsType(string module, string fullName, string tsFullName = null)
+        public TsType(Type type, string module, string fullName, string tsFullName = null)
         {
+            Type = type;
             Module = module;
             FullName = fullName;
             if (tsFullName == null)
@@ -106,8 +112,9 @@ namespace JsService.generate
         }
 
         //游离类型, 不注册
-        public TsType(string fullName, bool isGeneric)
+        public TsType(Type type, string fullName, bool isGeneric)
         {
+            Type = type;
             IsFree = true;
             IsGeneric = isGeneric;
 

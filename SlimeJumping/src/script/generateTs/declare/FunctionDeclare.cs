@@ -49,7 +49,7 @@ namespace JsService.generate
                 JsReturnType attr = (JsReturnType)attribute;
                 if (attr.CustomType)
                 {
-                    ReturnType = TypeDeclare.CreateFreeType(attr.TypeStr, false);
+                    ReturnType = TypeDeclare.CreateFreeType(null, attr.TypeStr, false);
                 }
                 else
                 {
@@ -66,7 +66,7 @@ namespace JsService.generate
                 Params.Add(new ParamDecType(this, parameterInfo));
             }
             //注册类型
-            TypeDeclare.RegisterPlaceholder(module, name);
+            TypeDeclare.RegisterPlaceholder(null, module, name);
             //读取注释
             DocSummary = methodInfo.GetXmlDocsSummary();
             DocReturns = methodInfo.GetXmlDocsTag("returns");

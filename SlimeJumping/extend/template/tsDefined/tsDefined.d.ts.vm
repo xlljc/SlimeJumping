@@ -12,18 +12,48 @@ declare interface Ref<T> {
     value: T;
 }
 declare var Ref: new <T>(value: T) => Ref<T>;
+
 /** Represents an array type in C#. */
-declare interface CsArray<T> {
-    [Symbol.iterator](): IterableIterator<T>;
-    get Length(): number;
-    Get(index: number): T;
-    Set(index: number, value: T): void;
+interface CsArray<T> {
+    get LongLength(): long;
+    get IsFixedSize(): boolean;
+    get IsReadOnly(): boolean;
+    get IsSynchronized(): boolean;
+    get SyncRoot(): Object;
+    get Length(): int;
+    get Rank(): int;
+    CopyTo(array: CsArray, index: int): void;
+    Clone(): Object;
+    CopyTo(array: CsArray, index: long): void;
+    GetLongLength(dimension: int): long;
+    GetValue(index: long): T;
+    GetValue(index1: long, index2: long): T;
+    GetValue(index1: long, index2: long, index3: long): T;
+    GetValue(...indices: long[]): T;
+    SetValue(value: T, index: long): void;
+    SetValue(value: T, index1: long, index2: long): void;
+    SetValue(value: T, index1: long, index2: long, index3: long): void;
+    SetValue(value: T, ...indices: long[]): void;
+    GetEnumerator(): System.Collections.IEnumerator;
+    GetLength(dimension: int): int;
+    GetLowerBound(dimension: int): int;
+    GetValue(...indices: int[]): T;
+    SetValue(value: T, ...indices: int[]): void;
+    GetUpperBound(dimension: int): int;
+    GetValue(index: int): T;
+    GetValue(index1: int, index2: int): T;
+    GetValue(index1: int, index2: int, index3: int): T;
+    SetValue(value: T, index: int): void;
+    SetValue(value: T, index1: int, index2: int): void;
+    SetValue(value: T, index1: int, index2: int, index3: int): void;
+    Initialize(): void;
 }
 declare interface CsArrayStatic {
-    createCsArray<T1 extends keyof CsType, V extends CsType[T1]>(csType: T1, ...lengths: number[]): CsArray<V>;
-    createCsArray(csType: string, ...lengths: number[]): CsArray<Object>;
+    createCsArray<T1 extends keyof CsType, V extends CsType[T1]>(csType: T1, length: number): CsArray<V>;
+    createCsArray<T1 extends keyof CsType, V extends CsType[T1]>(csType: T1, length1: number, length2: number): CsArray<CsArray<V>>;
+    createCsArray<T1 extends keyof CsType, V extends CsType[T1]>(csType: T1, length1: number, length2: number, length3: number): CsArray<CsArray<CsArray<V>>>;
     /** Converts a JS array to a C# array of the specified type. */
-    toCsArray<T>(csType: CsType, arr: Array<T>): CsArray<T>;
+    toCsArray<T1 extends keyof CsType, V extends CsType[T1]>(csType: T1, arr: V[]): CsArray<V>;
 }
 declare var CsArray: CsArrayStatic;
 

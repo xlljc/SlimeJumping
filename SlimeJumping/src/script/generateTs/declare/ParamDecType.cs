@@ -43,7 +43,7 @@ namespace JsService.generate
                 JsParamType attr = (JsParamType)attribute;
                 if (attr.CustomType)
                 {
-                    Type = TypeDeclare.CreateFreeType(attr.TypeStr, false);
+                    Type = TypeDeclare.CreateFreeType(null, attr.TypeStr, false);
                 }
                 else
                 {
@@ -73,7 +73,7 @@ namespace JsService.generate
                 JsParamType attr = (JsParamType)attribute;
                 if (attr.CustomType)
                 {
-                    Type = TypeDeclare.CreateFreeType(attr.TypeStr, false);
+                    Type = TypeDeclare.CreateFreeType(null, attr.TypeStr, false);
                 }
                 else
                 {
@@ -103,7 +103,7 @@ namespace JsService.generate
                 JsParamType attr = (JsParamType)attribute;
                 if (attr.CustomType)
                 {
-                    Type = TypeDeclare.CreateFreeType(attr.TypeStr, false);
+                    Type = TypeDeclare.CreateFreeType(null, attr.TypeStr, false);
                 }
                 else
                 {

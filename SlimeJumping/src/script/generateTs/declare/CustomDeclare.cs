@@ -13,6 +13,8 @@ namespace JsService.generate
         // 类型定义对象
         public TypeDeclare TypeDeclare { get; }
 
+        public Type Type { get; }
+
         // 是否可实例化
         public bool CanInstance { get; set; }
 
@@ -25,6 +27,7 @@ namespace JsService.generate
         public CustomDeclare(Type type, string tsFullName, string typeStr)
         {
             Name = tsFullName;
+            Type = type;
             TypeDeclare = TypeDeclare.Register(type, tsFullName);
             TypeStr = typeStr;
         }

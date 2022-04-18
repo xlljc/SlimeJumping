@@ -16,7 +16,7 @@ namespace JsService.generate
         {
             Name = name;
             //注册类型
-            TsType = new TsType(module, name);
+            TsType = new TsType(type, module, name);
             TsType.IsDetails = true;
             Type = TypeDeclare.Register(type, null);
         }

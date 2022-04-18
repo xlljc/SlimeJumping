@@ -44,7 +44,7 @@ namespace JsService.generate
                 JsReturnType attr = (JsReturnType)attribute;
                 if (attr.CustomType)
                 {
-                    ReturnType  = TypeDeclare.CreateFreeType(attr.TypeStr, false);
+                    ReturnType  = TypeDeclare.CreateFreeType(null, attr.TypeStr, false);
                 }
                 else
                 {

@@ -36,7 +36,7 @@ namespace JsService.generate
                 JsFieldType attr = (JsFieldType) attribute;
                 if (attr.CustomType)
                 {
-                    Type = TypeDeclare.CreateFreeType(attr.TypeStr, false);
+                    Type = TypeDeclare.CreateFreeType(null, attr.TypeStr, false);
                 }
                 else
                 {

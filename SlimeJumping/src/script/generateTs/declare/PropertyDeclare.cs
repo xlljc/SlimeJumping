@@ -33,7 +33,7 @@ namespace JsService.generate
                 JsPropertyType attr = (JsPropertyType)attribute;
                 if (attr.CustomType)
                 {
-                    Type = TypeDeclare.CreateFreeType(attr.TypeStr, false);
+                    Type = TypeDeclare.CreateFreeType(null, attr.TypeStr, false);
                 }
                 else
                 {

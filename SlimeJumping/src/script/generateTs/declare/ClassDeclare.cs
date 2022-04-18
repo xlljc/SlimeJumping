@@ -67,7 +67,7 @@ namespace JsService.generate
         public TypeDeclare TypeDeclare { get; }
 
         // C#类型对象
-        public Type ClsType { get; }
+        public Type Type { get; }
 
         //父类
         public ClassData BaseType { get; set; }
@@ -83,7 +83,7 @@ namespace JsService.generate
 
         public ClassDeclare(Type type, string tsFullName)
         {
-            ClsType = type;
+            Type = type;
             Name = tsFullName;
             IsInterface = type.IsInterface;
             IsAbstract = type.IsAbstract;

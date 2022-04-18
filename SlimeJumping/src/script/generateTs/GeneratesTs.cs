@@ -284,7 +284,7 @@ namespace JsService.generate
             }
             catch (Exception e)
             {
-                Godot.GD.PrintErr("模板引擎写出异常: " + e.Message);
+                Godot.GD.PrintErr("模板引擎写出异常: " + e.ToString());
                 return;
             }
             Godot.GD.Print($"{writePath}写出成功!");
@@ -312,16 +312,18 @@ namespace JsService.generate
             {
                 item.Value.OnWrite();
                 //类
-                if (item.Value is ClassDeclare)
+                if (item.Value is ClassDeclare cd)
                 {
-                    clsList.Add(item.Value);
-                    hostDefinitionList.Add($"    \"{item.Key}\": {item.Value.Name}");
+                    clsList.Add(cd);
+                    HostTypeMapping.Add(cd.Type);
+                    hostDefinitionList.Add($"    \"{item.Key}\": {cd.TypeDeclare.GetFormatString()}");
                 }
                 //枚举
-                else if (item.Value is EnumDeclare)
+                else if (item.Value is EnumDeclare ed)
                 {
-                    enumList.Add(item.Value);
-                    hostDefinitionList.Add($"    \"{item.Key}\": {item.Value.Name}");
+                    enumList.Add(ed);
+                    HostTypeMapping.Add(ed.TypeDeclare.Type);
+                    hostDefinitionList.Add($"    \"{item.Key}\": {ed.TypeDeclare.GetFormatString()}");
                 }
                 //方法
                 else if (item.Value is FunctionDeclare)
@@ -338,7 +340,11 @@ namespace JsService.generate
                     {
                         cls.Ignore = IgnoreTsType.Contains(cls.TypeDeclare.RefType.TsFullName);
                         custList.Add(cls);
-                        hostDefinitionList.Add($"    \"{item.Key}\": {item.Value.Name}");
+                        if (cls.Type != typeof(Array))
+                        {
+                            HostTypeMapping.Add(cls.Type);
+                            hostDefinitionList.Add($"    \"{item.Key}\": {cls.TypeDeclare.GetFormatString()}");
+                        }
                     }
                 }
             }
@@ -348,13 +354,17 @@ namespace JsService.generate
             {
                 foreach (var item in module.Value)
                 {
-                    if (!item.Value.IsDetails && !IgnoreTsType.Contains(item.Key))
+                    var value = item.Value;
+                    if (!value.IsDetails && !IgnoreTsType.Contains(item.Key))
                     {
-                        refList.Add(item.Value);
-                        hostDefinitionList.Add($"    \"{item.Key}\": {item.Value.TsFullName}");
+                        refList.Add(value);
+                        if (value.Type != null && value.Type.FullName != null)
+                        {
+                            HostTypeMapping.Add(value.Type);
+                            hostDefinitionList.Add($"    \"{item.Key}\": {value.TsFullName + GetGenericName(value.Type)}");
+                        }
                     }
                 }
-
             }
 
             _vltContext.Put("func", funcList);
@@ -363,6 +373,26 @@ namespace JsService.generate
             _vltContext.Put("cust", custList);
             _vltContext.Put("ref", refList);
             _vltContext.Put("definition", hostDefinitionList);
+        }
+
+        private string GetGenericName(Type type)
+        {
+            string name = "";
+            var list = type.GetGenericArguments();
+            if (list.Length > 0)
+            {
+                name += "<";
+                for (int i = 0; i < list.Length; i++)
+                {
+                    if (i != 0)
+                    {
+                        name += ", ";
+                    }
+                    name += "any";
+                }
+                name += ">";
+            }
+            return name;
         }
     }
 }

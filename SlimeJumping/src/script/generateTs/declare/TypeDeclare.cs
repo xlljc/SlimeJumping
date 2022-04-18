@@ -29,6 +29,11 @@ namespace JsService.generate
         public bool IsRef { get; set; }
 
         /// <summary>
+        /// C#类型
+        /// </summary>
+        public Type Type { get; }
+
+        /// <summary>
         /// 包含的泛型类
         /// </summary>
         public List<TypeDeclare> GenericTypes { get; set; }
@@ -41,6 +46,7 @@ namespace JsService.generate
         {
             Name = name;
             IsArray = type.IsArray;
+            Type = type;
             if (IsArray)
             {
                 //ArrayRank = type.GetArrayRank();
@@ -151,7 +157,7 @@ namespace JsService.generate
             }
             else
             {
-                typeData = new TsType(null, fullName, tsFullName);
+                typeData = new TsType(null, null, fullName, tsFullName);
                 RegisterType.Add(fullName, typeData);
             }
         }
@@ -159,9 +165,9 @@ namespace JsService.generate
         /// <summary>
         /// 注册占位对象
         /// </summary>
-        public static void RegisterPlaceholder(string module, string tsFullName)
+        public static void RegisterPlaceholder(Type type, string module, string tsFullName)
         {
-            new TsType(module, tsFullName).IsDetails = true;
+            new TsType(type, module, tsFullName).IsDetails = true;
         }
 
         /// <summary>
@@ -198,7 +204,7 @@ namespace JsService.generate
             // 是否是泛型
             if (filtrGeneric && IsGeneric(name, classDeclare, methodDeclare, functionDeclare))
             {
-                return CreateFreeType(fullName, true);
+                return CreateFreeType(type, fullName, true);
             }
 
             TsType typeData;
@@ -213,7 +219,7 @@ namespace JsService.generate
             }
             else //如果当前类型没有被注册
             {
-                typeData = new TsType(null, fullName, tsFullName);
+                typeData = new TsType(type, null, fullName, tsFullName);
                 typeData.GenericCount = type.GetGenericArguments().Length;
                 RegisterType.Add(fullName, typeData);
             }
@@ -235,11 +241,11 @@ namespace JsService.generate
         /// <summary>
         /// 创建一个游离类型, 该类型不会注册到 TsType 中
         /// </summary>
-        public static TypeDeclare CreateFreeType(string tName, bool isGeneric)
+        public static TypeDeclare CreateFreeType(Type type, string tName, bool isGeneric)
         {
             var g = new TypeDeclare();
             g.Name = tName;
-            g.RefType = new TsType(tName, isGeneric);
+            g.RefType = new TsType(type, tName, isGeneric);
             return g;
         }
 
@@ -338,9 +344,9 @@ namespace JsService.generate
         // 检测是否是泛型
         private static bool IsGeneric(string name, ClassDeclare classDeclare, MethodDeclare methodDeclare, FunctionDeclare functionDeclare)
         {
-            if (classDeclare != null && classDeclare.ClsType != null)
+            if (classDeclare != null && classDeclare.Type != null)
             {
-                var gs = classDeclare.ClsType.GetGenericArguments();
+                var gs = classDeclare.Type.GetGenericArguments();
                 if (gs != null)
                 {
                     foreach (var g in gs)

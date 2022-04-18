@@ -46,20 +46,20 @@ public class TestJsObject {
     [JsRegister]
     public static void Test()
     {
-        PuertsScriptManager.AddHostType(new HostType("Godot.Vector2", typeof(Vector2)));
-        PuertsScriptManager.AddHostType(new HostType("Godot.Vector3", typeof(Vector3)));
-        PuertsScriptManager.AddHostType(new HostType("Godot.Transform2D", typeof(Transform2D)));
-        PuertsScriptManager.AddHostType(new HostType("Godot.Transform", typeof(Transform)));
-        PuertsScriptManager.AddHostType(new HostType("Godot.Input", typeof(Input)));
-        PuertsScriptManager.AddHostType(new HostType("Godot.Node", typeof(Node)));
-        PuertsScriptManager.AddHostType(new HostType("Godot.NodePath", typeof(NodePath)));
-        PuertsScriptManager.AddHostType(new HostType("Godot.Node2D", typeof(Node2D)));
-        PuertsScriptManager.AddHostType(new HostType("Godot.SceneTree", typeof(SceneTree)));
-        PuertsScriptManager.AddHostType(new HostType("Godot.Sprite", typeof(Sprite)));
-        PuertsScriptManager.AddHostType(new HostType("Godot.AnimationPlayer", typeof(AnimationPlayer)));
-        PuertsScriptManager.AddHostType(new HostType("Godot.KinematicBody2D", typeof(KinematicBody2D)));
-        PuertsScriptManager.AddHostType(new HostType("Godot.KeyList", typeof(KeyList)));
-        PuertsScriptManager.AddHostTypeToModule("Native/GameManager", new HostType("GameManager", typeof(GameManager)));
+        // PuertsScriptManager.AddHostType(new HostType("Godot.Vector2", typeof(Vector2)));
+        // PuertsScriptManager.AddHostType(new HostType("Godot.Vector3", typeof(Vector3)));
+        // PuertsScriptManager.AddHostType(new HostType("Godot.Transform2D", typeof(Transform2D)));
+        // PuertsScriptManager.AddHostType(new HostType("Godot.Transform", typeof(Transform)));
+        // PuertsScriptManager.AddHostType(new HostType("Godot.Input", typeof(Input)));
+        // PuertsScriptManager.AddHostType(new HostType("Godot.Node", typeof(Node)));
+        // PuertsScriptManager.AddHostType(new HostType("Godot.NodePath", typeof(NodePath)));
+        // PuertsScriptManager.AddHostType(new HostType("Godot.Node2D", typeof(Node2D)));
+        // PuertsScriptManager.AddHostType(new HostType("Godot.SceneTree", typeof(SceneTree)));
+        // PuertsScriptManager.AddHostType(new HostType("Godot.Sprite", typeof(Sprite)));
+        // PuertsScriptManager.AddHostType(new HostType("Godot.AnimationPlayer", typeof(AnimationPlayer)));
+        // PuertsScriptManager.AddHostType(new HostType("Godot.KinematicBody2D", typeof(KinematicBody2D)));
+        // PuertsScriptManager.AddHostType(new HostType("Godot.KeyList", typeof(KeyList)));
+        // PuertsScriptManager.AddHostTypeToModule("Native/GameManager", new HostType("GameManager", typeof(GameManager)));
     }
 
     [JsFunction("TestArr1")]
@@ -88,5 +88,18 @@ public class TestJsObject {
     [JsFunction("TestOut")]
     public static void TestOut(out int a) {
         a = 5;
+    }
+
+    [JsFunction("TestNodeArray")]
+    public static void TestNodeArray(Node2D[][] array) {
+
+    }
+
+    [JsFunction("TestIntArray")]
+    public static int[] TestIntArray()
+    {
+        var arr = new int[10];
+        arr[1] = 999;
+        return arr;
     }
 }
