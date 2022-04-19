@@ -22,9 +22,9 @@ interface CsArray<T> {
     get SyncRoot(): Object;
     get Length(): int;
     get Rank(): int;
-    CopyTo(array: CsArray, index: int): void;
+    CopyTo(array: CsArray<T>, index: int): void;
     Clone(): Object;
-    CopyTo(array: CsArray, index: long): void;
+    CopyTo(array: CsArray<T>, index: long): void;
     GetLongLength(dimension: int): long;
     GetValue(index: long): T;
     GetValue(index1: long, index2: long): T;
@@ -34,7 +34,6 @@ interface CsArray<T> {
     SetValue(value: T, index1: long, index2: long): void;
     SetValue(value: T, index1: long, index2: long, index3: long): void;
     SetValue(value: T, ...indices: long[]): void;
-    GetEnumerator(): System.Collections.IEnumerator;
     GetLength(dimension: int): int;
     GetLowerBound(dimension: int): int;
     GetValue(...indices: int[]): T;

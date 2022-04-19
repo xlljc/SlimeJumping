@@ -49,7 +49,7 @@ public static class PuertsScriptManager
     //加载完成清理函数
     private static Action __overRegisterModule__;
     //执行模块函数
-    private static Action<string> __moduleExecute__;
+    private static Action<string> __initModule__;
     //帧回调函数
     private static Action<object> __process__;
     //物理帧回调函数
@@ -140,7 +140,7 @@ public static class PuertsScriptManager
         __readyRegisterModule__ = JsService.Eval<Action<string>>("__module__.readyRegisterModule");
         __overRegisterModule__ = JsService.Eval<Action>("__module__.overRegisterModule");
         //执行模块函数
-        __moduleExecute__ = JsService.Eval<Action<string>>("__module__.execute");
+        __initModule__ = JsService.Eval<Action<string>>("__module__.initModule");
 
         //扫描并加载所有runtime下面的js文件
         LoadModule("runtime");
@@ -333,7 +333,7 @@ public static class PuertsScriptManager
     /// <param name="path">模块路径</param>
     public static void ExecuteModule(string path)
     {
-        __moduleExecute__(path + "/index");
+        __initModule__(path);
     }
 
     /// <summary>

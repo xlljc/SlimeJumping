@@ -9,19 +9,15 @@ globalThis.Array.toJsArray = globalThis.Array.toJsArray || ((arr) => {
 globalThis.CsArray = globalThis.CsArray || (() => {
     const __createHostArr = globalThis.__createHostArr;
     delete globalThis.__createHostArr;
-    function createCsArray(type, ...length) {
-        let target = __createHostArr(type, ...length);
-        return target;
-    }
+    const __toHostArr = globalThis.__toHostArr;
+    delete globalThis.__toHostArr;
 
     return {
-        createCsArray,
+        createCsArray(type, ...length) {
+            return __createHostArr(type, ...length);
+        },
         toCsArray: (type, arr) => {
-            let csArr = createCsArray(type, arr.length);
-            for (let i = 0; i < arr.length; i++) {
-                csArr.SetValue(arr[i], i);
-            }
-            return csArr;
+            return __toHostArr(type, ...arr);
         }
     }
 })();

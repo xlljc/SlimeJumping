@@ -20,6 +20,14 @@ globalThis.__module__ = (() => {
 		}
 		module.exports[name] = obj;
 	}
+	function initModule(moduleName) {
+		execute(moduleName + "/index");
+		for (const path in modules) {
+			if (path.startsWith(moduleName)) {
+				execute(path);
+			}
+		}
+	}
     function execute(path) {
 		let module = modules[path];
 		if (module && !module.inited) {
@@ -70,6 +78,7 @@ globalThis.__module__ = (() => {
 	}
     return {
         modules,
+		initModule,
         addObject,
         getModule,
         execute,

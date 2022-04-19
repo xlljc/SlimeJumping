@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "System",
+    "lib": ["ES5", "ES2015", "ES6"],
+    "outDir": "./bin",
+    "outFile": "./bin/index.js",
+    "rootDir": "./src",
+    "declaration": true,
+    "declarationMap": true,
+    "strict": true,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "skipLibCheck": true,
+    "inlineSourceMap": true,
+    "sourceRoot": "../src",
+    "types": ["../../mods/native"],
+    "typeRoots": ["@types"],
+    "experimentalDecorators": true,
+  }
+}

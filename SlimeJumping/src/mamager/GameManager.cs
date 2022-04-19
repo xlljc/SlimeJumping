@@ -23,6 +23,8 @@ public class GameManager : Node
         }
         _inited = true;
         PuertsScriptManager.Init(DebugFlag.Enable, 9223);
+        PuertsScriptManager.LoadDevelopModule("extend/project", "UnitTest");
+        PuertsScriptManager.ExecuteModule("UnitTest");
     }
 
     public override void _EnterTree()

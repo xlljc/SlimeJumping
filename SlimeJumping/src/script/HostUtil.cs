@@ -30,5 +30,42 @@ namespace JsService
             var arr = Array.CreateInstance(arrType, args);
             return arr;
         }
+
+        [JsFunction("__toHostArr", RegisterFlag = RegisterFlag.OnlyInject)]
+        public static Array ToHostArr(string typeName, params object[] items)
+        {
+            var arrType = HostTypeMapping.GetTypeByName(typeName);
+            var arr = Array.CreateInstance(arrType, items.Length);
+            for (int i = 0; i < items.Length; i++)
+            {
+                arr.SetValue(Conver(items[i], arrType), i);
+            }
+            return arr;
+        }
+
+        private static object Conver(object o, Type t)
+        {
+            if (t == typeof(int))
+                return (int)(double)o;
+            else if (t == typeof(float))
+                return (float)(double)o;
+            else if (t == typeof(long))
+                return (long)(double)o;
+            else if (t == typeof(short))
+                return (short)(double)o;
+            else if (t == typeof(byte))
+                return (byte)(double)o;
+            else if (t == typeof(char))
+                return ((string)o)[0];
+            else if (t == typeof(uint))
+                return (uint)(double)o;
+            else if (t == typeof(ulong))
+                return (ulong)(double)o;
+            else if (t == typeof(ushort))
+                return (ushort)(double)o;
+            else if (t == typeof(sbyte))
+                return (sbyte)(double)o;
+            return o;
+        }
     }
 }
