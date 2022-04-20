@@ -1,22 +1,21 @@
 import { Test } from "./index";
 
-class A extends Godot.Node {
+export class MyNode extends Godot.Node {
     constructor() {
         super();
-        //console.log("create A: " + this.Name);
     }
     public _Process(delta: number): void {
         super._Process(delta);
-        //console.log("a: " + delta + " name: " + this.Name);
+        //let node = this.GetNode(new Godot.NodePath("test")) as Godot.Node2D;
     }
 }
 
-class ArrayExtends {
-    @Test()
+class TestExtends {
+    //@Test()
     public TestExtends1() {
         let time = Date.now();
         for (let i = 0; i < 100; i++) {
-            let a = new A();
+            let a = new MyNode();
             a._Process(1.5);
             a.GetNodeOrNull(new Godot.NodePath("aa/bb"));
         }

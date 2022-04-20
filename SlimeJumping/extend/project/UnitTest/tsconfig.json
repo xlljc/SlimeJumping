@@ -14,7 +14,7 @@
     "skipLibCheck": true,
     "inlineSourceMap": true,
     "sourceRoot": "../src",
-    "types": ["../../mods/native"],
+    "types": ["../../mods/native", "../../mods/runtime/bin/index"],
     "typeRoots": ["@types"],
     "experimentalDecorators": true,
   }

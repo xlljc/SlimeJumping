@@ -74,7 +74,7 @@ declare var console: Console;
 #foreach($i in $list)
 #if($velocityCount > 1), #end
 #if($i.IsParams)...#end
-#if($i.Name == 'function' || $i.Name == 'export' || $i.Name == 'class' || $i.Name == 'with')_#end
+#if($i.Name == 'function' || $i.Name == 'export' || $i.Name == 'class' || $i.Name == 'with' || $i.Name == 'var')_#end
 ${i.Name}#if($i.HasDefaultValue)?#end
 : #if($i.Type.IsRef)Ref<#end${i.Type.GetFormatString($i.IsParams)}#if($i.Type.IsRef)>#end#end
 #end

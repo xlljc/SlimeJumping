@@ -148,8 +148,8 @@ public static class PuertsScriptManager
         ExecuteModule("runtime");
 
         //帧循环函数
-        __process__ = JsService.Eval<Action<object>>("__module__.getModule('runtime/index').Process");
-        __physicsProcess__ = JsService.Eval<Action<object>>("__module__.getModule('runtime/index').PhysicsProcess");
+        __process__ = JsService.Eval<Action<object>>("__process__");
+        __physicsProcess__ = JsService.Eval<Action<object>>("__physicsProcess__");
     }
 
     public static void AddHostInstance(HostInstance obj)

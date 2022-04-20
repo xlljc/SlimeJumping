@@ -45,6 +45,12 @@ declare type CsType = {
     "Godot.PhysicsBody2D": Godot.PhysicsBody2D;
     "Godot.CollisionObject2D": Godot.CollisionObject2D;
     "Godot.KeyList": Godot.KeyList;
+    "Godot.WebSocketClient": Godot.WebSocketClient;
+    "Godot.WebSocketMultiplayerPeer": Godot.WebSocketMultiplayerPeer;
+    "Godot.NetworkedMultiplayerPeer": Godot.NetworkedMultiplayerPeer;
+    "Godot.PacketPeer": Godot.PacketPeer;
+    "Godot.Reference": Godot.Reference;
+    "Godot.WebSocketServer": Godot.WebSocketServer;
     "GameManager": import("Native/GameManager").GameManager;
     "Godot.Vector2.Axis": Godot.Vector2.Axis;
     "Godot.Vector3.Axis": Godot.Vector3.Axis;
@@ -64,7 +70,6 @@ declare type CsType = {
     "System.IntPtr": System.IntPtr;
     "Godot.WeakRef": Godot.WeakRef;
     "Godot.SignalAwaiter": Godot.SignalAwaiter;
-    "Godot.Reference": Godot.Reference;
     "Godot.Error": Godot.Error;
     "Godot.Color": Godot.Color;
     "Godot.Material": Godot.Material;
@@ -76,7 +81,6 @@ declare type CsType = {
     "Godot.Mesh": Godot.Mesh;
     "Godot.MultiMesh": Godot.MultiMesh;
     "Godot.World2D": Godot.World2D;
-    "Godot.NetworkedMultiplayerPeer": Godot.NetworkedMultiplayerPeer;
     "Godot.SceneTreeTimer": Godot.SceneTreeTimer;
     "Godot.SceneTree.StretchMode": Godot.SceneTree.StretchMode;
     "Godot.SceneTree.StretchAspect": Godot.SceneTree.StretchAspect;
@@ -86,6 +90,11 @@ declare type CsType = {
     "Godot.Animation": Godot.Animation;
     "Godot.KinematicCollision2D": Godot.KinematicCollision2D;
     "Godot.Shape2D": Godot.Shape2D;
+    "Godot.X509Certificate": Godot.X509Certificate;
+    "Godot.WebSocketPeer": Godot.WebSocketPeer;
+    "Godot.NetworkedMultiplayerPeer.TransferModeEnum": Godot.NetworkedMultiplayerPeer.TransferModeEnum;
+    "Godot.NetworkedMultiplayerPeer.ConnectionStatus": Godot.NetworkedMultiplayerPeer.ConnectionStatus;
+    "Godot.CryptoKey": Godot.CryptoKey;
 }
 declare interface Ref<T> {
     value: T;
@@ -4386,12 +4395,348 @@ declare namespace Godot {
     interface CollisionObject2DStatic extends Godot.Node2DStatic {
     }
 }
+declare namespace Godot {
+    /**
+     * This class implements a WebSocket client compatible with any RFC 6455-compliant WebSocket server.
+     * This client can be optionally used as a network peer for the .
+     * After starting the client (), you will need to  it at regular intervals (e.g. inside ).
+     * You will receive appropriate signals when connecting, disconnecting, or when new data is available.
+    */
+    interface WebSocketClient extends Godot.WebSocketMultiplayerPeer {
+        /**
+         * If true, SSL certificate verification is enabled.
+         * Note: You must specify the certificates to be used in the Project Settings for it to work when exported.
+        */
+        get VerifySsl(): boolean;
+        /**
+         * If true, SSL certificate verification is enabled.
+         * Note: You must specify the certificates to be used in the Project Settings for it to work when exported.
+        */
+        set VerifySsl(v: boolean);
+        /**
+         * If specified, this  will be the only one accepted when connecting to an SSL host. Any other certificate provided by the server will be regarded as invalid.
+         * Note: Specifying a custom trusted_ssl_certificate is not supported in HTML5 exports due to browsers restrictions.
+        */
+        get TrustedSslCertificate(): Godot.X509Certificate;
+        /**
+         * If specified, this  will be the only one accepted when connecting to an SSL host. Any other certificate provided by the server will be regarded as invalid.
+         * Note: Specifying a custom trusted_ssl_certificate is not supported in HTML5 exports due to browsers restrictions.
+        */
+        set TrustedSslCertificate(v: Godot.X509Certificate);
+        /**
+         * Connects to the given URL requesting one of the given protocols as sub-protocol. If the list empty (default), no sub-protocol will be requested.
+         * If true is passed as gd_mp_api, the client will behave like a network peer for the , connections to non-Godot servers will not work, and data_received will not be emitted.
+         * If false is passed instead (default), you must call  functions (put_packet, get_packet, etc.) on the  returned via get_peer(1) and not on this object directly (e.g. get_peer(1).put_packet(data)).
+         * You can optionally pass a list of custom_headers to be added to the handshake HTTP request.
+         * Note: To avoid mixed content warnings or errors in HTML5, you may have to use a url that starts with wss:// (secure) instead of ws://. When doing so, make sure to use the fully qualified domain name that matches the one defined in the server's SSL certificate. Do not connect directly via the IP address for wss:// connections, as it won't match with the SSL certificate.
+         * Note: Specifying custom_headers is not supported in HTML5 exports due to browsers restrictions.
+         * @params protocols If the parameter is null, then the default value is Array.Empty<string>()
+         * @params customHeaders If the parameter is null, then the default value is Array.Empty<string>()
+        */
+        ConnectToUrl(url: string, protocols?: CsArray<string>, gdMpApi?: boolean, customHeaders?: CsArray<string>): Godot.Error;
+        /**
+         * Disconnects this client from the connected host. See  for more information.
+        */
+        DisconnectFromHost(code?: int, reason?: string): void;
+        /**
+         * Return the IP address of the currently connected host.
+        */
+        GetConnectedHost(): string;
+        /**
+         * Return the IP port of the currently connected host.
+        */
+        GetConnectedPort(): ushort;
+        SetVerifySslEnabled(enabled: boolean): void;
+        IsVerifySslEnabled(): boolean;
+        GetTrustedSslCertificate(): Godot.X509Certificate;
+        SetTrustedSslCertificate(arg0: Godot.X509Certificate): void;
+    }
+    interface WebSocketClientConstructor {
+        new(): Godot.WebSocketClient;
+    }
+    interface WebSocketClientStatic extends Godot.WebSocketMultiplayerPeerStatic {
+    }
+    var WebSocketClient: Godot.WebSocketClientConstructor & Godot.WebSocketClientStatic;
+}
+declare namespace Godot {
+    /**
+     * Base class for WebSocket server and client, allowing them to be used as network peer for the .
+    */
+    interface WebSocketMultiplayerPeer extends Godot.NetworkedMultiplayerPeer {
+        /**
+         * Configures the buffer sizes for this WebSocket peer. Default values can be specified in the Project Settings under network/limits. For server, values are meant per connected peer.
+         * The first two parameters define the size and queued packets limits of the input buffer, the last two of the output buffer.
+         * Buffer sizes are expressed in KiB, so 4 = 2^12 = 4096 bytes. All parameters will be rounded up to the nearest power of two.
+         * Note: HTML5 exports only use the input buffer since the output one is managed by browsers.
+        */
+        SetBuffers(inputBufferSizeKb: int, inputMaxPackets: int, outputBufferSizeKb: int, outputMaxPackets: int): Godot.Error;
+        /**
+         * Returns the  associated to the given peer_id.
+        */
+        GetPeer(peerId: int): Godot.WebSocketPeer;
+    }
+    interface WebSocketMultiplayerPeerConstructor {
+    }
+    interface WebSocketMultiplayerPeerStatic extends Godot.NetworkedMultiplayerPeerStatic {
+    }
+}
+declare namespace Godot {
+    /**
+     * Manages the connection to network peers. Assigns unique IDs to each client connected to the server. See also .
+     * Note: The high-level multiplayer API protocol is an implementation detail and isn't meant to be used by non-Godot servers. It may change without notice.
+    */
+    interface NetworkedMultiplayerPeer extends Godot.PacketPeer {
+        /**
+         * If true, this  refuses new connections.
+        */
+        get RefuseNewConnections(): boolean;
+        /**
+         * If true, this  refuses new connections.
+        */
+        set RefuseNewConnections(v: boolean);
+        /**
+         * The manner in which to send packets to the target_peer. See .
+        */
+        get TransferMode(): Godot.NetworkedMultiplayerPeer.TransferModeEnum;
+        /**
+         * The manner in which to send packets to the target_peer. See .
+        */
+        set TransferMode(v: Godot.NetworkedMultiplayerPeer.TransferModeEnum);
+        SetTransferMode(mode: Godot.NetworkedMultiplayerPeer.TransferModeEnum): void;
+        GetTransferMode(): Godot.NetworkedMultiplayerPeer.TransferModeEnum;
+        /**
+         * Sets the peer to which packets will be sent.
+         * The id can be one of:  to send to all connected peers,  to send to the peer acting as server, a valid peer ID to send to that specific peer, a negative peer ID to send to all peers except that one. By default, the target peer is .
+        */
+        SetTargetPeer(id: int): void;
+        /**
+         * Returns the ID of the  who sent the most recent packet.
+        */
+        GetPacketPeer(): int;
+        /**
+         * Waits up to 1 second to receive a new network event.
+        */
+        Poll(): void;
+        /**
+         * Returns the current state of the connection. See .
+        */
+        GetConnectionStatus(): Godot.NetworkedMultiplayerPeer.ConnectionStatus;
+        /**
+         * Returns the ID of this .
+        */
+        GetUniqueId(): int;
+        SetRefuseNewConnections(enable: boolean): void;
+        IsRefusingNewConnections(): boolean;
+    }
+    interface NetworkedMultiplayerPeerConstructor {
+    }
+    interface NetworkedMultiplayerPeerStatic extends Godot.PacketPeerStatic {
+        /**
+         * Packets are sent to the server and then redistributed to other peers.
+        */
+        readonly TargetPeerBroadcast: int;
+        /**
+         * Packets are sent to the server alone.
+        */
+        readonly TargetPeerServer: int;
+    }
+}
+declare namespace Godot {
+    /**
+     * PacketPeer is an abstraction and base class for packet-based protocols (such as UDP). It provides an API for sending and receiving packets both as raw data or variables. This makes it easy to transfer data over a protocol, without having to encode data as low-level bytes or having to worry about network ordering.
+    */
+    interface PacketPeer extends Godot.Reference {
+        /**
+         * Maximum buffer size allowed when encoding Variants. Raise this value to support heavier memory allocations.
+         * The  method allocates memory on the stack, and the buffer used will grow automatically to the closest power of two to match the size of the Variant. If the Variant is bigger than encode_buffer_max_size, the method will error out with ERR_OUT_OF_MEMORY.
+        */
+        get EncodeBufferMaxSize(): int;
+        /**
+         * Maximum buffer size allowed when encoding Variants. Raise this value to support heavier memory allocations.
+         * The  method allocates memory on the stack, and the buffer used will grow automatically to the closest power of two to match the size of the Variant. If the Variant is bigger than encode_buffer_max_size, the method will error out with ERR_OUT_OF_MEMORY.
+        */
+        set EncodeBufferMaxSize(v: int);
+        /**
+         * Deprecated. Use get_var and put_var parameters instead.
+         * If true, the PacketPeer will allow encoding and decoding of object via  and .
+         * Warning: Deserialized objects can contain code which gets executed. Do not use this option if the serialized object comes from untrusted sources to avoid potential security threats such as remote code execution.
+        */
+        get AllowObjectDecoding(): boolean;
+        /**
+         * Deprecated. Use get_var and put_var parameters instead.
+         * If true, the PacketPeer will allow encoding and decoding of object via  and .
+         * Warning: Deserialized objects can contain code which gets executed. Do not use this option if the serialized object comes from untrusted sources to avoid potential security threats such as remote code execution.
+        */
+        set AllowObjectDecoding(v: boolean);
+        /**
+         * Gets a Variant. If allow_objects (or ) is true, decoding objects is allowed.
+         * Warning: Deserialized objects can contain code which gets executed. Do not use this option if the serialized object comes from untrusted sources to avoid potential security threats such as remote code execution.
+        */
+        GetVar(allowObjects?: boolean): Object;
+        /**
+         * Sends a Variant as a packet. If full_objects (or ) is true, encoding objects is allowed (and can potentially include code).
+        */
+        PutVar(_var: Object, fullObjects?: boolean): Godot.Error;
+        /**
+         * Gets a raw packet.
+        */
+        GetPacket(): CsArray<byte>;
+        /**
+         * Sends a raw packet.
+        */
+        PutPacket(buffer: CsArray<byte>): Godot.Error;
+        /**
+         * Returns the error state of the last packet received (via  and ).
+        */
+        GetPacketError(): Godot.Error;
+        /**
+         * Returns the number of packets currently available in the ring-buffer.
+        */
+        GetAvailablePacketCount(): int;
+        SetAllowObjectDecoding(enable: boolean): void;
+        IsObjectDecodingAllowed(): boolean;
+        GetEncodeBufferMaxSize(): int;
+        SetEncodeBufferMaxSize(maxSize: int): void;
+    }
+    interface PacketPeerConstructor {
+    }
+    interface PacketPeerStatic extends Godot.ReferenceStatic {
+    }
+}
+declare namespace Godot {
+    /**
+     * Base class for any object that keeps a reference count.  and many other helper objects inherit this class.
+     * Unlike other  types, References keep an internal reference counter so that they are automatically released when no longer in use, and only then. References therefore do not need to be freed manually with .
+     * In the vast majority of use cases, instantiating and using -derived types is all you need to do. The methods provided in this class are only for advanced users, and can cause issues if misused.
+     * Note: In C#, references will not be freed instantly after they are no longer in use. Instead, garbage collection will run periodically and will free references that are no longer in use. This means that unused references will linger on for a while before being removed.
+    */
+    interface Reference extends Godot.Object {
+        /**
+         * Initializes the internal reference counter. Use this only if you really know what you are doing.
+         * Returns whether the initialization was successful.
+        */
+        InitRef(): boolean;
+        /**
+         * Increments the internal reference counter. Use this only if you really know what you are doing.
+         * Returns true if the increment was successful, false otherwise.
+        */
+        Reference_(): boolean;
+        /**
+         * Decrements the internal reference counter. Use this only if you really know what you are doing.
+         * Returns true if the decrement was successful, false otherwise.
+        */
+        Unreference(): boolean;
+    }
+    interface ReferenceConstructor {
+        new(): Godot.Reference;
+    }
+    interface ReferenceStatic extends Godot.ObjectStatic {
+    }
+}
+declare namespace Godot {
+    /**
+     * This class implements a WebSocket server that can also support the high-level multiplayer API.
+     * After starting the server (), you will need to  it at regular intervals (e.g. inside ). When clients connect, disconnect, or send data, you will receive the appropriate signal.
+     * Note: Not available in HTML5 exports.
+    */
+    interface WebSocketServer extends Godot.WebSocketMultiplayerPeer {
+        /**
+         * When not set to * will restrict incoming connections to the specified IP address. Setting bind_ip to 127.0.0.1 will cause the server to listen only to the local host.
+        */
+        get BindIp(): string;
+        /**
+         * When not set to * will restrict incoming connections to the specified IP address. Setting bind_ip to 127.0.0.1 will cause the server to listen only to the local host.
+        */
+        set BindIp(v: string);
+        /**
+         * When set to a valid  (along with ) will cause the server to require SSL instead of regular TCP (i.e. the wss:// protocol).
+        */
+        get PrivateKey(): Godot.CryptoKey;
+        /**
+         * When set to a valid  (along with ) will cause the server to require SSL instead of regular TCP (i.e. the wss:// protocol).
+        */
+        set PrivateKey(v: Godot.CryptoKey);
+        /**
+         * When set to a valid  (along with ) will cause the server to require SSL instead of regular TCP (i.e. the wss:// protocol).
+        */
+        get SslCertificate(): Godot.X509Certificate;
+        /**
+         * When set to a valid  (along with ) will cause the server to require SSL instead of regular TCP (i.e. the wss:// protocol).
+        */
+        set SslCertificate(v: Godot.X509Certificate);
+        /**
+         * When using SSL (see  and ), you can set this to a valid  to be provided as additional CA chain information during the SSL handshake.
+        */
+        get CaChain(): Godot.X509Certificate;
+        /**
+         * When using SSL (see  and ), you can set this to a valid  to be provided as additional CA chain information during the SSL handshake.
+        */
+        set CaChain(v: Godot.X509Certificate);
+        /**
+         * The time in seconds before a pending client (i.e. a client that has not yet finished the HTTP handshake) is considered stale and forcefully disconnected.
+        */
+        get HandshakeTimeout(): float;
+        /**
+         * The time in seconds before a pending client (i.e. a client that has not yet finished the HTTP handshake) is considered stale and forcefully disconnected.
+        */
+        set HandshakeTimeout(v: float);
+        /**
+         * Returns true if the server is actively listening on a port.
+        */
+        IsListening(): boolean;
+        /**
+         * Starts listening on the given port.
+         * You can specify the desired subprotocols via the "protocols" array. If the list empty (default), no sub-protocol will be requested.
+         * If true is passed as gd_mp_api, the server will behave like a network peer for the , connections from non-Godot clients will not work, and data_received will not be emitted.
+         * If false is passed instead (default), you must call  functions (put_packet, get_packet, etc.), on the  returned via get_peer(id) to communicate with the peer with given id (e.g. get_peer(id).get_available_packet_count).
+         * @params protocols If the parameter is null, then the default value is Array.Empty<string>()
+        */
+        Listen(port: int, protocols?: CsArray<string>, gdMpApi?: boolean): Godot.Error;
+        /**
+         * Stops the server and clear its state.
+        */
+        Stop(): void;
+        /**
+         * Returns true if a peer with the given ID is connected.
+        */
+        HasPeer(id: int): boolean;
+        /**
+         * Returns the IP address of the given peer.
+        */
+        GetPeerAddress(id: int): string;
+        /**
+         * Returns the remote port of the given peer.
+        */
+        GetPeerPort(id: int): int;
+        /**
+         * Disconnects the peer identified by id from the server. See  for more information.
+        */
+        DisconnectPeer(id: int, code?: int, reason?: string): void;
+        GetBindIp(): string;
+        SetBindIp(arg0: string): void;
+        GetPrivateKey(): Godot.CryptoKey;
+        SetPrivateKey(arg0: Godot.CryptoKey): void;
+        GetSslCertificate(): Godot.X509Certificate;
+        SetSslCertificate(arg0: Godot.X509Certificate): void;
+        GetCaChain(): Godot.X509Certificate;
+        SetCaChain(arg0: Godot.X509Certificate): void;
+        GetHandshakeTimeout(): float;
+        SetHandshakeTimeout(timeout: float): void;
+    }
+    interface WebSocketServerConstructor {
+        new(): Godot.WebSocketServer;
+    }
+    interface WebSocketServerStatic extends Godot.WebSocketMultiplayerPeerStatic {
+    }
+    var WebSocketServer: Godot.WebSocketServerConstructor & Godot.WebSocketServerStatic;
+}
 declare module 'Native/GameManager' {
     /**
      * 游戏管理器, 负责管理整个项目其它的Manager, 并更新它们
     */
     interface GameManager extends Godot.Node {
         _EnterTree(): void;
+        _Input(event: Godot.InputEvent): void;
         _Process(delta: float): void;
         _PhysicsProcess(delta: float): void;
     }
@@ -4497,9 +4842,6 @@ declare namespace Godot {
     type SignalAwaiter = any;
 }
 declare namespace Godot {
-    type Reference = any;
-}
-declare namespace Godot {
     type Error = any;
 }
 declare namespace Godot {
@@ -4533,9 +4875,6 @@ declare namespace Godot {
     type World2D = any;
 }
 declare namespace Godot {
-    type NetworkedMultiplayerPeer = any;
-}
-declare namespace Godot {
     type SceneTreeTimer = any;
 }
 declare namespace Godot.SceneTree {
@@ -4561,4 +4900,19 @@ declare namespace Godot {
 }
 declare namespace Godot {
     type Shape2D = any;
+}
+declare namespace Godot {
+    type X509Certificate = any;
+}
+declare namespace Godot {
+    type WebSocketPeer = any;
+}
+declare namespace Godot.NetworkedMultiplayerPeer {
+    type TransferModeEnum = any;
+}
+declare namespace Godot.NetworkedMultiplayerPeer {
+    type ConnectionStatus = any;
+}
+declare namespace Godot {
+    type CryptoKey = any;
 }

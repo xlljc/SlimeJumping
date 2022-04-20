@@ -33,6 +33,14 @@ public class GameManager : Node
         Init();
     }
 
+    public override void _Input(InputEvent @event)
+    {
+        if (@event is InputEventKey iek)
+        {
+            GD.Print(iek.Pressed + ", " + iek.Echo + ", " + iek.Scancode);
+        }
+    }
+
     public override void _Process(float delta)
     {
         //更新输入事件

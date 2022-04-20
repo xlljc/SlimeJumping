@@ -59,6 +59,8 @@ public class TestJsObject {
         PuertsScriptManager.AddHostType(new HostType("Godot.AnimationPlayer", typeof(AnimationPlayer)));
         PuertsScriptManager.AddHostType(new HostType("Godot.KinematicBody2D", typeof(KinematicBody2D)));
         PuertsScriptManager.AddHostType(new HostType("Godot.KeyList", typeof(KeyList)));
+        PuertsScriptManager.AddHostType(new HostType("Godot.WebSocketClient", typeof(WebSocketClient)));
+        PuertsScriptManager.AddHostType(new HostType("Godot.WebSocketServer", typeof(WebSocketServer)));
         PuertsScriptManager.AddHostTypeToModule("Native/GameManager", new HostType("GameManager", typeof(GameManager)));
     }
 
