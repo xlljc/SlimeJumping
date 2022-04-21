@@ -3,7 +3,7 @@ namespace Runtime {
     /**
      * 二维向量
      */
-    export class Vector2 {
+    export class Vector2 implements IEquatable<Vector2> {
 
         /** x坐标 */
         public x: number = 0;
@@ -215,7 +215,7 @@ namespace Runtime {
 
         /** 比较两个向量值是否相等 */
         public equals(vector: Vector2): boolean {
-            return vector !== undefined && this.x === vector.x && this.y === vector.y;
+            return vector && this.x === vector.x && this.y === vector.y;
         }
 
         /** 转换为字符串 */

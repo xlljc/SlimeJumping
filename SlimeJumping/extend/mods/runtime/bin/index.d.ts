@@ -1,86 +1,39 @@
 declare namespace Runtime {
-    /**
-     * 二维向量
-     */
-    class Vector2 {
-        /** x坐标 */
-        x: number;
-        /** y坐标 */
-        y: number;
+    interface IEquatable<T> {
         /**
-         * 创建一个Vector对象,参数为 Vector
+         * 比较当前对象是否与指定对象属性相同
+         * @param other 目标对象
          */
-        constructor();
-        constructor(vector: Vector2);
-        constructor(x: number, y: number);
-        /** 向量值为(0,0) */
-        static get zero(): Vector2;
-        /** 向量值为(1,0) */
-        static get right(): Vector2;
-        /** 向量值为(-1,0) */
-        static get left(): Vector2;
-        /** 向量值为(0,-1) */
-        static get up(): Vector2;
-        /** 向量值为(0,1) */
-        static get down(): Vector2;
-        /** 向量值为(1,1) */
-        static get one(): Vector2;
-        /** 向量值为(-1,-1) */
-        static get negOne(): Vector2;
-        /** 获取向量长度 */
-        get length(): number;
-        /** 获取向量角度(弧度制),返回向量相对于X轴的弧度角,即(1,0)向量 */
-        get angle(): number;
-        /** 向量相加 */
-        add(vector: Vector2): Vector2;
-        add(num: number): Vector2;
-        /** 向量相减 */
-        reduce(vector: Vector2): Vector2;
-        reduce(num: number): Vector2;
-        /** 向量相乘 */
-        multiply(vector: Vector2): Vector2;
-        multiply(num: number): Vector2;
-        /** 向量相除 */
-        divide(vector: Vector2): Vector2;
-        divide(num: number): Vector2;
-        /** 向量取模 */
-        mod(vector: Vector2): Vector2;
-        mod(num: number): Vector2;
-        /** 向量整除 */
-        div(vector: Vector2): Vector2;
-        div(num: number): Vector2;
-        /** 返回与vector的点积 */
-        dot(vector: Vector2): number;
-        /** 返回与vector的叉积 */
-        cross(vector: Vector2): number;
-        /** 向量归一化,返回缩放到单位长度的向量,归一化的向量不能为(0,0) */
-        normalization(): Vector2;
-        /** 返回两个向量间的弧度角 */
-        angleTo(vector: Vector2): number;
-        /** 返回连接两个点的线和X坐标之间的弧度角. */
-        angleToPoint(vector: Vector2): number;
-        /** 根据角度旋转向量 */
-        rotated(angle: number): Vector2;
-        /** 返回绝对值向量 */
-        abs(): Vector2;
-        /** 返回向量,其中所有分量都向下取整*/
-        floor(): Vector2;
-        /** 返回向量,其中所有分量都向上取整*/
-        ceil(): Vector2;
-        /** 返回向量,其中所有分量都四舍五入到最接近的整数 */
-        round(): Vector2;
-        /** 返回向量,其中每个分量设置为一个或一个负数,具体取决于分量的符号 */
-        sign(): Vector2;
-        /** 返回到vector向量的距离 */
-        distanceTo(vector: Vector2): number;
-        /** 返回一个角度相同,长度为length的向量 */
-        clamped(length: number): Vector2;
-        /** 将向量朝vector移动固定的delta数量 */
-        moveToward(vector: Vector2, delta: number): Vector2;
-        /** 比较两个向量值是否相等 */
-        equals(vector: Vector2): boolean;
-        /** 转换为字符串 */
-        toString(): string;
+        equals(other: T): boolean;
+    }
+}
+declare namespace Runtime {
+    interface IEvent<EMAP> {
+        addListener<T extends keyof EMAP, V extends EMAP[T]>(event: T, cb: (v: V) => void): boolean;
+        dispatchEvent<T extends keyof EMAP, V extends EMAP[T]>(event: T, value: V): void;
+        removeListener<T extends keyof EMAP, V extends EMAP[T]>(event: T, cb: (v: V) => void): boolean;
+        clearListener<T extends keyof EMAP>(event: T): boolean;
+        clearAllListener(): boolean;
+    }
+}
+declare namespace Runtime {
+    /**
+     * 装饰器, 用在静态函数上, 被修饰的静态函数每帧都会被调用一次
+     */
+    function Update(): (target: any, propertyKey: string, descriptor: PropertyDescriptor) => void;
+    /**
+     * 装饰器, 用在静态函数上, 被修饰的静态函数每物理帧都会被调用一次
+     */
+    function PhysicsUpdate(): (target: any, propertyKey: string, descriptor: PropertyDescriptor) => void;
+}
+declare namespace Runtime {
+    /**
+     * 鼠标按键映射值
+     */
+    enum ButtonList {
+        Left = 0,
+        Middle = 1,
+        Right = 2
     }
 }
 declare namespace Runtime {
@@ -583,12 +536,323 @@ declare namespace Runtime {
 }
 declare namespace Runtime {
     /**
-     * 装饰器, 用在静态函数上, 被修饰的静态函数每帧都会被调用一次
+     * 颜色类
      */
-    function Update(): (target: any, propertyKey: string, descriptor: PropertyDescriptor) => void;
+    class Color implements IEquatable<Color> {
+        /** 红色通道值, 范围: 0 - 1 */
+        r: number;
+        /** 绿色通道值, 范围: 0 - 1 */
+        g: number;
+        /** 蓝色通道值, 范围: 0 - 1 */
+        b: number;
+        /** 透明通道值, 范围: 0 - 1 */
+        a: number;
+        /**
+         * 创建一个Color对象
+         */
+        constructor();
+        constructor(r: number, g: number, b: number);
+        constructor(r: number, g: number, b: number, a: number);
+        /**
+         * 创建一个Color对象, 复制参数color的 r g b a 值
+         */
+        constructor(color: Color);
+        /**
+         * 从一个十进制颜色中创建Color对象
+         */
+        constructor(rgba: number);
+        /**
+         * 从一个RGBA字符串中创建颜色对象
+         */
+        constructor(rgba: string);
+        /** HSV色调值 */
+        get h(): number;
+        /** HSV色调值 */
+        set h(value: number);
+        /**HSV饱和度值 */
+        get s(): number;
+        /** HSV饱和度值 */
+        set s(value: number);
+        /** HSV亮度值 */
+        get v(): number;
+        /** HSV亮度值 */
+        set v(value: number);
+        /** 颜色相加 */
+        add(color: Color): Color;
+        /** 颜色相减 */
+        reduce(color: Color): Color;
+        /** 颜色相乘 */
+        multiply(color: Color): Color;
+        multiply(scale: number): Color;
+        /** 颜色相除 */
+        divide(color: Color): Color;
+        divide(scale: number): Color;
+        /** 混合两种颜色 */
+        blend(color: Color): Color;
+        /** 根据amount (0-1)获取更暗的颜色 */
+        darkened(amount: number): Color;
+        /** 根据amount (0-1)获取更亮的颜色 */
+        brighter(amount: number): Color;
+        /** 获取两个颜色的中间色 */
+        middle(color: Color): Color;
+        /** 获取两个颜色间的过渡颜色,amount (0-1)为过渡的量 */
+        transition(color: Color, amount: number): Color;
+        /** 获取当前颜色的灰暗度值 */
+        gray(): number;
+        /** 获取该颜色的反色 */
+        inverted(): Color;
+        /** 获取该颜色向 #ffffff 颜色过渡,参数 amount (0-1) 为过渡的量 */
+        lightened(amount: number): Color;
+        /** 按权重值返回此颜色与to之间的线性插值的结果 */
+        linearInterpolate(to: Color, weight: number): Color;
+        linearInterpolate(to: Color, weight: Color): Color;
+        /** 转换为十进制颜色,可能会丢失精度 */
+        toDecimalism(): number;
+        /** 转换为十六进制字符串,可能会丢失精度 */
+        toHexadecimal(): string;
+        /** 转换为字符串 */
+        toString(): string;
+        equals(other: Color): boolean;
+        /**
+         * 从HSV配置创建color，值范围为0到1
+         * @param hue HSV色调
+         * @param saturation HSV饱和
+         * @param value HSV亮度
+         * @param alpha alpha透明度
+         */
+        static FromHsv(hue: number, saturation: number, value: number, alpha?: number): Color;
+        private static ParseCol8;
+        static get aliceblue(): Color;
+        static get antiquewhite(): Color;
+        static get aqua(): Color;
+        static get aquamarine(): Color;
+        static get azure(): Color;
+        static get beige(): Color;
+        static get bisque(): Color;
+        static get black(): Color;
+        static get blanchedalmond(): Color;
+        static get blue(): Color;
+        static get blueviolet(): Color;
+        static get brown(): Color;
+        static get burlywood(): Color;
+        static get cadetblue(): Color;
+        static get chartreuse(): Color;
+        static get chocolate(): Color;
+        static get coral(): Color;
+        static get cornflower(): Color;
+        static get cornsilk(): Color;
+        static get crimson(): Color;
+        static get cyan(): Color;
+        static get darkblue(): Color;
+        static get darkcyan(): Color;
+        static get darkgoldenrod(): Color;
+        static get darkgray(): Color;
+        static get darkgreen(): Color;
+        static get darkkhaki(): Color;
+        static get darkmagenta(): Color;
+        static get darkolivegreen(): Color;
+        static get darkorange(): Color;
+        static get darkorchid(): Color;
+        static get darkred(): Color;
+        static get darksalmon(): Color;
+        static get darkseagreen(): Color;
+        static get darkslateblue(): Color;
+        static get darkslategray(): Color;
+        static get darkturquoise(): Color;
+        static get darkviolet(): Color;
+        static get deeppink(): Color;
+        static get deepskyblue(): Color;
+        static get dimgray(): Color;
+        static get dodgerblue(): Color;
+        static get firebrick(): Color;
+        static get floralwhite(): Color;
+        static get forestgreen(): Color;
+        static get fuchsia(): Color;
+        static get gainsboro(): Color;
+        static get ghostwhite(): Color;
+        static get gold(): Color;
+        static get goldenrod(): Color;
+        static get gray(): Color;
+        static get green(): Color;
+        static get greenyellow(): Color;
+        static get honeydew(): Color;
+        static get hotpink(): Color;
+        static get indianred(): Color;
+        static get indigo(): Color;
+        static get ivory(): Color;
+        static get khaki(): Color;
+        static get lavender(): Color;
+        static get lavenderblush(): Color;
+        static get lawngreen(): Color;
+        static get lemonchiffon(): Color;
+        static get lightblue(): Color;
+        static get lightcoral(): Color;
+        static get lightcyan(): Color;
+        static get lightgoldenrod(): Color;
+        static get lightgray(): Color;
+        static get lightgreen(): Color;
+        static get lightpink(): Color;
+        static get lightsalmon(): Color;
+        static get lightseagreen(): Color;
+        static get lightskyblue(): Color;
+        static get lightslategray(): Color;
+        static get lightsteelblue(): Color;
+        static get lightyellow(): Color;
+        static get lime(): Color;
+        static get limegreen(): Color;
+        static get linen(): Color;
+        static get magenta(): Color;
+        static get maroon(): Color;
+        static get mediumaquamarine(): Color;
+        static get mediumblue(): Color;
+        static get mediumorchid(): Color;
+        static get mediumpurple(): Color;
+        static get mediumseagreen(): Color;
+        static get mediumslateblue(): Color;
+        static get mediumspringgreen(): Color;
+        static get mediumturquoise(): Color;
+        static get mediumvioletred(): Color;
+        static get midnightblue(): Color;
+        static get mintcream(): Color;
+        static get mistyrose(): Color;
+        static get moccasin(): Color;
+        static get navajowhite(): Color;
+        static get navyblue(): Color;
+        static get oldlace(): Color;
+        static get olive(): Color;
+        static get olivedrab(): Color;
+        static get orange(): Color;
+        static get orangered(): Color;
+        static get orchid(): Color;
+        static get palegoldenrod(): Color;
+        static get palegreen(): Color;
+        static get paleturquoise(): Color;
+        static get palevioletred(): Color;
+        static get papayawhip(): Color;
+        static get peachpuff(): Color;
+        static get peru(): Color;
+        static get pink(): Color;
+        static get plum(): Color;
+        static get powderblue(): Color;
+        static get purple(): Color;
+        static get rebeccapurple(): Color;
+        static get red(): Color;
+        static get rosybrown(): Color;
+        static get royalblue(): Color;
+        static get saddlebrown(): Color;
+        static get salmon(): Color;
+        static get sandybrown(): Color;
+        static get seagreen(): Color;
+        static get seashell(): Color;
+        static get sienna(): Color;
+        static get silver(): Color;
+        static get skyblue(): Color;
+        static get slateblue(): Color;
+        static get slategray(): Color;
+        static get snow(): Color;
+        static get springgreen(): Color;
+        static get steelblue(): Color;
+        static get tan(): Color;
+        static get teal(): Color;
+        static get thistle(): Color;
+        static get tomato(): Color;
+        static get transparent(): Color;
+        static get turquoise(): Color;
+        static get violet(): Color;
+        static get webgreen(): Color;
+        static get webgray(): Color;
+        static get webmaroon(): Color;
+        static get webpurple(): Color;
+        static get wheat(): Color;
+        static get white(): Color;
+        static get whitesmoke(): Color;
+        static get yellow(): Color;
+        static get yellowgreen(): Color;
+    }
+}
+declare namespace Runtime {
     /**
-     * 装饰器, 用在静态函数上, 被修饰的静态函数每物理帧都会被调用一次
+     * 二维向量
      */
-    function PhysicsUpdate(): (target: any, propertyKey: string, descriptor: PropertyDescriptor) => void;
+    class Vector2 implements IEquatable<Vector2> {
+        /** x坐标 */
+        x: number;
+        /** y坐标 */
+        y: number;
+        /**
+         * 创建一个Vector对象,参数为 Vector
+         */
+        constructor();
+        constructor(vector: Vector2);
+        constructor(x: number, y: number);
+        /** 向量值为(0,0) */
+        static get zero(): Vector2;
+        /** 向量值为(1,0) */
+        static get right(): Vector2;
+        /** 向量值为(-1,0) */
+        static get left(): Vector2;
+        /** 向量值为(0,-1) */
+        static get up(): Vector2;
+        /** 向量值为(0,1) */
+        static get down(): Vector2;
+        /** 向量值为(1,1) */
+        static get one(): Vector2;
+        /** 向量值为(-1,-1) */
+        static get negOne(): Vector2;
+        /** 获取向量长度 */
+        get length(): number;
+        /** 获取向量角度(弧度制),返回向量相对于X轴的弧度角,即(1,0)向量 */
+        get angle(): number;
+        /** 向量相加 */
+        add(vector: Vector2): Vector2;
+        add(num: number): Vector2;
+        /** 向量相减 */
+        reduce(vector: Vector2): Vector2;
+        reduce(num: number): Vector2;
+        /** 向量相乘 */
+        multiply(vector: Vector2): Vector2;
+        multiply(num: number): Vector2;
+        /** 向量相除 */
+        divide(vector: Vector2): Vector2;
+        divide(num: number): Vector2;
+        /** 向量取模 */
+        mod(vector: Vector2): Vector2;
+        mod(num: number): Vector2;
+        /** 向量整除 */
+        div(vector: Vector2): Vector2;
+        div(num: number): Vector2;
+        /** 返回与vector的点积 */
+        dot(vector: Vector2): number;
+        /** 返回与vector的叉积 */
+        cross(vector: Vector2): number;
+        /** 向量归一化,返回缩放到单位长度的向量,归一化的向量不能为(0,0) */
+        normalization(): Vector2;
+        /** 返回两个向量间的弧度角 */
+        angleTo(vector: Vector2): number;
+        /** 返回连接两个点的线和X坐标之间的弧度角. */
+        angleToPoint(vector: Vector2): number;
+        /** 根据角度旋转向量 */
+        rotated(angle: number): Vector2;
+        /** 返回绝对值向量 */
+        abs(): Vector2;
+        /** 返回向量,其中所有分量都向下取整*/
+        floor(): Vector2;
+        /** 返回向量,其中所有分量都向上取整*/
+        ceil(): Vector2;
+        /** 返回向量,其中所有分量都四舍五入到最接近的整数 */
+        round(): Vector2;
+        /** 返回向量,其中每个分量设置为一个或一个负数,具体取决于分量的符号 */
+        sign(): Vector2;
+        /** 返回到vector向量的距离 */
+        distanceTo(vector: Vector2): number;
+        /** 返回一个角度相同,长度为length的向量 */
+        clamped(length: number): Vector2;
+        /** 将向量朝vector移动固定的delta数量 */
+        moveToward(vector: Vector2, delta: number): Vector2;
+        /** 比较两个向量值是否相等 */
+        equals(vector: Vector2): boolean;
+        /** 转换为字符串 */
+        toString(): string;
+    }
 }
 //# sourceMappingURL=index.d.ts.map

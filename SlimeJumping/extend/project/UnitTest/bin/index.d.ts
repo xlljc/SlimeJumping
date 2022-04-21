@@ -13,6 +13,14 @@ declare module "Extends" {
         _Process(delta: number): void;
     }
 }
+declare module "TestColor" {
+    export class TestColor {
+        static Test1(): void;
+        static Test2(): void;
+        static TestSHV(): void;
+        static Test3(): void;
+    }
+}
 declare module "TestUpdate" {
     export class TestUpdate {
         static Test1(delta: number): void;
