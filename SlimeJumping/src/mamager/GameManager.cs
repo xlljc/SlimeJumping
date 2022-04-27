@@ -17,6 +17,10 @@ public class GameManager : Node
     /// </summary>
     public static void Init()
     {
+        //long time = System.DateTime.Now.Ticks;
+        //BuildTs("D:/GameProject/SlimeJumping中文路径/SlimeJumping/extend/mods/runtime");
+        //GD.Print("用时: " + (System.DateTime.Now.Ticks - time) / 10000 + "毫秒");
+
         if (_inited)
         {
             return;
@@ -25,6 +29,43 @@ public class GameManager : Node
         PuertsScriptManager.Init(DebugFlag.Enable, 9223);
         PuertsScriptManager.LoadDevelopModule("extend/project", "UnitTest");
         PuertsScriptManager.ExecuteModule("UnitTest");
+    }
+
+    private static void BuildTs(string path)
+    {
+        GD.Print("开始编译TypeScript工程: " + path);
+        Godot.Collections.Array arr = new Godot.Collections.Array();
+        OS.Execute("./tool/tsc/node.exe",
+            new string[] { "./tool/tsc/tsc.js", "-b", path + "/tsconfig.json" },
+            true, arr);
+
+        bool success = false;
+        if (arr.Count == 0 || (arr.Count == 1 && string.IsNullOrEmpty(arr[0].ToString())))
+        {
+            success = true;
+            GD.Print("编译成功!");
+        }
+        else
+        {
+            success = false;
+            GD.PrintErr("编译有报错!");
+            foreach (var item in arr)
+            {
+                GD.PrintErr("error: " + item);
+            }
+        }
+        //new System.Threading.Thread(() =>
+        //{
+        //    Godot.Collections.Array arr = new Godot.Collections.Array();
+        //    OS.Execute("./tool/tsc/node.exe",
+        //        new string[] { "./tool/tsc/tsc.js", "-b", path },
+        //        true, arr);
+        //    foreach (var item in arr)
+        //    {
+        //        GD.Print("tsc: " + item);
+        //    }
+        //    GD.Print("命令执行完成...");
+        //}).Start();
     }
 
     public override void _EnterTree()

@@ -1,0 +1,4 @@
+
+interface IDestroy {
+    destroy(): void;
+}

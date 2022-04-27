@@ -1,15 +1,16 @@
 
 export class TestUpdate {
 
-    @Runtime.Update()
+    @Update()
     public static Test1(delta: number) {
-        if (Runtime.Input.isKeyPressed(Runtime.KeyList.A)) {
+        if (Input.isKeyPressed(KeyList.A)) {
             console.log("按下了A");
         }
+        //Math.moveToward();
     }
 
-    @Runtime.PhysicsUpdate()
+    @PhysicsUpdate()
     public static Test2(delta: number) {
-        
+        Vector2.one;
     }
 }
