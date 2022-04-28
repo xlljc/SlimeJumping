@@ -17,9 +17,9 @@ public class GameManager : Node
     /// </summary>
     public static void Init()
     {
-        //long time = System.DateTime.Now.Ticks;
-        //BuildTs("D:/GameProject/SlimeJumping中文路径/SlimeJumping/extend/mods/runtime");
-        //GD.Print("用时: " + (System.DateTime.Now.Ticks - time) / 10000 + "毫秒");
+        long time = System.DateTime.Now.Ticks;
+        BuildTs("D:/GameProject/SlimeJumping中文路径/SlimeJumping/extend/mods/runtime");
+        GD.Print("用时: " + (System.DateTime.Now.Ticks - time) / 10000 + "毫秒");
 
         if (_inited)
         {
@@ -36,7 +36,7 @@ public class GameManager : Node
         GD.Print("开始编译TypeScript工程: " + path);
         Godot.Collections.Array arr = new Godot.Collections.Array();
         OS.Execute("./tool/tsc/node.exe",
-            new string[] { "./tool/tsc/tsc.js", "-b", path + "/tsconfig.json" },
+            new string[] { "./tool/tsc/tsc.data", "-b", path + "/tsconfig.json" },
             true, arr);
 
         bool success = false;
