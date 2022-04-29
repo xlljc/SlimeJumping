@@ -1,6 +1,7 @@
 
-interface INode<EMAP = NodeEventMap> extends IObject, IEvent<EMAP> {
+interface INode<EMAP = NodeEventMap> extends IObject, IEvent<EMAP>, IClone<IObject> {
 
+    set name(v: string);
     get x(): number;
     set x(x: number);
     get y(): number;
@@ -63,6 +64,9 @@ interface INode<EMAP = NodeEventMap> extends IObject, IEvent<EMAP> {
     getAngleTo(point: Vector2): number;
     toLocal(globalPoint: Vector2): Vector2;
     toGlobal(localPoint: Vector2): Vector2;
+
+    startCoroutine(iterator: Generator<any, any, any>): ICoroutine;
+    stopCoroutine(coroutine: ICoroutine): boolean;
 
     clone(): INode<EMAP>;
 }

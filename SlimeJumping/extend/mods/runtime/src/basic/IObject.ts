@@ -1,5 +1,4 @@
 
-interface IObject extends IDestroy, IEquatable<IObject>, IClone<IObject> {
+interface IObject extends IDestroy, IEquatable<IObject> {
     get name(): string;
-    set name(n: string);
 }

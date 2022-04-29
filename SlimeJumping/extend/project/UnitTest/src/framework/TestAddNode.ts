@@ -20,5 +20,6 @@ export class TestAddNode {
             node.position = Vector2.negOne;
         }
         let g: INode;
+        // SceneManager.currentScene.name;
     }
 }
