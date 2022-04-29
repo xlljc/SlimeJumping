@@ -1,4 +1,3 @@
-import { Test } from "./index";
 
 export class MyNode extends Godot.Node {
     constructor() {
@@ -6,7 +5,7 @@ export class MyNode extends Godot.Node {
     }
     public _Process(delta: number): void {
         super._Process(delta);
-        //let node = this.GetNode(new Godot.NodePath("test")) as Godot.Node2D;
+        let node = this.GetNode(new Godot.NodePath("test")) as Godot.Node2D;
     }
 }
 

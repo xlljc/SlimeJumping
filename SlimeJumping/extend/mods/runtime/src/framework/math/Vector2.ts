@@ -2,7 +2,7 @@
 /**
  * 二维向量
  */
-class Vector2 implements IEquatable<Vector2> {
+class Vector2 implements IEquatable<Vector2>, IClone<Vector2> {
 
     /** x坐标 */
     public x: number = 0;
@@ -16,7 +16,7 @@ class Vector2 implements IEquatable<Vector2> {
     constructor(vector: Vector2)
     constructor(x: number, y: number)
     constructor(...args: any[]) {
-        if (args.length == 0) {
+        if (args.length == 1) {
             let v = args[0] as Vector2;
             this.x = v.x;
             this.y = v.y;
@@ -309,6 +309,11 @@ class Vector2 implements IEquatable<Vector2> {
     /** 比较两个向量值是否相等 */
     public equals(vector: Vector2): boolean {
         return vector && this.x === vector.x && this.y === vector.y;
+    }
+
+    /** 克隆当前的向量, 返回新的向量对象 */
+    public clone(): Vector2 {
+        return new Vector2(this);
     }
 
     /** 转换为字符串 */

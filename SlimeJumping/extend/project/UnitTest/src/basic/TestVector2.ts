@@ -1,5 +1,3 @@
-import { Test, TestUstTime } from "./index";
-
 
 export class TestVector2 {
 

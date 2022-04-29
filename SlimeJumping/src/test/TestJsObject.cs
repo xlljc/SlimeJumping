@@ -62,7 +62,6 @@ public class TestJsObject {
         PuertsScriptManager.AddHostType(new HostType("Godot.KeyList", typeof(KeyList)));
         PuertsScriptManager.AddHostType(new HostType("Godot.WebSocketClient", typeof(WebSocketClient)));
         PuertsScriptManager.AddHostType(new HostType("Godot.WebSocketServer", typeof(WebSocketServer)));
-        PuertsScriptManager.AddHostTypeToModule("Native/GameManager", new HostType("GameManager", typeof(GameManager)));
     }
 
     [JsFunction("TestArr1")]

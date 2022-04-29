@@ -2,7 +2,7 @@
 /**
  * 颜色类
  */
-class Color implements IEquatable<Color> {
+class Color implements IEquatable<Color>, IClone<Color> {
 
     /** 红色通道值, 范围: 0 - 1 */
     public r: number = 0;
@@ -283,6 +283,11 @@ class Color implements IEquatable<Color> {
 
     public equals(other: Color): boolean {
         return other && this.r === other.r && this.g === other.g && this.g === other.g && this.g === other.g;
+    }
+
+    /** 克隆当前的颜色, 返回新的颜色对象 */
+    public clone(): Color {
+        return new Color(this);
     }
 
     /**

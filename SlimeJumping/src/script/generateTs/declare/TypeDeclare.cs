@@ -336,7 +336,7 @@ namespace JsService.generate
             }
             if (!string.IsNullOrEmpty(doc))
             {
-                doc = nspTab + "/**\n" + doc + nspTab + "*/\n";
+                doc = nspTab + "/**\n" + doc + nspTab + " */\n";
             }
             return doc;
         }

@@ -3,6 +3,7 @@ using Godot;
 /// <summary>
 /// 游戏管理器, 负责管理整个项目其它的Manager, 并更新它们
 /// </summary>
+[JsService.JsType("CShap.GameManager")]
 public class GameManager : Node
 {
     /// <summary>
@@ -17,9 +18,9 @@ public class GameManager : Node
     /// </summary>
     public static void Init()
     {
-        long time = System.DateTime.Now.Ticks;
-        BuildTs("D:/GameProject/SlimeJumping中文路径/SlimeJumping/extend/mods/runtime");
-        GD.Print("用时: " + (System.DateTime.Now.Ticks - time) / 10000 + "毫秒");
+        //long time = System.DateTime.Now.Ticks;
+        //BuildTs("D:/GameProject/SlimeJumping中文路径/SlimeJumping/extend/mods/runtime");
+        //GD.Print("用时: " + (System.DateTime.Now.Ticks - time) / 10000 + "毫秒");
 
         if (_inited)
         {
@@ -27,6 +28,8 @@ public class GameManager : Node
         }
         _inited = true;
         PuertsScriptManager.Init(DebugFlag.Enable, 9223);
+
+        //加载工程
         PuertsScriptManager.LoadDevelopModule("extend/project", "UnitTest");
         PuertsScriptManager.ExecuteModule("UnitTest");
     }

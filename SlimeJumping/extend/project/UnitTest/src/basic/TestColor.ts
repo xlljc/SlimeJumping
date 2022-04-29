@@ -1,4 +1,3 @@
-import { Test } from "./index";
 
 export class TestColor {
 
@@ -41,7 +40,7 @@ export class TestColor {
         //Color.FromHsv();
     }
 
-    @Test()
+    //@Test()
     public static Test3() {
         let color = Color.white;
         let color2 = Color.black;

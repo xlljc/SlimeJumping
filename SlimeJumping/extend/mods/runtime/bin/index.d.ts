@@ -1,3 +1,6 @@
+interface IClone<T> {
+    clone(): T;
+}
 interface IDestroy {
     destroy(): void;
 }
@@ -14,6 +17,69 @@ interface IEvent<EMAP> {
     removeEventListener<T extends keyof EMAP, V extends EMAP[T]>(event: T, cb: (v: V) => void): boolean;
     clearEventListener<T extends keyof EMAP>(event: T): boolean;
     clearAllEventListener(): boolean;
+}
+interface INode<EMAP = NodeEventMap> extends IObject, IEvent<EMAP> {
+    get x(): number;
+    set x(x: number);
+    get y(): number;
+    set y(y: number);
+    get position(): Vector2;
+    set position(pos: Vector2);
+    get globalPosition(): Vector2;
+    set globalPosition(pos: Vector2);
+    get scale(): Vector2;
+    set scale(sc: Vector2);
+    get globalScale(): Vector2;
+    set globalScale(sc: Vector2);
+    get rotation(): number;
+    set rotation(r: number);
+    get globalRotation(): number;
+    set globalRotation(r: number);
+    get rotationDegrees(): number;
+    set rotationDegrees(r: number);
+    get globalRotationDegrees(): number;
+    set globalRotationDegrees(r: number);
+    get layer(): number;
+    set layer(layer: number);
+    get globalLayer(): number;
+    set globalLayer(layer: number);
+    get modulate(): Color;
+    set modulate(v: Color);
+    get selfModulate(): Color;
+    set selfModulate(v: Color);
+    get visible(): boolean;
+    set visible(v: boolean);
+    get pause(): boolean;
+    set pause(p: boolean);
+    get parent(): INode | null;
+    get childIndex(): number | null;
+    get children(): INode[];
+    get childCount(): number;
+    getGlobalVisible(): boolean;
+    getGlobalPause(): boolean;
+    initialize(): void;
+    start(): void;
+    update(delta: number): void;
+    physicsUpdate(delta: number): void;
+    setParent(parent: INode): void;
+    setParent(parent: INode, keepGlobalPos: boolean): void;
+    addChild(child: INode): void;
+    addChild(child: INode, index: number): void;
+    getNode<T extends INode>(childPath: string): T | null;
+    getNodes<T extends INode>(childPath: string): T[];
+    removeChild(childIndex: number): void;
+    removeChild(childName: string): void;
+    removeChild(child: INode): void;
+    lookAt(target: Vector2): void;
+    rotate(radians: number): void;
+    getAngleTo(point: Vector2): number;
+    toLocal(globalPoint: Vector2): Vector2;
+    toGlobal(localPoint: Vector2): Vector2;
+    clone(): INode<EMAP>;
+}
+interface IObject extends IDestroy, IEquatable<IObject>, IClone<IObject> {
+    get name(): string;
+    set name(n: string);
 }
 /**
  * 装饰器, 用在静态函数上, 被修饰的静态函数每帧都会被调用一次
@@ -528,7 +594,7 @@ declare enum KeyList {
 /**
  * 颜色类
  */
-declare class Color implements IEquatable<Color> {
+declare class Color implements IEquatable<Color>, IClone<Color> {
     /** 红色通道值, 范围: 0 - 1 */
     r: number;
     /** 绿色通道值, 范围: 0 - 1 */
@@ -603,6 +669,8 @@ declare class Color implements IEquatable<Color> {
     /** 转换为字符串 */
     toString(): string;
     equals(other: Color): boolean;
+    /** 克隆当前的颜色, 返回新的颜色对象 */
+    clone(): Color;
     /**
      * 从HSV配置创建color，值范围为0到1
      * @param hue HSV色调
@@ -876,7 +944,7 @@ declare interface Math {
 /**
  * 二维向量
  */
-declare class Vector2 implements IEquatable<Vector2> {
+declare class Vector2 implements IEquatable<Vector2>, IClone<Vector2> {
     /** x坐标 */
     x: number;
     /** y坐标 */
@@ -981,7 +1049,12 @@ declare class Vector2 implements IEquatable<Vector2> {
     project(onNormal: Vector2): Vector2;
     /** 比较两个向量值是否相等 */
     equals(vector: Vector2): boolean;
+    /** 克隆当前的向量, 返回新的向量对象 */
+    clone(): Vector2;
     /** 转换为字符串 */
     toString(): string;
 }
+declare type NodeEventMap = {
+    "init": void;
+};
 //# sourceMappingURL=index.d.ts.map
