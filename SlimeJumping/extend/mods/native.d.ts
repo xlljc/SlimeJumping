@@ -41,10 +41,13 @@ declare type CsType = {
     "Godot.SceneTree": Godot.SceneTree;
     "Godot.MainLoop": Godot.MainLoop;
     "Godot.Sprite": Godot.Sprite;
+    "Godot.Area2D": Godot.Area2D;
+    "Godot.CollisionObject2D": Godot.CollisionObject2D;
+    "Godot.RigidBody2D": Godot.RigidBody2D;
+    "Godot.PhysicsBody2D": Godot.PhysicsBody2D;
+    "Godot.CollisionShape2D": Godot.CollisionShape2D;
     "Godot.AnimationPlayer": Godot.AnimationPlayer;
     "Godot.KinematicBody2D": Godot.KinematicBody2D;
-    "Godot.PhysicsBody2D": Godot.PhysicsBody2D;
-    "Godot.CollisionObject2D": Godot.CollisionObject2D;
     "Godot.KeyList": Godot.KeyList;
     "Godot.WebSocketClient": Godot.WebSocketClient;
     "Godot.WebSocketMultiplayerPeer": Godot.WebSocketMultiplayerPeer;
@@ -85,11 +88,17 @@ declare type CsType = {
     "Godot.SceneTree.StretchMode": Godot.SceneTree.StretchMode;
     "Godot.SceneTree.StretchAspect": Godot.SceneTree.StretchAspect;
     "Godot.PackedScene": Godot.PackedScene;
+    "Godot.Area2D.SpaceOverrideEnum": Godot.Area2D.SpaceOverrideEnum;
+    "Godot.Shape2D": Godot.Shape2D;
+    "Godot.RigidBody2D.ModeEnum": Godot.RigidBody2D.ModeEnum;
+    "Godot.PhysicsMaterial": Godot.PhysicsMaterial;
+    "Godot.RigidBody2D.CCDMode": Godot.RigidBody2D.CCDMode;
+    "Godot.Physics2DDirectBodyState": Godot.Physics2DDirectBodyState;
+    "Godot.Physics2DTestMotionResult": Godot.Physics2DTestMotionResult;
     "Godot.AnimationPlayer.AnimationProcessMode": Godot.AnimationPlayer.AnimationProcessMode;
     "Godot.AnimationPlayer.AnimationMethodCallMode": Godot.AnimationPlayer.AnimationMethodCallMode;
     "Godot.Animation": Godot.Animation;
     "Godot.KinematicCollision2D": Godot.KinematicCollision2D;
-    "Godot.Shape2D": Godot.Shape2D;
     "Godot.X509Certificate": Godot.X509Certificate;
     "Godot.WebSocketPeer": Godot.WebSocketPeer;
     "Godot.NetworkedMultiplayerPeer.TransferModeEnum": Godot.NetworkedMultiplayerPeer.TransferModeEnum;
@@ -148,14 +157,6 @@ declare interface ArrayConstructor {
     /** Convert C# arrays to JS arrays. */
     toJsArray<T>(csArr: CsArray<T>): Array<T>;
 }
-
-interface Console {
-    error(...data: Object[]): void;
-    info(...data: Object[]): void;
-    log(...data: Object[]): void;
-    warn(...data: Object[]): void;
-}
-declare var console: Console;
 
 
 declare namespace globalThis {
@@ -438,6 +439,10 @@ declare namespace CShap {
      * 游戏管理器, 负责管理整个项目其它的Manager, 并更新它们
      */
     interface GameManager extends Godot.Node {
+        /**
+         * mod 对象根节点
+         */
+        get ModeRoot(): Godot.Node2D;
         _EnterTree(): void;
         _Input(event: Godot.InputEvent): void;
         _Process(delta: float): void;
@@ -3905,6 +3910,670 @@ declare namespace Godot {
 }
 declare namespace Godot {
     /**
+     * 2D area that detects  nodes overlapping, entering, or exiting. Can also alter or override local physics parameters (gravity, damping) and route audio to a custom audio bus.
+     */
+    interface Area2D extends Godot.CollisionObject2D {
+        /**
+         * If true, the area detects bodies or areas entering and exiting it.
+         */
+        get Monitoring(): boolean;
+        /**
+         * If true, the area detects bodies or areas entering and exiting it.
+         */
+        set Monitoring(v: boolean);
+        /**
+         * If true, other monitoring areas can detect this area.
+         */
+        get Monitorable(): boolean;
+        /**
+         * If true, other monitoring areas can detect this area.
+         */
+        set Monitorable(v: boolean);
+        /**
+         * The area's priority. Higher priority areas are processed first.
+         */
+        get Priority(): float;
+        /**
+         * The area's priority. Higher priority areas are processed first.
+         */
+        set Priority(v: float);
+        /**
+         * Override mode for gravity and damping calculations within this area. See  for possible values.
+         */
+        get SpaceOverride(): Godot.Area2D.SpaceOverrideEnum;
+        /**
+         * Override mode for gravity and damping calculations within this area. See  for possible values.
+         */
+        set SpaceOverride(v: Godot.Area2D.SpaceOverrideEnum);
+        /**
+         * If true, gravity is calculated from a point (set via ). See also .
+         */
+        get GravityPoint(): boolean;
+        /**
+         * If true, gravity is calculated from a point (set via ). See also .
+         */
+        set GravityPoint(v: boolean);
+        /**
+         * The falloff factor for point gravity. The greater the value, the faster gravity decreases with distance.
+         */
+        get GravityDistanceScale(): float;
+        /**
+         * The falloff factor for point gravity. The greater the value, the faster gravity decreases with distance.
+         */
+        set GravityDistanceScale(v: float);
+        /**
+         * The area's gravity vector (not normalized). If gravity is a point (see ), this will be the point of attraction.
+         */
+        get GravityVec(): Godot.Vector2;
+        /**
+         * The area's gravity vector (not normalized). If gravity is a point (see ), this will be the point of attraction.
+         */
+        set GravityVec(v: Godot.Vector2);
+        /**
+         * The area's gravity intensity (in pixels per second squared). This value multiplies the gravity vector. This is useful to alter the force of gravity without altering its direction.
+         */
+        get Gravity(): float;
+        /**
+         * The area's gravity intensity (in pixels per second squared). This value multiplies the gravity vector. This is useful to alter the force of gravity without altering its direction.
+         */
+        set Gravity(v: float);
+        /**
+         * The rate at which objects stop moving in this area. Represents the linear velocity lost per second.
+         * See  for more details about damping.
+         */
+        get LinearDamp(): float;
+        /**
+         * The rate at which objects stop moving in this area. Represents the linear velocity lost per second.
+         * See  for more details about damping.
+         */
+        set LinearDamp(v: float);
+        /**
+         * The rate at which objects stop spinning in this area. Represents the angular velocity lost per second.
+         * See  for more details about damping.
+         */
+        get AngularDamp(): float;
+        /**
+         * The rate at which objects stop spinning in this area. Represents the angular velocity lost per second.
+         * See  for more details about damping.
+         */
+        set AngularDamp(v: float);
+        /**
+         * If true, the area's audio bus overrides the default audio bus.
+         */
+        get AudioBusOverride(): boolean;
+        /**
+         * If true, the area's audio bus overrides the default audio bus.
+         */
+        set AudioBusOverride(v: boolean);
+        /**
+         * The name of the area's audio bus.
+         */
+        get AudioBusName(): string;
+        /**
+         * The name of the area's audio bus.
+         */
+        set AudioBusName(v: string);
+        SetSpaceOverrideMode(spaceOverrideMode: Godot.Area2D.SpaceOverrideEnum): void;
+        GetSpaceOverrideMode(): Godot.Area2D.SpaceOverrideEnum;
+        SetGravityIsPoint(enable: boolean): void;
+        IsGravityAPoint(): boolean;
+        SetGravityDistanceScale(distanceScale: float): void;
+        GetGravityDistanceScale(): float;
+        SetGravityVector(vector: Godot.Vector2): void;
+        GetGravityVector(): Godot.Vector2;
+        SetGravity(gravity: float): void;
+        GetGravity(): float;
+        SetLinearDamp(linearDamp: float): void;
+        GetLinearDamp(): float;
+        SetAngularDamp(angularDamp: float): void;
+        GetAngularDamp(): float;
+        SetPriority(priority: float): void;
+        GetPriority(): float;
+        SetMonitoring(enable: boolean): void;
+        IsMonitoring(): boolean;
+        SetMonitorable(enable: boolean): void;
+        IsMonitorable(): boolean;
+        /**
+         * Returns a list of intersecting s. The overlapping body's  must be part of this area's  in order to be detected.
+         * For performance reasons (collisions are all processed at the same time) this list is modified once during the physics step, not immediately after objects are moved. Consider using signals instead.
+         */
+        GetOverlappingBodies(): Godot.Collections.Array;
+        /**
+         * Returns a list of intersecting s. The overlapping area's  must be part of this area's  in order to be detected.
+         * For performance reasons (collisions are all processed at the same time) this list is modified once during the physics step, not immediately after objects are moved. Consider using signals instead.
+         */
+        GetOverlappingAreas(): Godot.Collections.Array;
+        /**
+         * If true, the given physics body overlaps the Area2D.
+         * Note: The result of this test is not immediate after moving objects. For performance, list of overlaps is updated once per frame and before the physics step. Consider using signals instead.
+         * The body argument can either be a  or a  instance (while TileMaps are not physics bodies themselves, they register their tiles with collision shapes as a virtual physics body).
+         */
+        OverlapsBody(body: Godot.Node): boolean;
+        /**
+         * If true, the given area overlaps the Area2D.
+         * Note: The result of this test is not immediate after moving objects. For performance, the list of overlaps is updated once per frame and before the physics step. Consider using signals instead.
+         */
+        OverlapsArea(area: Godot.Node): boolean;
+        SetAudioBusName(name: string): void;
+        GetAudioBusName(): string;
+        SetAudioBusOverride(enable: boolean): void;
+        IsOverridingAudioBus(): boolean;
+    }
+    interface Area2DConstructor {
+        new(): Godot.Area2D;
+    }
+    interface Area2DStatic extends Godot.CollisionObject2DStatic {
+    }
+    var Area2D: Godot.Area2DConstructor & Godot.Area2DStatic;
+}
+declare namespace Godot {
+    /**
+     * CollisionObject2D is the base class for 2D physics objects. It can hold any number of 2D collision s. Each shape must be assigned to a shape owner. The CollisionObject2D can have any number of shape owners. Shape owners are not nodes and do not appear in the editor, but are accessible through code using the shape_owner_* methods.
+     */
+    interface CollisionObject2D extends Godot.Node2D {
+        /**
+         * The physics layers this CollisionObject2D is in. Collision objects can exist in one or more of 32 different layers. See also .
+         * Note: A contact is detected if object A is in any of the layers that object B scans, or object B is in any layers that object A scans. See Collision layers and masks in the documentation for more information.
+         */
+        get CollisionLayer(): uint;
+        /**
+         * The physics layers this CollisionObject2D is in. Collision objects can exist in one or more of 32 different layers. See also .
+         * Note: A contact is detected if object A is in any of the layers that object B scans, or object B is in any layers that object A scans. See Collision layers and masks in the documentation for more information.
+         */
+        set CollisionLayer(v: uint);
+        /**
+         * The physics layers this CollisionObject2D scans. Collision objects can scan one or more of 32 different layers. See also .
+         * Note: A contact is detected if object A is in any of the layers that object B scans, or object B is in any layers that object A scans. See Collision layers and masks in the documentation for more information.
+         */
+        get CollisionMask(): uint;
+        /**
+         * The physics layers this CollisionObject2D scans. Collision objects can scan one or more of 32 different layers. See also .
+         * Note: A contact is detected if object A is in any of the layers that object B scans, or object B is in any layers that object A scans. See Collision layers and masks in the documentation for more information.
+         */
+        set CollisionMask(v: uint);
+        /**
+         * If true, this object is pickable. A pickable object can detect the mouse pointer entering/leaving, and if the mouse is inside it, report input events. Requires at least one  bit to be set.
+         */
+        get InputPickable(): boolean;
+        /**
+         * If true, this object is pickable. A pickable object can detect the mouse pointer entering/leaving, and if the mouse is inside it, report input events. Requires at least one  bit to be set.
+         */
+        set InputPickable(v: boolean);
+        /**
+         * Accepts unhandled s. Requires  to be true. shape_idx is the child index of the clicked . Connect to the input_event signal to easily pick up these events.
+         */
+        _InputEvent(viewport: Godot.Object, event: Godot.InputEvent, shapeIdx: int): void;
+        /**
+         * Returns the object's .
+         */
+        GetRid(): Godot.RID;
+        SetCollisionLayer(layer: uint): void;
+        GetCollisionLayer(): uint;
+        SetCollisionMask(mask: uint): void;
+        GetCollisionMask(): uint;
+        /**
+         * If value is true, sets the specified bit in the the .
+         * If value is false, clears the specified bit in the the .
+         */
+        SetCollisionLayerBit(bit: int, value: boolean): void;
+        /**
+         * Returns whether or not the specified bit of the  is set.
+         */
+        GetCollisionLayerBit(bit: int): boolean;
+        /**
+         * If value is true, sets the specified bit in the the .
+         * If value is false, clears the specified bit in the the .
+         */
+        SetCollisionMaskBit(bit: int, value: boolean): void;
+        /**
+         * Returns whether or not the specified bit of the  is set.
+         */
+        GetCollisionMaskBit(bit: int): boolean;
+        SetPickable(enabled: boolean): void;
+        IsPickable(): boolean;
+        /**
+         * Creates a new shape owner for the given object. Returns owner_id of the new owner for future reference.
+         */
+        CreateShapeOwner(owner: Godot.Object): uint;
+        /**
+         * Removes the given shape owner.
+         */
+        RemoveShapeOwner(ownerId: uint): void;
+        /**
+         * Returns an  of owner_id identifiers. You can use these ids in other methods that take owner_id as an argument.
+         */
+        GetShapeOwners(): Godot.Collections.Array;
+        /**
+         * Sets the  of the given shape owner.
+         */
+        ShapeOwnerSetTransform(ownerId: uint, transform: Godot.Transform2D): void;
+        /**
+         * Returns the shape owner's .
+         */
+        ShapeOwnerGetTransform(ownerId: uint): Godot.Transform2D;
+        /**
+         * Returns the parent object of the given shape owner.
+         */
+        ShapeOwnerGetOwner(ownerId: uint): Godot.Object;
+        /**
+         * If true, disables the given shape owner.
+         */
+        ShapeOwnerSetDisabled(ownerId: uint, disabled: boolean): void;
+        /**
+         * If true, the shape owner and its shapes are disabled.
+         */
+        IsShapeOwnerDisabled(ownerId: uint): boolean;
+        /**
+         * If enable is true, collisions for the shape owner originating from this  will not be reported to collided with s.
+         */
+        ShapeOwnerSetOneWayCollision(ownerId: uint, enable: boolean): void;
+        /**
+         * Returns true if collisions for the shape owner originating from this  will not be reported to collided with s.
+         */
+        IsShapeOwnerOneWayCollisionEnabled(ownerId: uint): boolean;
+        /**
+         * Sets the one_way_collision_margin of the shape owner identified by given owner_id to margin pixels.
+         */
+        ShapeOwnerSetOneWayCollisionMargin(ownerId: uint, margin: float): void;
+        /**
+         * Returns the one_way_collision_margin of the shape owner identified by given owner_id.
+         */
+        GetShapeOwnerOneWayCollisionMargin(ownerId: uint): float;
+        /**
+         * Adds a  to the shape owner.
+         */
+        ShapeOwnerAddShape(ownerId: uint, shape: Godot.Shape2D): void;
+        /**
+         * Returns the number of shapes the given shape owner contains.
+         */
+        ShapeOwnerGetShapeCount(ownerId: uint): int;
+        /**
+         * Returns the  with the given id from the given shape owner.
+         */
+        ShapeOwnerGetShape(ownerId: uint, shapeId: int): Godot.Shape2D;
+        /**
+         * Returns the child index of the  with the given id from the given shape owner.
+         */
+        ShapeOwnerGetShapeIndex(ownerId: uint, shapeId: int): int;
+        /**
+         * Removes a shape from the given shape owner.
+         */
+        ShapeOwnerRemoveShape(ownerId: uint, shapeId: int): void;
+        /**
+         * Removes all shapes from the shape owner.
+         */
+        ShapeOwnerClearShapes(ownerId: uint): void;
+        /**
+         * Returns the owner_id of the given shape.
+         */
+        ShapeFindOwner(shapeIndex: int): uint;
+    }
+    interface CollisionObject2DConstructor {
+    }
+    interface CollisionObject2DStatic extends Godot.Node2DStatic {
+    }
+}
+declare namespace Godot {
+    /**
+     * This node implements simulated 2D physics. You do not control a RigidBody2D directly. Instead, you apply forces to it (gravity, impulses, etc.) and the physics simulation calculates the resulting movement based on its mass, friction, and other physical properties.
+     * A RigidBody2D has 4 behavior s: Rigid, Static, Character, and Kinematic.
+     * Note: You should not change a RigidBody2D's position or linear_velocity every frame or even very often. If you need to directly affect the body's state, use , which allows you to directly access the physics state.
+     * Please also keep in mind that physics bodies manage their own transform which overwrites the ones you set. So any direct or indirect transformation (including scaling of the node or its parent) will be visible in the editor only, and immediately reset at runtime.
+     * If you need to override the default physics behavior or add a transformation at runtime, you can write a custom force integration. See .
+     * The center of mass is always located at the node's origin without taking into account the  centroid offsets.
+     */
+    interface RigidBody2D extends Godot.PhysicsBody2D {
+        /**
+         * The body's mode. See  for possible values.
+         */
+        get Mode(): Godot.RigidBody2D.ModeEnum;
+        /**
+         * The body's mode. See  for possible values.
+         */
+        set Mode(v: Godot.RigidBody2D.ModeEnum);
+        /**
+         * The body's mass.
+         */
+        get Mass(): float;
+        /**
+         * The body's mass.
+         */
+        set Mass(v: float);
+        /**
+         * The body's moment of inertia. This is like mass, but for rotation: it determines how much torque it takes to rotate the body. The moment of inertia is usually computed automatically from the mass and the shapes, but this function allows you to set a custom value. Set 0 inertia to return to automatically computing it.
+         */
+        get Inertia(): float;
+        /**
+         * The body's moment of inertia. This is like mass, but for rotation: it determines how much torque it takes to rotate the body. The moment of inertia is usually computed automatically from the mass and the shapes, but this function allows you to set a custom value. Set 0 inertia to return to automatically computing it.
+         */
+        set Inertia(v: float);
+        /**
+         * The body's weight based on its mass and the Default Gravity value in Project > Project Settings > Physics > 2d.
+         */
+        get Weight(): float;
+        /**
+         * The body's weight based on its mass and the Default Gravity value in Project > Project Settings > Physics > 2d.
+         */
+        set Weight(v: float);
+        /**
+         * The body's friction. Values range from 0 (frictionless) to 1 (maximum friction).
+         * Deprecated, use  instead via .
+         */
+        get Friction(): float;
+        /**
+         * The body's friction. Values range from 0 (frictionless) to 1 (maximum friction).
+         * Deprecated, use  instead via .
+         */
+        set Friction(v: float);
+        /**
+         * The body's bounciness. Values range from 0 (no bounce) to 1 (full bounciness).
+         * Deprecated, use  instead via .
+         */
+        get Bounce(): float;
+        /**
+         * The body's bounciness. Values range from 0 (no bounce) to 1 (full bounciness).
+         * Deprecated, use  instead via .
+         */
+        set Bounce(v: float);
+        /**
+         * The physics material override for the body.
+         * If a material is assigned to this property, it will be used instead of any other physics material, such as an inherited one.
+         */
+        get PhysicsMaterialOverride(): Godot.PhysicsMaterial;
+        /**
+         * The physics material override for the body.
+         * If a material is assigned to this property, it will be used instead of any other physics material, such as an inherited one.
+         */
+        set PhysicsMaterialOverride(v: Godot.PhysicsMaterial);
+        /**
+         * Multiplies the gravity applied to the body. The body's gravity is calculated from the Default Gravity value in Project > Project Settings > Physics > 2d and/or any additional gravity vector applied by s.
+         */
+        get GravityScale(): float;
+        /**
+         * Multiplies the gravity applied to the body. The body's gravity is calculated from the Default Gravity value in Project > Project Settings > Physics > 2d and/or any additional gravity vector applied by s.
+         */
+        set GravityScale(v: float);
+        /**
+         * If true, internal force integration is disabled for this body. Aside from collision response, the body will only move as determined by the  function.
+         */
+        get CustomIntegrator(): boolean;
+        /**
+         * If true, internal force integration is disabled for this body. Aside from collision response, the body will only move as determined by the  function.
+         */
+        set CustomIntegrator(v: boolean);
+        /**
+         * Continuous collision detection mode.
+         * Continuous collision detection tries to predict where a moving body will collide instead of moving it and correcting its movement after collision. Continuous collision detection is slower, but more precise and misses fewer collisions with small, fast-moving objects. Raycasting and shapecasting methods are available. See  for details.
+         */
+        get ContinuousCd(): Godot.RigidBody2D.CCDMode;
+        /**
+         * Continuous collision detection mode.
+         * Continuous collision detection tries to predict where a moving body will collide instead of moving it and correcting its movement after collision. Continuous collision detection is slower, but more precise and misses fewer collisions with small, fast-moving objects. Raycasting and shapecasting methods are available. See  for details.
+         */
+        set ContinuousCd(v: Godot.RigidBody2D.CCDMode);
+        /**
+         * The maximum number of contacts that will be recorded. Requires  to be set to true.
+         * Note: The number of contacts is different from the number of collisions. Collisions between parallel edges will result in two contacts (one at each end).
+         */
+        get ContactsReported(): int;
+        /**
+         * The maximum number of contacts that will be recorded. Requires  to be set to true.
+         * Note: The number of contacts is different from the number of collisions. Collisions between parallel edges will result in two contacts (one at each end).
+         */
+        set ContactsReported(v: int);
+        /**
+         * If true, the body will emit signals when it collides with another RigidBody2D. See also .
+         */
+        get ContactMonitor(): boolean;
+        /**
+         * If true, the body will emit signals when it collides with another RigidBody2D. See also .
+         */
+        set ContactMonitor(v: boolean);
+        /**
+         * If true, the body will not move and will not calculate forces until woken up by another body through, for example, a collision, or by using the  or  methods.
+         */
+        get Sleeping(): boolean;
+        /**
+         * If true, the body will not move and will not calculate forces until woken up by another body through, for example, a collision, or by using the  or  methods.
+         */
+        set Sleeping(v: boolean);
+        /**
+         * If true, the body can enter sleep mode when there is no movement. See .
+         * Note: A RigidBody2D will never enter sleep mode automatically if its  is . It can still be put to sleep manually by setting its  property to true.
+         */
+        get CanSleep(): boolean;
+        /**
+         * If true, the body can enter sleep mode when there is no movement. See .
+         * Note: A RigidBody2D will never enter sleep mode automatically if its  is . It can still be put to sleep manually by setting its  property to true.
+         */
+        set CanSleep(v: boolean);
+        /**
+         * The body's linear velocity in pixels per second. Can be used sporadically, but don't set this every frame, because physics may run in another thread and runs at a different granularity. Use  as your process loop for precise control of the body state.
+         */
+        get LinearVelocity(): Godot.Vector2;
+        /**
+         * The body's linear velocity in pixels per second. Can be used sporadically, but don't set this every frame, because physics may run in another thread and runs at a different granularity. Use  as your process loop for precise control of the body state.
+         */
+        set LinearVelocity(v: Godot.Vector2);
+        /**
+         * Damps the body's . If -1, the body will use the Default Linear Damp in Project > Project Settings > Physics > 2d.
+         * See  for more details about damping.
+         */
+        get LinearDamp(): float;
+        /**
+         * Damps the body's . If -1, the body will use the Default Linear Damp in Project > Project Settings > Physics > 2d.
+         * See  for more details about damping.
+         */
+        set LinearDamp(v: float);
+        /**
+         * The body's rotational velocity in radians per second.
+         */
+        get AngularVelocity(): float;
+        /**
+         * The body's rotational velocity in radians per second.
+         */
+        set AngularVelocity(v: float);
+        /**
+         * Damps the body's . If -1, the body will use the Default Angular Damp defined in Project > Project Settings > Physics > 2d.
+         * See  for more details about damping.
+         */
+        get AngularDamp(): float;
+        /**
+         * Damps the body's . If -1, the body will use the Default Angular Damp defined in Project > Project Settings > Physics > 2d.
+         * See  for more details about damping.
+         */
+        set AngularDamp(v: float);
+        /**
+         * The body's total applied force.
+         */
+        get AppliedForce(): Godot.Vector2;
+        /**
+         * The body's total applied force.
+         */
+        set AppliedForce(v: Godot.Vector2);
+        /**
+         * The body's total applied torque.
+         */
+        get AppliedTorque(): float;
+        /**
+         * The body's total applied torque.
+         */
+        set AppliedTorque(v: float);
+        /**
+         * Allows you to read and safely modify the simulation state for the object. Use this instead of  if you need to directly change the body's position or other physics properties. By default, it works in addition to the usual physics behavior, but  allows you to disable the default behavior and write custom force integration for a body.
+         */
+        _IntegrateForces(state: Godot.Physics2DDirectBodyState): void;
+        SetMode(mode: Godot.RigidBody2D.ModeEnum): void;
+        GetMode(): Godot.RigidBody2D.ModeEnum;
+        SetMass(mass: float): void;
+        GetMass(): float;
+        GetInertia(): float;
+        SetInertia(inertia: float): void;
+        SetWeight(weight: float): void;
+        GetWeight(): float;
+        SetFriction(friction: float): void;
+        GetFriction(): float;
+        SetBounce(bounce: float): void;
+        GetBounce(): float;
+        SetPhysicsMaterialOverride(physicsMaterialOverride: Godot.PhysicsMaterial): void;
+        GetPhysicsMaterialOverride(): Godot.PhysicsMaterial;
+        SetGravityScale(gravityScale: float): void;
+        GetGravityScale(): float;
+        SetLinearDamp(linearDamp: float): void;
+        GetLinearDamp(): float;
+        SetAngularDamp(angularDamp: float): void;
+        GetAngularDamp(): float;
+        SetLinearVelocity(linearVelocity: Godot.Vector2): void;
+        GetLinearVelocity(): Godot.Vector2;
+        SetAngularVelocity(angularVelocity: float): void;
+        GetAngularVelocity(): float;
+        SetMaxContactsReported(amount: int): void;
+        GetMaxContactsReported(): int;
+        SetUseCustomIntegrator(enable: boolean): void;
+        IsUsingCustomIntegrator(): boolean;
+        SetContactMonitor(enabled: boolean): void;
+        IsContactMonitorEnabled(): boolean;
+        SetContinuousCollisionDetectionMode(mode: Godot.RigidBody2D.CCDMode): void;
+        GetContinuousCollisionDetectionMode(): Godot.RigidBody2D.CCDMode;
+        /**
+         * Sets the body's velocity on the given axis. The velocity in the given vector axis will be set as the given vector length. This is useful for jumping behavior.
+         */
+        SetAxisVelocity(axisVelocity: Godot.Vector2): void;
+        /**
+         * Applies a directional impulse without affecting rotation.
+         */
+        ApplyCentralImpulse(impulse: Godot.Vector2): void;
+        /**
+         * Applies a positioned impulse to the body. An impulse is time-independent! Applying an impulse every frame would result in a framerate-dependent force. For this reason it should only be used when simulating one-time impacts (use the "_force" functions otherwise). The position uses the rotation of the global coordinate system, but is centered at the object's origin.
+         */
+        ApplyImpulse(offset: Godot.Vector2, impulse: Godot.Vector2): void;
+        /**
+         * Applies a rotational impulse to the body.
+         */
+        ApplyTorqueImpulse(torque: float): void;
+        SetAppliedForce(force: Godot.Vector2): void;
+        GetAppliedForce(): Godot.Vector2;
+        SetAppliedTorque(torque: float): void;
+        GetAppliedTorque(): float;
+        /**
+         * Adds a constant directional force without affecting rotation.
+         */
+        AddCentralForce(force: Godot.Vector2): void;
+        /**
+         * Adds a positioned force to the body. Both the force and the offset from the body origin are in global coordinates.
+         */
+        AddForce(offset: Godot.Vector2, force: Godot.Vector2): void;
+        /**
+         * Adds a constant rotational force.
+         */
+        AddTorque(torque: float): void;
+        SetSleeping(sleeping: boolean): void;
+        IsSleeping(): boolean;
+        SetCanSleep(ableToSleep: boolean): void;
+        IsAbleToSleep(): boolean;
+        /**
+         * Returns true if a collision would result from moving in the given vector. margin increases the size of the shapes involved in the collision detection, and result is an object of type , which contains additional information about the collision (should there be one).
+         */
+        TestMotion(motion: Godot.Vector2, infiniteInertia?: boolean, margin?: float, result?: Godot.Physics2DTestMotionResult): boolean;
+        /**
+         * Returns a list of the bodies colliding with this one. Requires  to be set to true and  to be set high enough to detect all the collisions.
+         * Note: The result of this test is not immediate after moving objects. For performance, list of collisions is updated once per frame and before the physics step. Consider using signals instead.
+         */
+        GetCollidingBodies(): Godot.Collections.Array;
+    }
+    interface RigidBody2DConstructor {
+        new(): Godot.RigidBody2D;
+    }
+    interface RigidBody2DStatic extends Godot.PhysicsBody2DStatic {
+    }
+    var RigidBody2D: Godot.RigidBody2DConstructor & Godot.RigidBody2DStatic;
+}
+declare namespace Godot {
+    /**
+     * PhysicsBody2D is an abstract base class for implementing a physics body. All *Body2D types inherit from it.
+     */
+    interface PhysicsBody2D extends Godot.CollisionObject2D {
+        /**
+         * Both collision_layer and collision_mask. Returns collision_layer when accessed. Updates collision_layer and collision_mask when modified.
+         */
+        get Layers(): uint;
+        /**
+         * Both collision_layer and collision_mask. Returns collision_layer when accessed. Updates collision_layer and collision_mask when modified.
+         */
+        set Layers(v: uint);
+        /**
+         * Returns an array of nodes that were added as collision exceptions for this body.
+         */
+        GetCollisionExceptions(): Godot.Collections.Array;
+        /**
+         * Adds a body to the list of bodies that this body can't collide with.
+         */
+        AddCollisionExceptionWith(body: Godot.Node): void;
+        /**
+         * Removes a body from the list of bodies that this body can't collide with.
+         */
+        RemoveCollisionExceptionWith(body: Godot.Node): void;
+    }
+    interface PhysicsBody2DConstructor {
+    }
+    interface PhysicsBody2DStatic extends Godot.CollisionObject2DStatic {
+    }
+}
+declare namespace Godot {
+    /**
+     * Editor facility for creating and editing collision shapes in 2D space. You can use this node to represent all sorts of collision shapes, for example, add this to an  to give it a detection shape, or add it to a  to create a solid object. IMPORTANT: this is an Editor-only helper to create shapes, use  to get the actual shape.
+     */
+    interface CollisionShape2D extends Godot.Node2D {
+        /**
+         * The actual shape owned by this collision shape.
+         */
+        get Shape(): Godot.Shape2D;
+        /**
+         * The actual shape owned by this collision shape.
+         */
+        set Shape(v: Godot.Shape2D);
+        /**
+         * A disabled collision shape has no effect in the world. This property should be changed with .
+         */
+        get Disabled(): boolean;
+        /**
+         * A disabled collision shape has no effect in the world. This property should be changed with .
+         */
+        set Disabled(v: boolean);
+        /**
+         * Sets whether this collision shape should only detect collision on one side (top or bottom).
+         */
+        get OneWayCollision(): boolean;
+        /**
+         * Sets whether this collision shape should only detect collision on one side (top or bottom).
+         */
+        set OneWayCollision(v: boolean);
+        /**
+         * The margin used for one-way collision (in pixels). Higher values will make the shape thicker, and work better for colliders that enter the shape at a high velocity.
+         */
+        get OneWayCollisionMargin(): float;
+        /**
+         * The margin used for one-way collision (in pixels). Higher values will make the shape thicker, and work better for colliders that enter the shape at a high velocity.
+         */
+        set OneWayCollisionMargin(v: float);
+        SetShape(shape: Godot.Shape2D): void;
+        GetShape(): Godot.Shape2D;
+        SetDisabled(disabled: boolean): void;
+        IsDisabled(): boolean;
+        SetOneWayCollision(enabled: boolean): void;
+        IsOneWayCollisionEnabled(): boolean;
+        SetOneWayCollisionMargin(margin: float): void;
+        GetOneWayCollisionMargin(): float;
+    }
+    interface CollisionShape2DConstructor {
+        new(): Godot.CollisionShape2D;
+    }
+    interface CollisionShape2DStatic extends Godot.Node2DStatic {
+    }
+    var CollisionShape2D: Godot.CollisionShape2DConstructor & Godot.CollisionShape2DStatic;
+}
+declare namespace Godot {
+    /**
      * An animation player is used for general-purpose playback of  resources. It contains a dictionary of animations (referenced by name) and custom blend times between their transitions. Additionally, animations can be played and blended in different channels.
      *  is more suited than  for animations where you know the final values in advance. For example, fading a screen in and out is more easily done with an  node thanks to the animation tools provided by the editor. That particular example can also be implemented with a  node, but it requires doing everything by code.
      * Updating the target properties of animations occurs at process time.
@@ -4238,184 +4907,6 @@ declare namespace Godot {
     interface KinematicBody2DStatic extends Godot.PhysicsBody2DStatic {
     }
     var KinematicBody2D: Godot.KinematicBody2DConstructor & Godot.KinematicBody2DStatic;
-}
-declare namespace Godot {
-    /**
-     * PhysicsBody2D is an abstract base class for implementing a physics body. All *Body2D types inherit from it.
-     */
-    interface PhysicsBody2D extends Godot.CollisionObject2D {
-        /**
-         * Both collision_layer and collision_mask. Returns collision_layer when accessed. Updates collision_layer and collision_mask when modified.
-         */
-        get Layers(): uint;
-        /**
-         * Both collision_layer and collision_mask. Returns collision_layer when accessed. Updates collision_layer and collision_mask when modified.
-         */
-        set Layers(v: uint);
-        /**
-         * Returns an array of nodes that were added as collision exceptions for this body.
-         */
-        GetCollisionExceptions(): Godot.Collections.Array;
-        /**
-         * Adds a body to the list of bodies that this body can't collide with.
-         */
-        AddCollisionExceptionWith(body: Godot.Node): void;
-        /**
-         * Removes a body from the list of bodies that this body can't collide with.
-         */
-        RemoveCollisionExceptionWith(body: Godot.Node): void;
-    }
-    interface PhysicsBody2DConstructor {
-    }
-    interface PhysicsBody2DStatic extends Godot.CollisionObject2DStatic {
-    }
-}
-declare namespace Godot {
-    /**
-     * CollisionObject2D is the base class for 2D physics objects. It can hold any number of 2D collision s. Each shape must be assigned to a shape owner. The CollisionObject2D can have any number of shape owners. Shape owners are not nodes and do not appear in the editor, but are accessible through code using the shape_owner_* methods.
-     */
-    interface CollisionObject2D extends Godot.Node2D {
-        /**
-         * The physics layers this CollisionObject2D is in. Collision objects can exist in one or more of 32 different layers. See also .
-         * Note: A contact is detected if object A is in any of the layers that object B scans, or object B is in any layers that object A scans. See Collision layers and masks in the documentation for more information.
-         */
-        get CollisionLayer(): uint;
-        /**
-         * The physics layers this CollisionObject2D is in. Collision objects can exist in one or more of 32 different layers. See also .
-         * Note: A contact is detected if object A is in any of the layers that object B scans, or object B is in any layers that object A scans. See Collision layers and masks in the documentation for more information.
-         */
-        set CollisionLayer(v: uint);
-        /**
-         * The physics layers this CollisionObject2D scans. Collision objects can scan one or more of 32 different layers. See also .
-         * Note: A contact is detected if object A is in any of the layers that object B scans, or object B is in any layers that object A scans. See Collision layers and masks in the documentation for more information.
-         */
-        get CollisionMask(): uint;
-        /**
-         * The physics layers this CollisionObject2D scans. Collision objects can scan one or more of 32 different layers. See also .
-         * Note: A contact is detected if object A is in any of the layers that object B scans, or object B is in any layers that object A scans. See Collision layers and masks in the documentation for more information.
-         */
-        set CollisionMask(v: uint);
-        /**
-         * If true, this object is pickable. A pickable object can detect the mouse pointer entering/leaving, and if the mouse is inside it, report input events. Requires at least one  bit to be set.
-         */
-        get InputPickable(): boolean;
-        /**
-         * If true, this object is pickable. A pickable object can detect the mouse pointer entering/leaving, and if the mouse is inside it, report input events. Requires at least one  bit to be set.
-         */
-        set InputPickable(v: boolean);
-        /**
-         * Accepts unhandled s. Requires  to be true. shape_idx is the child index of the clicked . Connect to the input_event signal to easily pick up these events.
-         */
-        _InputEvent(viewport: Godot.Object, event: Godot.InputEvent, shapeIdx: int): void;
-        /**
-         * Returns the object's .
-         */
-        GetRid(): Godot.RID;
-        SetCollisionLayer(layer: uint): void;
-        GetCollisionLayer(): uint;
-        SetCollisionMask(mask: uint): void;
-        GetCollisionMask(): uint;
-        /**
-         * If value is true, sets the specified bit in the the .
-         * If value is false, clears the specified bit in the the .
-         */
-        SetCollisionLayerBit(bit: int, value: boolean): void;
-        /**
-         * Returns whether or not the specified bit of the  is set.
-         */
-        GetCollisionLayerBit(bit: int): boolean;
-        /**
-         * If value is true, sets the specified bit in the the .
-         * If value is false, clears the specified bit in the the .
-         */
-        SetCollisionMaskBit(bit: int, value: boolean): void;
-        /**
-         * Returns whether or not the specified bit of the  is set.
-         */
-        GetCollisionMaskBit(bit: int): boolean;
-        SetPickable(enabled: boolean): void;
-        IsPickable(): boolean;
-        /**
-         * Creates a new shape owner for the given object. Returns owner_id of the new owner for future reference.
-         */
-        CreateShapeOwner(owner: Godot.Object): uint;
-        /**
-         * Removes the given shape owner.
-         */
-        RemoveShapeOwner(ownerId: uint): void;
-        /**
-         * Returns an  of owner_id identifiers. You can use these ids in other methods that take owner_id as an argument.
-         */
-        GetShapeOwners(): Godot.Collections.Array;
-        /**
-         * Sets the  of the given shape owner.
-         */
-        ShapeOwnerSetTransform(ownerId: uint, transform: Godot.Transform2D): void;
-        /**
-         * Returns the shape owner's .
-         */
-        ShapeOwnerGetTransform(ownerId: uint): Godot.Transform2D;
-        /**
-         * Returns the parent object of the given shape owner.
-         */
-        ShapeOwnerGetOwner(ownerId: uint): Godot.Object;
-        /**
-         * If true, disables the given shape owner.
-         */
-        ShapeOwnerSetDisabled(ownerId: uint, disabled: boolean): void;
-        /**
-         * If true, the shape owner and its shapes are disabled.
-         */
-        IsShapeOwnerDisabled(ownerId: uint): boolean;
-        /**
-         * If enable is true, collisions for the shape owner originating from this  will not be reported to collided with s.
-         */
-        ShapeOwnerSetOneWayCollision(ownerId: uint, enable: boolean): void;
-        /**
-         * Returns true if collisions for the shape owner originating from this  will not be reported to collided with s.
-         */
-        IsShapeOwnerOneWayCollisionEnabled(ownerId: uint): boolean;
-        /**
-         * Sets the one_way_collision_margin of the shape owner identified by given owner_id to margin pixels.
-         */
-        ShapeOwnerSetOneWayCollisionMargin(ownerId: uint, margin: float): void;
-        /**
-         * Returns the one_way_collision_margin of the shape owner identified by given owner_id.
-         */
-        GetShapeOwnerOneWayCollisionMargin(ownerId: uint): float;
-        /**
-         * Adds a  to the shape owner.
-         */
-        ShapeOwnerAddShape(ownerId: uint, shape: Godot.Shape2D): void;
-        /**
-         * Returns the number of shapes the given shape owner contains.
-         */
-        ShapeOwnerGetShapeCount(ownerId: uint): int;
-        /**
-         * Returns the  with the given id from the given shape owner.
-         */
-        ShapeOwnerGetShape(ownerId: uint, shapeId: int): Godot.Shape2D;
-        /**
-         * Returns the child index of the  with the given id from the given shape owner.
-         */
-        ShapeOwnerGetShapeIndex(ownerId: uint, shapeId: int): int;
-        /**
-         * Removes a shape from the given shape owner.
-         */
-        ShapeOwnerRemoveShape(ownerId: uint, shapeId: int): void;
-        /**
-         * Removes all shapes from the shape owner.
-         */
-        ShapeOwnerClearShapes(ownerId: uint): void;
-        /**
-         * Returns the owner_id of the given shape.
-         */
-        ShapeFindOwner(shapeIndex: int): uint;
-    }
-    interface CollisionObject2DConstructor {
-    }
-    interface CollisionObject2DStatic extends Godot.Node2DStatic {
-    }
 }
 declare namespace Godot {
     /**
@@ -4886,6 +5377,27 @@ declare namespace Godot.SceneTree {
 declare namespace Godot {
     type PackedScene = any;
 }
+declare namespace Godot.Area2D {
+    type SpaceOverrideEnum = any;
+}
+declare namespace Godot {
+    type Shape2D = any;
+}
+declare namespace Godot.RigidBody2D {
+    type ModeEnum = any;
+}
+declare namespace Godot {
+    type PhysicsMaterial = any;
+}
+declare namespace Godot.RigidBody2D {
+    type CCDMode = any;
+}
+declare namespace Godot {
+    type Physics2DDirectBodyState = any;
+}
+declare namespace Godot {
+    type Physics2DTestMotionResult = any;
+}
 declare namespace Godot.AnimationPlayer {
     type AnimationProcessMode = any;
 }
@@ -4897,9 +5409,6 @@ declare namespace Godot {
 }
 declare namespace Godot {
     type KinematicCollision2D = any;
-}
-declare namespace Godot {
-    type Shape2D = any;
 }
 declare namespace Godot {
     type X509Certificate = any;

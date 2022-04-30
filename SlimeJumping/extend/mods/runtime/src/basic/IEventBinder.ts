@@ -1,6 +1,6 @@
 
 interface IEventBinder<EMAP> {
-    readonly target: IEvent<EMAP>
-    readonly eventName: string;
+    get target(): IEvent<EMAP>
+    get eventName(): string;
     removeListener(): boolean;
 }

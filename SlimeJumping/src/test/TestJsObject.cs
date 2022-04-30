@@ -57,6 +57,9 @@ public class TestJsObject {
         PuertsScriptManager.AddHostType(new HostType("Godot.Node2D", typeof(Node2D)));
         PuertsScriptManager.AddHostType(new HostType("Godot.SceneTree", typeof(SceneTree)));
         PuertsScriptManager.AddHostType(new HostType("Godot.Sprite", typeof(Sprite)));
+        PuertsScriptManager.AddHostType(new HostType("Godot.Area2D", typeof(Area2D)));
+        PuertsScriptManager.AddHostType(new HostType("Godot.RigidBody2D", typeof(RigidBody2D)));
+        PuertsScriptManager.AddHostType(new HostType("Godot.CollisionShape2D", typeof(CollisionShape2D)));
         PuertsScriptManager.AddHostType(new HostType("Godot.AnimationPlayer", typeof(AnimationPlayer)));
         PuertsScriptManager.AddHostType(new HostType("Godot.KinematicBody2D", typeof(KinematicBody2D)));
         PuertsScriptManager.AddHostType(new HostType("Godot.KeyList", typeof(KeyList)));

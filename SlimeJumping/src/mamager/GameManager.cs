@@ -12,6 +12,12 @@ public class GameManager : Node
     private static bool _inited = false;
     
     public static GameManager Instance { get; private set; }
+    
+
+    /// <summary>
+    /// mod 对象根节点
+    /// </summary>
+    public Node2D ModeRoot { get; private set; }
 
     /// <summary>
     /// 初始化调用
@@ -27,6 +33,11 @@ public class GameManager : Node
             return;
         }
         _inited = true;
+
+        Instance.ModeRoot = new Node2D();
+        Instance.ModeRoot.Name = "ModeRoot";
+        Instance.GetTree().CurrentScene.AddChild(Instance.ModeRoot);
+
         PuertsScriptManager.Init(DebugFlag.Enable, 9223);
 
         //加载工程

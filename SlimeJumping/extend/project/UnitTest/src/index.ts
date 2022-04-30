@@ -7,8 +7,8 @@ export function Test(...args: any[]) {
         try {
             descriptor.value(...args);
             console.log("--------------- success ---------------");
-        } catch (e) {
-            console.error(e.toString());
+        } catch (e: any) {
+            console.error(e.toString() + "\n" + e.stack);
             console.log("--------------- error ---------------");
         }
     };
@@ -21,8 +21,8 @@ export function TestUstTime(...args: any[]) {
             let time = Date.now();
             descriptor.value(...args);
             console.log("--------------- useTime " + (Date.now() - time) + " ---------------");
-        } catch (e) {
-            console.error(e.toString());
+        } catch (e: any) {
+            console.error(e.toString() + "\n" + e.stack);
             console.log("--------------- error ---------------");
         }
     };

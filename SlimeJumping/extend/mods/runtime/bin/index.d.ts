@@ -2,8 +2,8 @@ interface IClone<T> {
     clone(): T;
 }
 interface ICoroutine {
-    readonly target: INode;
-    readonly index: number;
+    get target(): INode;
+    get index(): number;
 }
 interface IDestroy {
     destroy(): void;
@@ -23,11 +23,11 @@ interface IEvent<EMAP> {
     clearAllEventListener(): boolean;
 }
 interface IEventBinder<EMAP> {
-    readonly target: IEvent<EMAP>;
-    readonly eventName: string;
+    get target(): IEvent<EMAP>;
+    get eventName(): string;
     removeListener(): boolean;
 }
-interface INode<EMAP = NodeEventMap> extends IObject, IEvent<EMAP>, IClone<IObject> {
+interface INode<EMAP = NodeEventMap> extends IObject, IEvent<EMAP> {
     set name(v: string);
     get x(): number;
     set x(x: number);
@@ -90,8 +90,16 @@ interface INode<EMAP = NodeEventMap> extends IObject, IEvent<EMAP>, IClone<IObje
     clone(): INode<EMAP>;
 }
 interface IObject extends IDestroy, IEquatable<IObject> {
+    get index(): number;
     get name(): string;
 }
+interface Console {
+    error(...data: Object[]): void;
+    info(...data: Object[]): void;
+    log(...data: Object[]): void;
+    warn(...data: Object[]): void;
+}
+declare var console: Console;
 /**
  * 装饰器, 用在静态函数上, 被修饰的静态函数每帧都会被调用一次
  */
@@ -100,6 +108,9 @@ declare function Update(): (target: any, propertyKey: string, descriptor: Proper
  * 装饰器, 用在静态函数上, 被修饰的静态函数每物理帧都会被调用一次
  */
 declare function PhysicsUpdate(): (target: any, propertyKey: string, descriptor: PropertyDescriptor) => void;
+declare function NodeRegister<T extends {
+    new (...arg: any[]): INode;
+}>(constructor: T): T;
 /**
  * 鼠标按键映射值
  */
@@ -1066,6 +1077,13 @@ declare class Vector2 implements IEquatable<Vector2>, IClone<Vector2> {
     toString(): string;
 }
 declare class Node implements INode {
+    static instantiate<T extends INode>(): T;
+    static instantiate<T extends INode>(nodeName: string): T;
+    static instantiate<T extends INode>(nodeName: string, position: Vector2): T;
+    static instantiate<T extends INode>(nodeName: string, parent: INode, position: Vector2): T;
+    get index(): number;
+    get name(): string;
+    set name(n: string);
     get x(): number;
     set x(x: number);
     get y(): number;
@@ -1098,25 +1116,30 @@ declare class Node implements INode {
     set visible(v: boolean);
     get pause(): boolean;
     set pause(p: boolean);
-    get parent(): INode<NodeEventMap>;
+    get parent(): INode;
     get childIndex(): number;
-    get children(): INode<NodeEventMap>[];
+    get children(): INode[];
     get childCount(): number;
+    private _name;
+    private _position;
+    private _scale;
+    private _rotation;
+    constructor();
     getGlobalVisible(): boolean;
     getGlobalPause(): boolean;
     initialize(): void;
     start(): void;
     update(delta: number): void;
     physicsUpdate(delta: number): void;
-    setParent(parent: INode<NodeEventMap>): void;
-    setParent(parent: INode<NodeEventMap>, keepGlobalPos: boolean): void;
-    addChild(child: INode<NodeEventMap>): void;
-    addChild(child: INode<NodeEventMap>, index: number): void;
-    getNode<T extends INode<NodeEventMap>>(childPath: string): T;
-    getNodes<T extends INode<NodeEventMap>>(childPath: string): T[];
+    setParent(parent: INode): void;
+    setParent(parent: INode, keepGlobalPos: boolean): void;
+    addChild(child: INode): void;
+    addChild(child: INode, index: number): void;
+    getNode<T extends INode>(childPath: string): T;
+    getNodes<T extends INode>(childPath: string): T[];
     removeChild(childIndex: number): void;
     removeChild(childName: string): void;
-    removeChild(child: INode<NodeEventMap>): void;
+    removeChild(child: INode): void;
     lookAt(target: Vector2): void;
     rotate(radians: number): void;
     getAngleTo(point: Vector2): number;
@@ -1124,9 +1147,7 @@ declare class Node implements INode {
     toGlobal(localPoint: Vector2): Vector2;
     startCoroutine(iterator: Generator<any, any, any>): ICoroutine;
     stopCoroutine(coroutine: ICoroutine): boolean;
-    clone(): INode<NodeEventMap>;
-    get name(): string;
-    set name(n: string);
+    clone(): INode;
     destroy(): void;
     equals(other: IObject): boolean;
     addEventListener<T extends keyof NodeEventMap, V extends NodeEventMap[T]>(event: T, cb: (v: V) => void): IEventBinder<NodeEventMap>;
@@ -1141,6 +1162,7 @@ declare type NodeEventMap = {
 declare class Scene implements IObject {
     #private;
     readonly rootNode: INode;
+    get index(): number;
     get name(): string;
     constructor(sceneName: string);
     appendNode(node: INode): void;
@@ -1149,7 +1171,13 @@ declare class Scene implements IObject {
 }
 declare class SceneManager {
     private constructor();
+    private static _activeScene;
     static get sceneCount(): number;
-    static get currentScene(): Scene;
+    static getSceneByIndex(index: number): Scene;
+    static getSceneByName(sceneName: string): Scene;
+    static get activeScene(): Scene;
+    static setActiveScene(sceneName: string): void;
+    static setActiveScene(sceneIndex: number): void;
+    static setActiveScene(scene: Scene): void;
 }
 //# sourceMappingURL=index.d.ts.map

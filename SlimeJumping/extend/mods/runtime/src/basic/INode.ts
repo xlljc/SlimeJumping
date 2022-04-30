@@ -1,5 +1,5 @@
 
-interface INode<EMAP = NodeEventMap> extends IObject, IEvent<EMAP>, IClone<IObject> {
+interface INode<EMAP = NodeEventMap> extends IObject, IEvent<EMAP> {
 
     set name(v: string);
     get x(): number;

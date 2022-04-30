@@ -1,5 +1,5 @@
 
 interface ICoroutine {
-    readonly target: INode;
-    readonly index: number;
+    get target(): INode;
+    get index(): number;
 }
